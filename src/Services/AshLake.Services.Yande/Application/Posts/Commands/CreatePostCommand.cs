@@ -10,13 +10,13 @@ public record CreatePostCommand : Command
     public bool HasChildren { get; set; }
     public int Height { get; set; }
     public int PostId { get; set; }
-    public string MD5 { get; set; } = null!;
+    public string Md5 { get; set; } = null!;
     public int? ParentId { get; set; }
     public string Rating { get; set; } = null!;
     public int Score { get; set; }
     public string Source { get; set; }
-    public string Status { get; set; } = null!;
-    public IReadOnlyList<string> Tags { get; set; }
+    public PostStatus Status { get; set; }
+    public List<string> Tags { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
     public int Width { get; set; }
 }

@@ -2,7 +2,7 @@
 
 public interface IPostRepository
 {
-    Task<Post> GetPostAsync(int postId);
-    Task AddPostAsync(Post post);
-    Task DeletePostAsync(int postId);
+    Task<Post> SingleAsync(int postId);
+    Task AddPostAsync(Post post, CancellationToken cancellationToken = default);
+    Task DeletePostAsync(int postId, CancellationToken cancellationToken = default);
 }

@@ -2,7 +2,7 @@
 
 public class Post
 {
-    public string Author { get; private set; }
+    public string? Author { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
     public string FileExt { get; private set; } = null!;
     public long FileSize { get; private set; }
@@ -10,17 +10,17 @@ public class Post
     public bool HasChildren { get; private set; }
     public int Height { get; private set; }
     public int Id { get; private set; }
-    public string MD5 { get; private set; } = null!;
+    public string Md5 { get; private set; } = null!;
     public int? ParentId { get; private set; }
     public string Rating { get; private set; } = null!;
     public int Score { get; private set; }
-    public string Source { get; private set; }
-    public string Status { get; private set; } = null!;
-    public IReadOnlyList<string> Tags { get; private set; }
+    public string? Source { get; private set; }
+    public PostStatus Status { get; private set; }
+    public List<string> Tags { get; private set; }
     public DateTimeOffset UpdatedAt { get; private set; }
     public int Width { get; private set; }
 
-    public Post(string author,
+    public Post(string? author,
                 DateTimeOffset createdAt,
                 string fileExt,
                 long fileSize,
@@ -32,9 +32,9 @@ public class Post
                 int? parentId,
                 string rating,
                 int score,
-                string source,
-                string status,
-                IReadOnlyList<string> tags,
+                string? source,
+                PostStatus status,
+                List<string> tags,
                 DateTimeOffset updatedAt,
                 int width)
     {
@@ -46,7 +46,7 @@ public class Post
         HasChildren = hasChildren;
         Height = height;
         Id = id;
-        MD5 = md5;
+        Md5 = md5;
         ParentId = parentId;
         Rating = rating;
         Score = score;

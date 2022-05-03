@@ -22,7 +22,7 @@ public class PostCommandHandler
                             command.HasChildren,
                             command.Height,
                             command.PostId,
-                            command.MD5,
+                            command.Md5,
                             command.ParentId,
                             command.Rating,
                             command.Score,

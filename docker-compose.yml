@@ -1,0 +1,11 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres_dc
+    environment:
+      POSTGRES_USER: root 
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres 
+    ports:
+      - "5432:5432"
