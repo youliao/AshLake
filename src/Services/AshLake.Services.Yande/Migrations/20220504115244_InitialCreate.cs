@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using AshLake.Services.Yande.Domain.Posts;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -18,8 +18,7 @@ namespace AshLake.Services.Yande.Migrations
                 name: "Post",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<int>(type: "integer", nullable: false),
                     Author = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     FileExt = table.Column<string>(type: "character varying(4)", maxLength: 4, nullable: false),
@@ -32,7 +31,7 @@ namespace AshLake.Services.Yande.Migrations
                     Rating = table.Column<string>(type: "character(1)", fixedLength: true, maxLength: 1, nullable: false),
                     Score = table.Column<int>(type: "integer", nullable: false),
                     Source = table.Column<string>(type: "text", nullable: true),
-                    Status = table.Column<int>(type: "integer", nullable: false),
+                    Status = table.Column<PostStatus>(type: "post_status", nullable: false),
                     Tags = table.Column<List<string>>(type: "character varying[]", nullable: false),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     Width = table.Column<int>(type: "integer", nullable: false)

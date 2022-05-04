@@ -36,6 +36,11 @@ public static class ProgramExtensions
         });
     }
 
+    public static void AddCustomJsonOptions(this WebApplicationBuilder builder)
+    {
+
+    }
+
     public static void UseCustomSwagger(this WebApplication app)
     {
         app.UseSwagger().UseSwaggerUI(c =>

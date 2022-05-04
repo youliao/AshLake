@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace AshLake.Services.Yande.Infrastructure.EntityConfigurations;
 
@@ -7,7 +8,9 @@ public class PostEntityTypeConfiguration : IEntityTypeConfiguration<Post>
     public void Configure(EntityTypeBuilder<Post> builder)
     {
         builder.ToTable(nameof(Post));
+
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id).ValueGeneratedNever();
 
         builder.Property(x => x.Author)
             .HasMaxLength(50);
