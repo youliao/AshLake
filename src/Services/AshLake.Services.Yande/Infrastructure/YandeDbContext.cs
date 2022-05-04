@@ -5,7 +5,7 @@ namespace AshLake.Services.Yande.Infrastructure;
 
 public class YandeDbContext : DbContext
 {
-    public DbSet<Post> Posts { get; set; }
+    public DbSet<Post> Posts { get; set; } = null!;
 
     public YandeDbContext(DbContextOptions<YandeDbContext> options) : base(options)
     {

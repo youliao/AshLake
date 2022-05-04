@@ -2,21 +2,25 @@ const string appName = "Yande API";
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddCustomJsonOptions();
 builder.AddCustomDatabase();
 builder.AddCustomRepositories();
 builder.AddCustomSwagger();
 
-var app = builder.Services
-    .AddEndpointsApiExplorer()
-    .AddServices(builder);
-
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddCarter();
+builder.Services.AddMediatR(typeof(Program));
+var app = builder.Build();
 app.UseCustomSwagger();
-app.UseRouting();
-app.UseCloudEvents();
-app.UseEndpoints(endpoint =>
-{
-    endpoint.MapSubscribeHandler();
-});
+//app.UseRouting();
+//app.UseCloudEvents();
+//app.UseEndpoints(endpoint =>
+//{
+//    endpoint.MapSubscribeHandler();
+//});
+
+
+app.MapCarter();
 
 try
 {

@@ -1,6 +1,6 @@
 ﻿namespace AshLake.Services.Yande.Application.Posts.Commands;
 
-public record DeletePostCommand : Command
+public record DeletePostCommand
 {
     public int PostId { get; set; }
 }

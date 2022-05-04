@@ -2,14 +2,9 @@
 global using FluentValidation;
 global using FluentValidation.AspNetCore;
 global using Polly;
-global using Masa.BuildingBlocks.Dispatcher.Events;
-global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
-global using Masa.Contrib.Dispatcher.Events;
-global using Masa.Contrib.Dispatcher.IntegrationEvents.Dapr;
-global using Masa.Contrib.ReadWriteSpliting.Cqrs.Commands;
-global using Masa.Contrib.ReadWriteSpliting.Cqrs.Queries;
-global using Masa.Contrib.Service.MinimalAPIs;
-global using Microsoft.AspNetCore.Mvc;
+global using Carter;
+global using MediatR;
+global using System.Text.Json.Serialization;
 global using Microsoft.Extensions.Options;
 global using Microsoft.OpenApi.Models;
 global using Microsoft.Extensions.Configuration;

@@ -10,17 +10,17 @@ public class PostRepository : IPostRepository
         _dbContext = dbContext;
     }
 
-    public async Task AddPostAsync(Post post, CancellationToken cancellationToken = default)
+    public async Task<int> AddPostAsync(Post post, CancellationToken cancellationToken = default)
     {
         await _dbContext.AddAsync(post, cancellationToken);
-        await _dbContext.SaveChangesAsync();
+        return await _dbContext.SaveChangesAsync();
     }
 
-    public async Task DeletePostAsync(int postId, CancellationToken cancellationToken = default)
+    public async Task<int> DeletePostAsync(int postId, CancellationToken cancellationToken = default)
     {
         var post = await _dbContext.Set<Post>().FirstOrDefaultAsync(post => post.Id == postId) ?? throw new ArgumentNullException("Post does not exist");
         _dbContext.Posts.Remove(post);
-        await _dbContext.SaveChangesAsync();
+        return await _dbContext.SaveChangesAsync();
     }
 
     public async Task<Post> SingleAsync(int postId)
