@@ -2,5 +2,5 @@
 
 public record DeletePostCommand
 {
-    public int PostId { get; set; }
+    public int PostId { get; init; }
 }

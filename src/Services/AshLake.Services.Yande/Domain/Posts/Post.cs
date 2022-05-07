@@ -56,4 +56,9 @@ public class Post
         UpdatedAt = updatedAt;
         Width = width;
     }
+
+    public void Delete()
+    {
+        Status = PostStatus.DELETED;
+    }
 }
