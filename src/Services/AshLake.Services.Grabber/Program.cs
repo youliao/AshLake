@@ -1,18 +1,15 @@
-const string appName = "Grabber API";
-
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
 
 builder.AddCustomSwagger();
 builder.AddCustomHttpClient();
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddCarter();
+builder.AddCustomDatabase();
+builder.AddCustomRepositories();
 builder.Services.AddMediatR(typeof(Program));
 var app = builder.Build();
 
 app.UseCustomSwagger();
-
-app.MapCarter();
-
+app.MapControllers();
 app.Run();

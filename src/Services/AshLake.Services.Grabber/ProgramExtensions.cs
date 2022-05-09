@@ -1,4 +1,6 @@
-﻿namespace AshLake.Services.Grabber;
+﻿using MongoDB.Driver;
+
+namespace AshLake.Services.Grabber;
 
 public static class ProgramExtensions
 {
@@ -17,7 +19,7 @@ public static class ProgramExtensions
         builder.Services.AddHttpClient(BooruSites.Yande, config =>
         {
             config.BaseAddress = new Uri(builder.Configuration["YandeUrl"]);
-            config.Timeout = TimeSpan.FromSeconds(15);
+            config.Timeout = TimeSpan.FromSeconds(10);
         });
     }
 
@@ -45,12 +47,16 @@ public static class ProgramExtensions
 
     public static void AddCustomDatabase(this WebApplicationBuilder builder)
     {
-
+        builder.Services.AddSingleton(s =>
+        {
+            var settings = MongoClientSettings.FromConnectionString(builder.Configuration["MongoDBConnectionString"]);
+            return new MongoClient(settings).GetDatabase("grabber");
+        });
     }
 
     public static void AddCustomRepositories(this WebApplicationBuilder builder)
     {
-        //builder.Services.AddScoped<IPostRepository, PostRepository>();
+        builder.Services.AddScoped<YandeRepository>();
     }
 
 }
