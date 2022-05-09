@@ -1,8 +1,8 @@
 ﻿namespace AshLake.Services.Yande.Application.Posts.Commands;
 
-public class AddPostCommandValidator : AbstractValidator<AddPostCommand>
+public class CreatePostCommandValidator : AbstractValidator<AddPostCommand>
 {
-    public AddPostCommandValidator()
+    public CreatePostCommandValidator()
     {
         RuleFor(v => v.Rating)
             .Length(1)

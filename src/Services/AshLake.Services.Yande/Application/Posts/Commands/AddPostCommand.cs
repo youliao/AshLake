@@ -2,30 +2,30 @@
 
 public record AddPostCommand : IRequest<Unit>
 {
-    public string? Author { get; init; }
-    public DateTimeOffset CreatedAt { get; init; }
-    public string FileExt { get; init; } = null!;
-    public long FileSize { get; init; }
-    public string FileUrl { get; init; } = null!;
-    public bool HasChildren { get; init; }
-    public int Height { get; init; }
-    public int PostId { get; init; }
-    public string Md5 { get; init; } = null!;
-    public int? ParentId { get; init; }
-    public string Rating { get; init; } = null!;
-    public int Score { get; init; }
-    public string? Source { get; init; }
-    public PostStatus Status { get; init; }
-    public List<string> Tags { get; init; } = null!;
-    public DateTimeOffset UpdatedAt { get; init; }
-    public int Width { get; init; }
+    public string? Author { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+    public string FileExt { get; set; } = null!;
+    public long FileSize { get; set; }
+    public string FileUrl { get; set; } = null!;
+    public bool HasChildren { get; set; }
+    public int Height { get; set; }
+    public int PostId { get; set; }
+    public string Md5 { get; set; } = null!;
+    public int? ParentId { get; set; }
+    public string Rating { get; set; } = null!;
+    public int Score { get; set; }
+    public string? Source { get; set; }
+    public PostStatus Status { get; set; }
+    public List<string> Tags { get; set; } = null!;
+    public DateTimeOffset UpdatedAt { get; set; }
+    public int Width { get; set; }
 }
 
-public class AddPostCommandHandler : IRequestHandler<AddPostCommand, Unit>
+public class CreateTodoListCommandHandler : IRequestHandler<AddPostCommand, Unit>
 {
     private readonly IPostRepository _repository;
 
-    public AddPostCommandHandler(IPostRepository repository)
+    public CreateTodoListCommandHandler(IPostRepository repository)
     {
         _repository = repository;
     }
@@ -51,7 +51,7 @@ public class AddPostCommandHandler : IRequestHandler<AddPostCommand, Unit>
                             command.Width);
 
         await _repository.AddAsync(post);
-        return Unit.Value;
+        return Unit.Value; 
     }
 }
 

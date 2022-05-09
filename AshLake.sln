@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{D5
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildingBlocks", "BuildingBlocks", "{26B3D76D-6E9A-478C-AA0D-1F993C8746B9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AshLake.Services.Grabber", "src\Services\AshLake.Services.Grabber\AshLake.Services.Grabber.csproj", "{BD2B1557-7381-49E9-9A37-7B67A15B6DE6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{7DE32B4F-1FFA-407D-961B-94A1885B992B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7DE32B4F-1FFA-407D-961B-94A1885B992B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7DE32B4F-1FFA-407D-961B-94A1885B992B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD2B1557-7381-49E9-9A37-7B67A15B6DE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD2B1557-7381-49E9-9A37-7B67A15B6DE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD2B1557-7381-49E9-9A37-7B67A15B6DE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD2B1557-7381-49E9-9A37-7B67A15B6DE6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -29,6 +35,7 @@ Global
 		{7DE32B4F-1FFA-407D-961B-94A1885B992B} = {D573494F-6826-48D0-A95A-D6BEEDCA2B63}
 		{D573494F-6826-48D0-A95A-D6BEEDCA2B63} = {DFC6E2A2-DD70-435E-9F2B-DA2CD363A072}
 		{26B3D76D-6E9A-478C-AA0D-1F993C8746B9} = {DFC6E2A2-DD70-435E-9F2B-DA2CD363A072}
+		{BD2B1557-7381-49E9-9A37-7B67A15B6DE6} = {D573494F-6826-48D0-A95A-D6BEEDCA2B63}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EDC91361-03C5-4AF8-AB4A-E5B82895C858}
