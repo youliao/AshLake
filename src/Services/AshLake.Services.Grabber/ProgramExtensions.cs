@@ -1,6 +1,4 @@
-﻿using MongoDB.Driver;
-
-namespace AshLake.Services.Grabber;
+﻿namespace AshLake.Services.Grabber;
 
 public static class ProgramExtensions
 {
@@ -47,16 +45,12 @@ public static class ProgramExtensions
 
     public static void AddCustomDatabase(this WebApplicationBuilder builder)
     {
-        builder.Services.AddSingleton(s =>
-        {
-            var settings = MongoClientSettings.FromConnectionString(builder.Configuration["MongoDBConnectionString"]);
-            return new MongoClient(settings).GetDatabase("grabber");
-        });
+
     }
 
     public static void AddCustomRepositories(this WebApplicationBuilder builder)
     {
-        builder.Services.AddScoped<YandeRepository>();
+        builder.Services.AddScoped<YandeSourceSiteRepository>();
     }
 
 }
