@@ -7,6 +7,7 @@ builder.AddCustomSwagger();
 builder.AddCustomHttpClient();
 builder.AddCustomDatabase();
 builder.AddCustomRepositories();
+builder.AddCustomEasyCaching();
 
 builder.Services.AddMediatR(typeof(Program));
 

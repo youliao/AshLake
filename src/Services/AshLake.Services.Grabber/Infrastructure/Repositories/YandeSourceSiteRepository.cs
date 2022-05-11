@@ -2,19 +2,26 @@
 
 public class YandeSourceSiteRepository
 {
+    private readonly IEasyCachingProvider _cachingProvider;
     private readonly IHttpClientFactory _httpClientFactory;
 
-    public YandeSourceSiteRepository(IHttpClientFactory httpClientFactory)
+    public YandeSourceSiteRepository(IEasyCachingProvider cachingProvider, IHttpClientFactory httpClientFactory)
     {
+        _cachingProvider = cachingProvider;
         _httpClientFactory = httpClientFactory;
     }
 
-    public async Task<JsonNode?> GetMetadataAsync(int id)
+    public async Task<JsonNode?> GetMetadataAsync(int id, bool cachedEnable = true)
     {
         string tags = $"id:{id}";
-        var array = await GetMetadataArrayAsync(tags, 1, 1);
 
-        return array.FirstOrDefault();
+        if (!cachedEnable) return (await GetMetadataArrayAsync(tags, 1, 1)).FirstOrDefault();
+
+        var cache = await _cachingProvider.GetAsync($"{BooruSites.Yande}:{id}",
+                                             async () => (await GetMetadataArrayAsync(tags, 1, 1)).FirstOrDefault(),
+                                             TimeSpan.FromMinutes(10));
+
+        return cache.Value;
     }
 
     public async Task<JsonArray> GetMetadataArrayAsync(string tags,int limit,int page)

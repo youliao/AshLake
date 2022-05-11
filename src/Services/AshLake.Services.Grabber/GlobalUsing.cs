@@ -9,3 +9,4 @@ global using System.Net.Mime;
 global using AshLake.Services.Grabber.Application.Yande.Queries;
 global using AshLake.Services.Grabber.Infrastructure.Repositories;
 global using Ardalis.GuardClauses;
+global using EasyCaching.Core;

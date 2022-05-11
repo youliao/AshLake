@@ -21,17 +21,17 @@ public static class ProgramExtensions
         });
     }
 
+    public static void AddCustomJsonOptions(this WebApplicationBuilder builder)
+    {
+
+    }
+
     public static void AddCustomSwagger(this WebApplicationBuilder builder)
     {
         builder.Services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = $"Ash Lake - {AppName}", Version = "v1" });
         });
-    }
-
-    public static void AddCustomJsonOptions(this WebApplicationBuilder builder)
-    {
-
     }
 
     public static void UseCustomSwagger(this WebApplication app)
@@ -42,10 +42,17 @@ public static class ProgramExtensions
         });
     }
 
-
     public static void AddCustomDatabase(this WebApplicationBuilder builder)
     {
 
+    }
+
+    public static void AddCustomEasyCaching(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddEasyCaching(options =>
+        {
+            options.UseInMemory();
+        });
     }
 
     public static void AddCustomRepositories(this WebApplicationBuilder builder)
