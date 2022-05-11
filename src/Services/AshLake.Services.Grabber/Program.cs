@@ -29,10 +29,11 @@ if (true)
             {
                 Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.6.1",
                 Status = StatusCodes.Status500InternalServerError,
-                Detail = exceptionHandlerPathFeature?.Error.Message,
-                Title = exceptionHandlerPathFeature?.Error.GetType().ToString(),
-                Instance = context.Request.Path,
+                Detail = exceptionHandlerPathFeature?.Error?.InnerException?.Message,
+                Title = exceptionHandlerPathFeature?.Error.Message,
+                Instance = context.Request.Path
             };
+            prob.Extensions.Add(nameof(Exception), exceptionHandlerPathFeature?.Error.GetType().ToString());
             await context.Response.WriteAsJsonAsync(prob);
         });
     });
