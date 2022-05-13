@@ -51,7 +51,7 @@ public static class ProgramExtensions
     {
         builder.Services.AddEasyCaching(options =>
         {
-            options.UseInMemory();
+            options.UseInMemory(BooruSites.Yande);
         });
     }
 

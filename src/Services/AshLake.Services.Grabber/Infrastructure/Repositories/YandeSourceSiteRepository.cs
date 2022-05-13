@@ -2,41 +2,46 @@
 
 public class YandeSourceSiteRepository
 {
-    private readonly IEasyCachingProvider _cachingProvider;
+    private readonly IEasyCachingProviderFactory _cachingProviderFactory;
     private readonly IHttpClientFactory _httpClientFactory;
 
-    public YandeSourceSiteRepository(IEasyCachingProvider cachingProvider, IHttpClientFactory httpClientFactory)
+    public YandeSourceSiteRepository(IEasyCachingProviderFactory cachingProviderFactory, IHttpClientFactory httpClientFactory)
     {
-        _cachingProvider = cachingProvider;
+        _cachingProviderFactory = cachingProviderFactory;
         _httpClientFactory = httpClientFactory;
     }
+
+    private HttpClient _httpClient { get=> _httpClientFactory.CreateClient(BooruSites.Yande); }
+    private IEasyCachingProvider _cachingProvider { get => _cachingProviderFactory.GetCachingProvider(BooruSites.Yande); }
 
     public async Task<JsonNode?> GetMetadataAsync(int id, bool cachedEnable = true)
     {
         string tags = $"id:{id}";
 
-        if (!cachedEnable) return (await GetMetadataArrayAsync(tags, 1, 1)).FirstOrDefault();
+        if (!cachedEnable) return (await GetMetadataListAsync(tags, 1, 1)).FirstOrDefault();
 
-        var cache = await _cachingProvider.GetAsync($"{BooruSites.Yande}:{id}",
-                                             async () => (await GetMetadataArrayAsync(tags, 1, 1)).FirstOrDefault(),
+        var cache = await _cachingProvider.GetAsync($"{id}",
+                                             async () => (await GetMetadataListAsync(tags, 1, 1)).FirstOrDefault(),
                                              TimeSpan.FromMinutes(10));
 
         return cache.Value;
     }
 
-    public async Task<JsonArray> GetMetadataArrayAsync(string tags,int limit,int page)
+    public async Task<IReadOnlyList<JsonNode>> GetMetadataListAsync(string tags,int limit,int page)
     {
-        var client = _httpClientFactory.CreateClient(BooruSites.Yande);
-
         string urlEncoded = WebUtility.UrlEncode(tags ?? "order:id");
 
-        return await client.GetFromJsonAsync<JsonArray>($"/post.json?tags={urlEncoded}&limit={limit}&page={page}") ?? new JsonArray();
+        var list = await _httpClient.GetFromJsonAsync<IReadOnlyList<JsonNode>>($"/post.json?tags={urlEncoded}&limit={limit}&page={page}") ?? new List<JsonNode>();
+        if (list.Count == 0) return list;
+
+        var dic = list!.ToDictionary(x => x["id"]!.AsValue().ToString());
+        await _cachingProvider.SetAllAsync(dic, TimeSpan.FromMinutes(10));
+
+        return list;
     }
 
     public async Task<Stream> GetPreviewAsync(int id)
     {
-        var client = _httpClientFactory.CreateClient(BooruSites.Yande);
-
         var metadata = await GetMetadataAsync(id);
         Guard.Against.Null(metadata,nameof(metadata));
 
@@ -44,14 +49,11 @@ public class YandeSourceSiteRepository
         var previewUrl = metadata[key]?.AsValue()?.ToString();
         Guard.Against.NullOrEmpty(previewUrl, key);
 
-        return await client.GetStreamAsync(previewUrl);
+        return await _httpClient.GetStreamAsync(previewUrl);
     }
 
     public async Task<Stream> GetFileAsync(int id)
     {
-        var client = _httpClientFactory.CreateClient(BooruSites.Yande);
-        client.Timeout = TimeSpan.FromMinutes(1);
-
         var metadata = await GetMetadataAsync(id);
         Guard.Against.Null(metadata, nameof(metadata));
 
@@ -59,6 +61,7 @@ public class YandeSourceSiteRepository
         var previewUrl = metadata[key]?.AsValue()?.ToString();
         Guard.Against.NullOrEmpty(previewUrl, key);
 
-        return await client.GetStreamAsync(previewUrl);
+        _httpClient.Timeout = TimeSpan.FromMinutes(1);
+        return await _httpClient.GetStreamAsync(previewUrl);
     }
 }

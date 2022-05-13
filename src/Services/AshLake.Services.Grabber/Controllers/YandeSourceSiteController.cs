@@ -4,7 +4,7 @@ public class YandeSourceSiteController : ApiControllerBase
 {
     [Route("/api/sourcesite/yande/postmetadata")]
     [HttpGet]
-    public async Task<ActionResult<JsonArray>> GetPostsMetadataArray([FromQuery] GetYandePostsMetadataArrayQuery query)
+    public async Task<ActionResult<IReadOnlyList<JsonNode>>> GetPostsMetadataArray([FromQuery] GetYandePostsMetadataListQuery query)
     {
         var result = await Mediator.Send(query);
         return Ok(result);
