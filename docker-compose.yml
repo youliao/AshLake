@@ -1,11 +1,20 @@
 version: '3'
 services:
   postgres:
-    image: postgres:latest
-    container_name: postgres_dc
+    image: postgres:14
+    container_name: postgres_test
     environment:
       POSTGRES_USER: root 
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: postgres 
     ports:
       - "5432:5432"
+
+  mongo:
+    image: mongo:4
+    container_name: mongo_test
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongoadmin
+      MONGO_INITDB_ROOT_PASSWORD: mongoadmin
+    ports:
+      - "27017:27017"

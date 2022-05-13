@@ -2,7 +2,7 @@
 
 public class YandeSourceSiteController : ApiControllerBase
 {
-    [Route("/api/sourcesite/yande/postmetadata")]
+    [Route("/api/sourcesites/yande/postmetadata")]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<JsonNode>>> GetPostsMetadataArray([FromQuery] GetYandePostsMetadataListQuery query)
     {
@@ -10,7 +10,7 @@ public class YandeSourceSiteController : ApiControllerBase
         return Ok(result);
     }
 
-    [Route("/api/sourcesite/yande/postmetadata/{id:int}")]
+    [Route("/api/sourcesites/yande/postmetadata/{id:int}")]
     [HttpGet]
     public async Task<ActionResult<JsonNode>> GetPostMetadata(int id)
     {
@@ -22,7 +22,7 @@ public class YandeSourceSiteController : ApiControllerBase
         return Ok(result);
     }
 
-    [Route("/api/sourcesite/yande/postpreviews/{id:int}")]
+    [Route("/api/sourcesites/yande/postpreviews/{id:int}")]
     [HttpGet]
     public async Task<FileResult> GetPostPreview(int id)
     {
@@ -32,7 +32,7 @@ public class YandeSourceSiteController : ApiControllerBase
         return File(stream, MediaTypeNames.Image.Jpeg);
     }
 
-    [Route("/api/sourcesite/yande/postfiles/{id:int}")]
+    [Route("/api/sourcesites/yande/postfiles/{id:int}")]
     [HttpGet]
     public async Task<FileResult> GetPostFile(int id)
     {

@@ -1,4 +1,4 @@
-﻿namespace AshLake.Services.Grabber;
+﻿namespace AshLake.Contracts.Seedwork;
 
 public static class BooruSites
 {
