@@ -39,7 +39,7 @@ public static class ProgramExtensions
         builder.Services.AddSingleton(s =>
         {
             var settings = MongoClientSettings.FromConnectionString(builder.Configuration["MongoDBConnectionString"]);
-            return new MongoClient(settings).GetDatabase("ArchiveBox");
+            return new MongoClient(settings);
         });
     }
 

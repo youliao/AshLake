@@ -1,12 +1,15 @@
-﻿namespace AshLake.Services.ArchiveBox.Infrastructure.Repositories;
+﻿using AshLake.Contracts.Seedwork;
+
+namespace AshLake.Services.ArchiveBox.Infrastructure.Repositories;
 
 public class MetadataRepository<T> : IMetadataRepository<T> where T : Mesadata
 {
-    private readonly IMongoDatabase _database;
+    private readonly MongoClient _mongoClient;
+    private IMongoDatabase _database => _mongoClient.GetDatabase(BooruSites.Yande);
 
-    public MetadataRepository(IMongoDatabase database)
+    public MetadataRepository(MongoClient mongoClient)
     {
-        _database = database;
+        _mongoClient = mongoClient;
     }
 
     public async Task AddAsync(T post)

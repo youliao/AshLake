@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-namespace AshLake.Services.ArchiveBox.Domain.Repositories;
+﻿namespace AshLake.Services.ArchiveBox.Domain.Repositories;
 
 public interface IMetadataRepository<T> where T : Mesadata
 {
