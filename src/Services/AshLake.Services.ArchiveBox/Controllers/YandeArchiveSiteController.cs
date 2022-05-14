@@ -9,7 +9,7 @@ public class YandeArchiveSiteController : ApiControllerBase
         var archiveStatus = await Mediator.Send(command);
 
         return AcceptedAtAction(nameof(GetPostMetadata),
-                                new { id = command.Id },
+                                new { id = command.PostId },
                                 new { ArchiveStatus = archiveStatus });
     }
 
