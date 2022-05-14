@@ -4,13 +4,14 @@ public class YandeArchiveSiteController : ApiControllerBase
 {
     [Route("/api/archivesites/yande/postmetadata")]
     [HttpPost]
-    public async Task<ActionResult> AddOrUpdateMetadata(AddPostMetadataCommand command)
+    [ProducesResponseType(typeof(ArchiveStatus), StatusCodes.Status202Accepted)]
+    public async Task<ActionResult<ArchiveStatus>> AddOrUpdateMetadata(AddPostMetadataCommand command)
     {
         var archiveStatus = await Mediator.Send(command);
 
         return AcceptedAtAction(nameof(GetPostMetadata),
                                 new { id = command.PostId },
-                                new { ArchiveStatus = archiveStatus });
+                                archiveStatus);
     }
 
     [Route("/api/archivesites/yande/postmetadata/{id:int}")]
