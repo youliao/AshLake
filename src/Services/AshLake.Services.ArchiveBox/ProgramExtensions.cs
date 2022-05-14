@@ -12,11 +12,23 @@ public static class ProgramExtensions
         //    new DaprClientBuilder().Build());
     }
 
-
-    public static void AddCustomJsonOptions(this WebApplicationBuilder builder)
+    public static void AddCustomControllers(this WebApplicationBuilder builder)
     {
+        builder.Services.AddControllers().AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        });
 
+        builder.Services.AddEndpointsApiExplorer();
     }
+
+    //public static void AddCustomJsonOptions(this WebApplicationBuilder builder)
+    //{
+    //    builder.Services.Configure<Microsoft.AspNetCore.Mvc.JsonOptions>(options =>
+    //    {
+    //        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    //    });
+    //}
 
     public static void AddCustomSwagger(this WebApplicationBuilder builder)
     {

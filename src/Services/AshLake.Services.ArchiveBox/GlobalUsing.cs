@@ -13,3 +13,4 @@ global using System.Net.Mime;
 global using AshLake.Services.ArchiveBox.Infrastructure.Repositories;
 global using AshLake.Services.ArchiveBox.Application.Queries;
 global using MongoDB.Bson;
+global using System.Text.Json.Serialization;

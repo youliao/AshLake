@@ -1,10 +1,6 @@
-using MongoDB.Bson.Serialization;
-
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-
+builder.AddCustomControllers();
 builder.AddCustomSwagger();
 builder.AddCustomDatabase();
 builder.AddCustomRepositories();
