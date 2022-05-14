@@ -49,7 +49,7 @@ public static class ProgramExtensions
 
     public static void AddCustomRepositories(this WebApplicationBuilder builder)
     {
-        builder.Services.AddScoped(typeof(IMetadataRepository<>), typeof(MetadataRepository<>));
+        builder.Services.AddScoped(typeof(IYandeMetadataRepository<>), typeof(YandeMetadataRepository<>));
     }
 
 }

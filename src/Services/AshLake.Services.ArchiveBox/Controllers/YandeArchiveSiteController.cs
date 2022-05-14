@@ -6,7 +6,7 @@ public class YandeArchiveSiteController : ApiControllerBase
     [HttpPost]
     public async Task<ActionResult> AddPostMetadata(AddPostMetadataCommand command)
     {
-        await Mediator.Send(command);
+        var before = await Mediator.Send(command);
 
         return CreatedAtAction(nameof(GetPostMetadata), new { id = command.Id });
     }

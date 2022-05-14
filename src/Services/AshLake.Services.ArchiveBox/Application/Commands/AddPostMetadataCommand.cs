@@ -1,24 +1,24 @@
 ﻿namespace AshLake.Services.ArchiveBox.Application.Commands;
 
-public record AddPostMetadataCommand : IRequest<Unit>
+public record AddPostMetadataCommand : IRequest<PostMetadata>
 {
     public string Id { get; init; } = default!;
     public string Data { get; init; } = default!;
 }
 
-public class AddPostMetadataCommandHandler : IRequestHandler<AddPostMetadataCommand, Unit>
+public class AddPostMetadataCommandHandler : IRequestHandler<AddPostMetadataCommand, PostMetadata>
 {
-    private readonly IMetadataRepository<YandePostMetadata> _repository;
+    private readonly IYandeMetadataRepository<PostMetadata> _repository;
 
-    public AddPostMetadataCommandHandler(IMetadataRepository<YandePostMetadata> repository)
+    public AddPostMetadataCommandHandler(IYandeMetadataRepository<PostMetadata> repository)
     {
         _repository = repository;
     }
 
-    public async Task<Unit> Handle(AddPostMetadataCommand command, CancellationToken cancellationToken)
+    public async Task<PostMetadata> Handle(AddPostMetadataCommand command, CancellationToken cancellationToken)
     {
-        var metadata = new YandePostMetadata(command.Id, BsonDocument.Parse(command.Data));
-        await _repository.AddAsync(metadata);
-        return Unit.Value;
+        var metadata = new PostMetadata(command.Id, BsonDocument.Parse(command.Data));
+        var before = await _repository.FindOneAndReplaceAsync(metadata);
+        return before;
     }
 }

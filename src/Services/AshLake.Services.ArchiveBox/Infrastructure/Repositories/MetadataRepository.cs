@@ -2,19 +2,20 @@
 
 namespace AshLake.Services.ArchiveBox.Infrastructure.Repositories;
 
-public class MetadataRepository<T> : IMetadataRepository<T> where T : Mesadata
+public abstract class MetadataRepository<T> : IMetadataRepository<T> where T : Mesadata
 {
-    private readonly MongoClient _mongoClient;
-    private IMongoDatabase _database => _mongoClient.GetDatabase(BooruSites.Yande);
+    protected readonly MongoClient _mongoClient;
+    protected abstract IMongoDatabase _database { get; }
 
     public MetadataRepository(MongoClient mongoClient)
     {
         _mongoClient = mongoClient;
     }
 
-    public async Task AddAsync(T post)
+    public async Task<T> FindOneAndReplaceAsync(T post)
     {
-        await _database.GetEntityCollection<T>().InsertOneAsync(post);
+        var opt = new FindOneAndReplaceOptions<T, T>() { IsUpsert = true, ReturnDocument = ReturnDocument.Before};
+        return await _database.GetEntityCollection<T>().FindOneAndReplaceAsync<T>(x=>x.Id == post.Id, post, opt);
     }
 
     public async Task DeleteAsync(string postId)
