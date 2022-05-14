@@ -14,18 +14,14 @@ public abstract class MetadataRepository<T> : IMetadataRepository<T> where T : M
 
     public async Task<T> FindOneAndReplaceAsync(T post)
     {
-        var opt = new FindOneAndReplaceOptions<T, T>() { IsUpsert = true, ReturnDocument = ReturnDocument.Before};
-        return await _database.GetEntityCollection<T>().FindOneAndReplaceAsync<T>(x=>x.Id == post.Id, post, opt);
+        return await _database.GetEntityCollection<T>().FindOneAndReplaceAsync(x => x.Id == post.Id,
+                                                                               post,
+                                                                               new() { IsUpsert = true, ReturnDocument = ReturnDocument.Before });
     }
 
-    public async Task DeleteAsync(string postId)
+    public async Task<T> DeleteAsync(string postId)
     {
-        await _database.GetEntityCollection<T>().FindOneAndDeleteAsync(x => x.Id == postId);
-    }
-
-    public IQueryable<T> Query(Expression<Func<T, bool>> predicate)
-    {
-        throw new NotImplementedException();
+        return await _database.GetEntityCollection<T>().FindOneAndDeleteAsync(x => x.Id == postId);
     }
 
     public async Task<T> SingleAsync(string postId)

@@ -2,7 +2,7 @@
 
 namespace AshLake.Services.ArchiveBox.Application.Queries;
 
-public record GetYandePostMetadataQuery : IRequest<JsonNode?>
+public record GetPostMetadataQuery : IRequest<JsonNode?>
 {
     public int Id { get; init; }
 }
