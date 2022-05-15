@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Nodes;
 
-namespace AshLake.Services.ArchiveBox.Application.Queries;
+namespace AshLake.Services.Archiver.Application.Queries.GetPostMetadata;
 
 public record GetPostMetadataQuery : IRequest<JsonNode?>
 {
