@@ -14,3 +14,4 @@ global using MongoDB.Bson;
 global using System.Text.Json.Serialization;
 global using AshLake.Contracts.Seedwork.Converts;
 global using Hellang.Middleware.ProblemDetails;
+global using Hangfire;
