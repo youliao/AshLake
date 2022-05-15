@@ -1,4 +1,5 @@
 ﻿using AshLake.Contracts.Seedwork;
+using AshLake.Contracts.Seedwork.Extensions;
 
 namespace AshLake.Services.ArchiveBox.Infrastructure.Repositories;
 

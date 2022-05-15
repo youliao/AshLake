@@ -19,8 +19,15 @@ public class YandeArchiveSiteController : ApiControllerBase
 
     [Route("/api/archivesites/yande/postmetadata/{id:int}")]
     [HttpGet]
-    public async Task<ActionResult> GetPostMetadata(GetPostMetadataQuery query)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> GetPostMetadata(int id)
     {
-        return Ok();
+        var query = new GetYandePostMetadataQuery() { PostId = id.ToString()};
+        var postmetadata = await Mediator.Send(query);
+
+        if (postmetadata is null) return NotFound();
+
+        return Ok(postmetadata.Data);
     }
 }

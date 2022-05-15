@@ -17,6 +17,7 @@ public static class ProgramExtensions
         builder.Services.AddControllers().AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            options.JsonSerializerOptions.Converters.Add(new BsonDocumentConverter());
         });
 
         builder.Services.AddEndpointsApiExplorer();
