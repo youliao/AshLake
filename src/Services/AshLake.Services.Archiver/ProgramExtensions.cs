@@ -12,9 +12,31 @@ public static class ProgramExtensions
         //    new DaprClientBuilder().Build());
     }
 
+    public static void AddCustomProblemDetails(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddProblemDetails(c =>
+        {
+            // You can configure the middleware to re-throw certain types of exceptions, all exceptions or based on a predicate.
+            // This is useful if you have upstream middleware that needs to do additional handling of exceptions.
+            c.Rethrow<NotSupportedException>();
+
+            // This will map NotImplementedException to the 501 Not Implemented status code.
+            c.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
+
+            // This will map HttpRequestException to the 503 Service Unavailable status code.
+            c.MapToStatusCode<HttpRequestException>(StatusCodes.Status503ServiceUnavailable);
+
+            // Because exceptions are handled polymorphically, this will act as a "catch all" mapping, which is why it's added last.
+            // If an exception other than NotImplementedException and HttpRequestException is thrown, this will handle it.
+            c.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
+        });
+    }
+
     public static void AddCustomControllers(this WebApplicationBuilder builder)
     {
-        builder.Services.AddControllers().AddJsonOptions(options =>
+        builder.Services
+            .AddControllers()
+            .AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             options.JsonSerializerOptions.Converters.Add(new BsonDocumentConverter());
