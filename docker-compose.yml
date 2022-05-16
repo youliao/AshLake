@@ -20,14 +20,20 @@ services:
     ports:
       - "27017:27017"
 
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2017-latest
-    container_name: sqlserver_test
-    environment:
-      SA_PASSWORD: Pass@word
-      ACCEPT_EULA: Y
+  #sqlserver:
+  #  image: mcr.microsoft.com/mssql/server:2017-latest
+  #  container_name: sqlserver_test
+  #  environment:
+  #    SA_PASSWORD: Pass@word
+  #    ACCEPT_EULA: Y
+  #  ports:
+  #    - "1433:1433"
+
+  redis:
+    image: redis:7
+    container_name: redis_test
     ports:
-      - "1433:1433"
+      - "6379:6379"
 
   minio:
     image: minio/minio:latest

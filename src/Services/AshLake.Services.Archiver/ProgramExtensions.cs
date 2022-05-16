@@ -71,7 +71,10 @@ public static class ProgramExtensions
 
     public static void AddCustomAddHangfire(this WebApplicationBuilder builder)
     {
-        builder.Services.AddHangfire(x => x.UseSqlServerStorage(builder.Configuration["HangfireConnectionString"]));
+        builder.Services.AddHangfire(c =>
+        {
+            c.UseRedisStorage(builder.Configuration["HangfireConnectionString"]);
+        });
         builder.Services.AddHangfireServer();
     }
 
