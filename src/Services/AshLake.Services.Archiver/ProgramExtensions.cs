@@ -12,6 +12,14 @@ public static class ProgramExtensions
         //    new DaprClientBuilder().Build());
     }
 
+    public static void AddCustomHttpClient(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddHttpClient(BooruSites.Yande, config =>
+        {
+            config.BaseAddress = new Uri(builder.Configuration["YandeGrabberApi"]);
+            //config.Timeout = TimeSpan.FromSeconds(10);
+        });
+    }
     public static void AddCustomProblemDetails(this WebApplicationBuilder builder)
     {
         builder.Services.AddProblemDetails(c =>
@@ -45,13 +53,13 @@ public static class ProgramExtensions
         builder.Services.AddEndpointsApiExplorer();
     }
 
-    //public static void AddCustomJsonOptions(this WebApplicationBuilder builder)
-    //{
-    //    builder.Services.Configure<Microsoft.AspNetCore.Mvc.JsonOptions>(options =>
-    //    {
-    //        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    //    });
-    //}
+    public static void AddCustomJsonOptions(this WebApplicationBuilder builder)
+    {
+        builder.Services.Configure<Microsoft.AspNetCore.Mvc.JsonOptions>(options =>
+        {
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        });
+    }
 
     public static void AddCustomSwagger(this WebApplicationBuilder builder)
     {
@@ -75,7 +83,12 @@ public static class ProgramExtensions
         {
             c.UseRedisStorage(builder.Configuration["HangfireConnectionString"]);
         });
-        builder.Services.AddHangfireServer();
+        builder.Services.AddHangfireServer(opt =>
+        {
+            opt.ShutdownTimeout = TimeSpan.FromMinutes(30);
+            opt.WorkerCount = 5;
+            opt.Queues = new[] { "metadata", "file", "preview" };
+        });
     }
 
     public static void AddCustomDatabase(this WebApplicationBuilder builder)
@@ -87,8 +100,9 @@ public static class ProgramExtensions
         });
     }
 
-    public static void AddCustomEasyCaching(this WebApplicationBuilder builder)
+    public static void AddCustomBackgroundJobs(this WebApplicationBuilder builder)
     {
+        builder.Services.AddScoped(typeof(PostMetadataJobService));
     }
 
     public static void AddCustomRepositories(this WebApplicationBuilder builder)

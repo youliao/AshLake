@@ -1,4 +1,5 @@
 ﻿using AshLake.Services.Archiver.Application.Commands.AddPostMetadata;
+using AshLake.Services.Archiver.Application.Commands.CreateJobsForAddOrUpdateMetadata;
 using AshLake.Services.Archiver.Application.Queries.GetPostMetadata;
 
 namespace AshLake.Services.ArchiveBox.Controllers;
@@ -24,10 +25,20 @@ public class YandeArchiveSiteController : ApiControllerBase
     public async Task<ActionResult> GetPostMetadata(int id)
     {
         var query = new GetYandePostMetadataQuery() { PostId = id.ToString()};
-        var postmetadata = await Mediator.Send(query);
+        var postMetadata = await Mediator.Send(query);
 
-        if (postmetadata is null) return NotFound();
+        if (postMetadata is null) return NotFound();
 
-        return Ok(postmetadata.Data);
+        return Ok(postMetadata.Data);
+    }
+
+    [Route("/api/archivesites/yande/jobs/addorupdatemetadatajobs")]
+    [HttpPost]
+    [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status202Accepted)]
+    public async Task<ActionResult<IEnumerable<string>>> CreateJobsForAddOrUpdateMetadata(CreateYandeJobsForAddOrUpdateMetadataCommand command)
+    {
+        var tasks = await Mediator.Send(command);
+         
+        return Ok(tasks);
     }
 }

@@ -4,8 +4,9 @@ builder.AddCustomProblemDetails();
 builder.AddCustomControllers();
 builder.AddCustomSwagger();
 builder.AddCustomDatabase();
+builder.AddCustomHttpClient();
 builder.AddCustomRepositories();
-builder.AddCustomEasyCaching();
+builder.AddCustomBackgroundJobs();
 builder.AddCustomAddHangfire();
 
 builder.Services.AddMediatR(typeof(Program));

@@ -15,3 +15,5 @@ global using System.Text.Json.Serialization;
 global using AshLake.Contracts.Seedwork.Converts;
 global using Hellang.Middleware.ProblemDetails;
 global using Hangfire;
+global using AshLake.Services.Archiver.Application.BackgroundJobs;
+global using AshLake.Contracts.Seedwork;

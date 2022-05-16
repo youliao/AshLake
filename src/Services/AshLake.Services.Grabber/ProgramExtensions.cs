@@ -17,7 +17,7 @@ public static class ProgramExtensions
         builder.Services.AddHttpClient(BooruSites.Yande, config =>
         {
             config.BaseAddress = new Uri(builder.Configuration["YandeUrl"]);
-            config.Timeout = TimeSpan.FromSeconds(10);
+            //config.Timeout = TimeSpan.FromSeconds(10);
         });
     }
 
