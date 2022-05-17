@@ -2,7 +2,7 @@
 
 public interface IMetadataRepository<T> where T : Mesadata
 {
-    Task<T> FindOneAndReplaceAsync(T post);
+    Task<ArchiveStatus> AddOrUpdateAsync(T post);
 
     Task<T> DeleteAsync(string postId);
 

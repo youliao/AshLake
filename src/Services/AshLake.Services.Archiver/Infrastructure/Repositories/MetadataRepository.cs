@@ -13,11 +13,17 @@ public abstract class MetadataRepository<T> : IMetadataRepository<T> where T : M
         _mongoClient = mongoClient;
     }
 
-    public async Task<T> FindOneAndReplaceAsync(T post)
+    public async Task<ArchiveStatus> AddOrUpdateAsync(T post)
     {
-        return await _database.GetEntityCollection<T>().FindOneAndReplaceAsync(x => x.Id == post.Id,
+        var before = await _database.GetEntityCollection<T>().FindOneAndReplaceAsync(x => x.Id == post.Id,
                                                                                post,
                                                                                new() { IsUpsert = true, ReturnDocument = ReturnDocument.Before });
+
+        if (before is null) return ArchiveStatus.Added;
+
+        if (post.Equals(before)) return ArchiveStatus.Untouched;
+
+        return ArchiveStatus.Updated;
     }
 
     public async Task<T> DeleteAsync(string postId)

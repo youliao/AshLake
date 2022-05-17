@@ -20,11 +20,6 @@ public abstract class AddPostMetadataCommandHandler<TCommand, TRepository>
     public async Task<ArchiveStatus> Handle(TCommand command, CancellationToken cancellationToken)
     {
         var metadata = new PostMetadata(command.PostId, BsonDocument.Parse(command.Data));
-        var before = await _repository.FindOneAndReplaceAsync(metadata);
-
-        if (before is null) return ArchiveStatus.Added;
-        if (metadata.Equals(before)) return ArchiveStatus.Untouched;
-
-        return ArchiveStatus.Updated;
+        return await _repository.AddOrUpdateAsync(metadata);
     }
 }
