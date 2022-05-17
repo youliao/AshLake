@@ -55,9 +55,10 @@ public static class ProgramExtensions
 
     public static void AddCustomJsonOptions(this WebApplicationBuilder builder)
     {
-        builder.Services.Configure<Microsoft.AspNetCore.Mvc.JsonOptions>(options =>
+        builder.Services.Configure<JsonOptions>(options =>
         {
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            //options.JsonSerializerOptions.Converters.Add(new BsonDocumentConverter());
         });
     }
 

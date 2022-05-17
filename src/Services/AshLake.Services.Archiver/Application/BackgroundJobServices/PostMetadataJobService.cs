@@ -31,14 +31,20 @@ public class PostMetadataJobService
     public async Task<int> AddOrUpdatePostMetadata(int startId, int limit)
     {
         var httpClient = _httpClientFactory.CreateClient(BooruSites.Yande);
-        var metadataList = await httpClient.GetFromJsonAsync<IReadOnlyList<JsonNode>>($"sourcesites/yande/postmetadata?StartId={startId}&Page=1&Limit={limit}");
+
+        var serializeOptions = new JsonSerializerOptions();
+        serializeOptions.Converters.Add(new BsonDocumentConverter());
+
+        var metadataList = await httpClient.GetFromJsonAsync<List<BsonDocument>>($"sourcesites/yande/postmetadata?StartId={startId}&Page=1&Limit={limit}", serializeOptions);
 
         if (metadataList is null || metadataList.Count == 0) return 0;
 
-        foreach(var item in metadataList)
+        metadataList.RemoveAll(x => x["id"].AsInt32 >= startId + limit);
+
+        foreach (var item in metadataList)
         {
             ArchiveStatus status;
-            var postMetadata = new PostMetadata(item["id"]!.AsValue().ToString(), BsonDocument.Parse(item.ToJsonString()));
+            var postMetadata = new PostMetadata(item["id"].AsInt32.ToString(), item);
             var before = await _repository.FindOneAndReplaceAsync(postMetadata);
 
             if (before is null) 
