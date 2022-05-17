@@ -3,15 +3,14 @@
 public class YandeSourceSiteRepository
 {
     private readonly IEasyCachingProviderFactory _cachingProviderFactory;
-    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly HttpClient _httpClient;
 
-    public YandeSourceSiteRepository(IEasyCachingProviderFactory cachingProviderFactory, IHttpClientFactory httpClientFactory)
+    public YandeSourceSiteRepository(IEasyCachingProviderFactory cachingProviderFactory, HttpClient httpClient)
     {
         _cachingProviderFactory = cachingProviderFactory;
-        _httpClientFactory = httpClientFactory;
+        _httpClient = httpClient;
     }
 
-    private HttpClient _httpClient { get=> _httpClientFactory.CreateClient(BooruSites.Yande); }
     private IEasyCachingProvider _cachingProvider { get => _cachingProviderFactory.GetCachingProvider(BooruSites.Yande); }
 
     public async Task<JsonNode?> GetMetadataAsync(int id, bool cachedEnable = true)

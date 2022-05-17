@@ -1,4 +1,6 @@
-﻿namespace AshLake.Services.ArchiveBox;
+﻿using System.Text.Json.Serialization;
+
+namespace AshLake.Services.ArchiveBox;
 
 public static class ProgramExtensions
 {
@@ -47,19 +49,10 @@ public static class ProgramExtensions
             .AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            options.JsonSerializerOptions.Converters.Add(new BsonDocumentConverter());
+            options.JsonSerializerOptions.Converters.Add(new BsonDocumentJsonConverter());
         });
 
         builder.Services.AddEndpointsApiExplorer();
-    }
-
-    public static void AddCustomJsonOptions(this WebApplicationBuilder builder)
-    {
-        builder.Services.Configure<JsonOptions>(options =>
-        {
-            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            //options.JsonSerializerOptions.Converters.Add(new BsonDocumentConverter());
-        });
     }
 
     public static void AddCustomSwagger(this WebApplicationBuilder builder)

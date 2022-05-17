@@ -36,13 +36,10 @@ public class YandeArchiveSiteController : ApiControllerBase
     [Route("/api/archivesites/yande/jobs/addorupdatemetadatajobs")]
     [HttpPost]
     [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status202Accepted)]
-    public async Task<ActionResult<IEnumerable<string>>> CreateJobsForAddOrUpdateMetadata(CreateYandeJobsForAddOrUpdateMetadataCommand command,
-        [FromServices]IHttpClientFactory httpClientFactory)
+    public async Task<ActionResult<IEnumerable<string>>> CreateJobsForAddOrUpdateMetadata(CreateYandeJobsForAddOrUpdateMetadataCommand command)
     {
-        var httpClient = httpClientFactory.CreateClient(BooruSites.Yande);
-
         var tasks = await Mediator.Send(command);
          
-        return Ok();
+        return Ok(tasks);
     }
 }

@@ -12,15 +12,6 @@ public static class ProgramExtensions
         //    new DaprClientBuilder().Build());
     }
 
-    public static void AddCustomHttpClient(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddHttpClient(BooruSites.Yande, config =>
-        {
-            config.BaseAddress = new Uri(builder.Configuration["YandeUrl"]);
-            //config.Timeout = TimeSpan.FromSeconds(10);
-        });
-    }
-
     public static void AddCustomJsonOptions(this WebApplicationBuilder builder)
     {
 
@@ -53,11 +44,21 @@ public static class ProgramExtensions
         {
             options.UseInMemory(BooruSites.Yande);
         });
+
+        builder.Services.AddEasyCaching(options =>
+        {
+            options.UseInMemory(BooruSites.Danbooru);
+        });
     }
 
     public static void AddCustomRepositories(this WebApplicationBuilder builder)
     {
         builder.Services.AddScoped<YandeSourceSiteRepository>();
+        builder.Services.AddHttpClient<YandeSourceSiteRepository>(config =>
+        {
+            config.BaseAddress = new Uri(builder.Configuration["YandeUrl"]);
+            //config.Timeout = TimeSpan.FromSeconds(10);
+        });
     }
 
 }

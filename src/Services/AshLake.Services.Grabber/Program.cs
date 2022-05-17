@@ -4,7 +4,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.AddCustomSwagger();
-builder.AddCustomHttpClient();
 builder.AddCustomDatabase();
 builder.AddCustomRepositories();
 builder.AddCustomEasyCaching();

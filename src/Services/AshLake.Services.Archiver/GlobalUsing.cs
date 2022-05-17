@@ -2,7 +2,6 @@
 global using MongoDB.Driver;
 global using Microsoft.OpenApi.Models;
 global using AshLake.Services.ArchiveBox.Domain.Entities;
-global using System.Text.Json.Nodes;
 global using AshLake.Services.ArchiveBox.Domain.Repositories;
 global using System.Linq.Expressions;
 global using AshLake.Contracts.Seedwork.Extensions;
@@ -11,7 +10,6 @@ global using MediatR;
 global using System.Net.Mime;
 global using AshLake.Services.ArchiveBox.Infrastructure.Repositories;
 global using MongoDB.Bson;
-global using System.Text.Json.Serialization;
 global using AshLake.Contracts.Seedwork.Converts;
 global using Hellang.Middleware.ProblemDetails;
 global using Hangfire;
