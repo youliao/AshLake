@@ -25,6 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dapr", "dapr", "{E56D89F2-B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "components", "components", "{34B56E0F-7C5F-420E-8E7F-F1DC9C9BE334}"
 	ProjectSection(SolutionItems) = preProject
+		dapr\components\ashlake-objectstorage.yaml = dapr\components\ashlake-objectstorage.yaml
 		dapr\components\ashlake-pubsub.yaml = dapr\components\ashlake-pubsub.yaml
 		dapr\components\ashlake-secrets.json = dapr\components\ashlake-secrets.json
 		dapr\components\ashlake-secretstore.yaml = dapr\components\ashlake-secretstore.yaml

@@ -1,0 +1,22 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: objectstorage
+spec:
+  type: bindings.aws.s3
+  version: v1
+  metadata:
+  - name: bucket
+    value: mybucket
+  - name: region
+    value: us-east-1
+  - name: endpoint
+    value: http://minio.local:9000
+  - name: accessKey
+    value: minio
+  - name: secretKey
+    value: minio123
+  - name: forcePathStyle
+    value: true
+  - name: disableSSL
+    value: true
