@@ -18,7 +18,7 @@ public static class ProgramExtensions
 
     public static void AddCustomGrabberServices(this WebApplicationBuilder builder)
     {
-        builder.Services.AddSingleton<IGrabberService, YandeGrabberService>(_ => new YandeGrabberService(DaprClient.CreateInvokeHttpClient("Grabber")));
+        builder.Services.AddSingleton(_ => new YandeGrabberService(DaprClient.CreateInvokeHttpClient("Grabber")));
     }
     public static void AddCustomBackgroundJobs(this WebApplicationBuilder builder)
     {
