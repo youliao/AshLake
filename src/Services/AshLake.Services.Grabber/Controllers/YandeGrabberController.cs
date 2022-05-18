@@ -1,8 +1,8 @@
 ﻿namespace AshLake.Services.Grabber.Controllers;
 
-public class YandeSourceSiteController : ApiControllerBase
+public class YandeGrabberController : ApiControllerBase
 {
-    [Route("/api/sourcesites/yande/postmetadata")]
+    [Route("/api/sites/yande/postmetadata")]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<JsonNode>>> GetPostsMetadataArray([FromQuery] GetYandePostsMetadataListQuery query)
     {
@@ -10,7 +10,7 @@ public class YandeSourceSiteController : ApiControllerBase
         return Ok(result);
     }
 
-    [Route("/api/sourcesites/yande/postmetadata/{id:int}")]
+    [Route("/api/sites/yande/postmetadata/{id:int}")]
     [HttpGet]
     public async Task<ActionResult<JsonNode>> GetPostMetadata(int id)
     {
@@ -22,7 +22,7 @@ public class YandeSourceSiteController : ApiControllerBase
         return Ok(result);
     }
 
-    [Route("/api/sourcesites/yande/postpreviews/{id:int}")]
+    [Route("/api/sites/yande/postpreviews/{id:int}")]
     [HttpGet]
     public async Task<FileResult> GetPostPreview(int id)
     {
@@ -32,7 +32,7 @@ public class YandeSourceSiteController : ApiControllerBase
         return File(stream, MediaTypeNames.Image.Jpeg);
     }
 
-    [Route("/api/sourcesites/yande/postfiles/{id:int}")]
+    [Route("/api/sites/yande/postfiles/{id:int}")]
     [HttpGet]
     public async Task<FileResult> GetPostFile(int id)
     {

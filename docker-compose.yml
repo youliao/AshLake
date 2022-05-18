@@ -1,52 +1,38 @@
-version: '3'
+version: '3.4'
 
 services:
-  postgres:
-    image: postgres:14
-    container_name: postgres_test
-    environment:
-      POSTGRES_USER: root 
-      POSTGRES_DB: postgres
-      POSTGRES_PASSWORD: postgres 
-    ports:
-      - "5432:5432"
-
   mongo:
     image: mongo:4
-    container_name: mongo_test
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: mongoadmin
-      MONGO_INITDB_ROOT_PASSWORD: mongoadmin
-    ports:
-      - "27017:27017"
 
-  #sqlserver:
-  #  image: mcr.microsoft.com/mssql/server:2017-latest
-  #  container_name: sqlserver_test
-  #  environment:
-  #    SA_PASSWORD: Pass@word
-  #    ACCEPT_EULA: Y
-  #  ports:
-  #    - "1433:1433"
+  postgres:
+    image: postgres:14
 
   redis:
     image: redis:7
-    container_name: redis_test
-    ports:
-      - "6379:6379"
 
   minio:
     image: minio/minio:latest
-    container_name: minio_test
-    volumes:
-      - data:/data
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    environment:
-      MINIO_ACCESS_KEY: minio
-      MINIO_SECRET_KEY: minio123
-    command: server /data --console-address ":9001"
 
-volumes:
-  data:
+  grabber:
+    image: ${DOCKER_REGISTRY-}ashlakeservicesgrabber
+    build:
+      context: .
+      dockerfile: src/Services/AshLake.Services.Grabber/Dockerfile
+
+  grabber-dapr:
+    image: "daprio/daprd:latest"
+    network_mode: "service:grabber"
+    depends_on:
+      - grabber
+
+  archiver:
+    image: ${DOCKER_REGISTRY-}ashlakeservicesarchiver
+    build:
+      context: .
+      dockerfile: src/Services/AshLake.Services.Archiver/Dockerfile
+
+  archiver-dapr:
+    image: "daprio/daprd:latest"
+    network_mode: "service:archiver"
+    depends_on:
+      - archiver

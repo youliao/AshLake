@@ -1,4 +1,5 @@
-﻿using Hellang.Middleware.ProblemDetails;
+﻿using Dapr.Client;
+using Hellang.Middleware.ProblemDetails;
 using System.Text.Json.Serialization;
 
 namespace AshLake.Services.Archiver;
@@ -17,12 +18,7 @@ public static class ProgramExtensions
 
     public static void AddCustomGrabberServices(this WebApplicationBuilder builder)
     {
-        builder.Services.AddScoped(typeof(YandeGrabberService));
-        builder.Services.AddHttpClient<YandeGrabberService>( config =>
-        {
-            config.BaseAddress = new Uri(builder.Configuration["YandeGrabberApi"]);
-            //config.Timeout = TimeSpan.FromSeconds(10);
-        });
+        builder.Services.AddSingleton<IGrabberService, YandeGrabberService>(_ => new YandeGrabberService(DaprClient.CreateInvokeHttpClient("Grabber")));
     }
     public static void AddCustomBackgroundJobs(this WebApplicationBuilder builder)
     {

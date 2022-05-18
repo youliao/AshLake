@@ -1,0 +1,21 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "composeLaunchAction": "LaunchBrowser",
+      "composeLaunchServiceName": "archiver",
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "archiver": "StartDebugging",
+        "archiver-dapr": "StartWithoutDebugging",
+        "grabber": "StartDebugging",
+        "grabber-dapr": "StartWithoutDebugging",
+        "minio": "StartWithoutDebugging",
+        "mongo": "StartWithoutDebugging",
+        "postgres": "StartWithoutDebugging",
+        "redis": "StartWithoutDebugging"
+      }
+    }
+  }
+}

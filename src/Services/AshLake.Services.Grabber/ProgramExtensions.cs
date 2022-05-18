@@ -12,9 +12,17 @@ public static class ProgramExtensions
         //    new DaprClientBuilder().Build());
     }
 
-    public static void AddCustomJsonOptions(this WebApplicationBuilder builder)
+    public static void AddCustomControllers(this WebApplicationBuilder builder)
     {
+        builder.Services
+            .AddControllers()
+            .AddDapr()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+            });
 
+        builder.Services.AddEndpointsApiExplorer();
     }
 
     public static void AddCustomSwagger(this WebApplicationBuilder builder)

@@ -1,0 +1,60 @@
+version: '3.4'
+
+services:
+  mongo:
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongoadmin
+      MONGO_INITDB_ROOT_PASSWORD: mongoadmin
+    ports:
+      - "27017:27017"
+
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: root 
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres 
+    ports:
+      - "5432:5432"
+
+  redis:
+    ports:
+      - "6379:6379"
+
+  minio:
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+    command: server /data --console-address ":9001"
+
+  archiver:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - MongoDBConnectionString=mongodb://mongoadmin:mongoadmin@mongo:27017
+      - HangfireConnectionString=redis:6379
+    ports:
+      - "80"
+
+  archiver-dapr:
+    command: ["./daprd",
+      "-app-id", "archiver",
+      "-app-port", "80"
+      ]
+
+  grabber:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - YandeUrl=https://yande.re/
+    ports:
+      - "80"
+
+  grabber-dapr:
+    command: ["./daprd",
+      "-app-id", "grabber",
+      "-app-port", "80"
+      ]
