@@ -1,6 +1,6 @@
-﻿namespace AshLake.Services.ArchiveBox.Domain.Repositories;
+﻿namespace AshLake.Services.Archiver.Domain.Repositories;
 
-public interface IMetadataRepository<T> where T : Mesadata
+public interface IMetadataRepository<T> where T : Metadata
 {
     Task<ArchiveStatus> AddOrUpdateAsync(T post);
 

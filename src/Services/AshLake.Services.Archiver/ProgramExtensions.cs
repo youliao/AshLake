@@ -1,10 +1,11 @@
-﻿using System.Text.Json.Serialization;
+﻿using Hellang.Middleware.ProblemDetails;
+using System.Text.Json.Serialization;
 
-namespace AshLake.Services.ArchiveBox;
+namespace AshLake.Services.Archiver;
 
 public static class ProgramExtensions
 {
-    private const string AppName = "ArchiveBox API";
+    private const string AppName = "Archiver API";
 
     public static void AddCustomConfiguration(this WebApplicationBuilder builder)
     {
@@ -14,14 +15,20 @@ public static class ProgramExtensions
         //    new DaprClientBuilder().Build());
     }
 
-    public static void AddCustomHttpClient(this WebApplicationBuilder builder)
+    public static void AddCustomGrabberServices(this WebApplicationBuilder builder)
     {
-        builder.Services.AddHttpClient(BooruSites.Yande, config =>
+        builder.Services.AddScoped(typeof(YandeGrabberService));
+        builder.Services.AddHttpClient<YandeGrabberService>( config =>
         {
             config.BaseAddress = new Uri(builder.Configuration["YandeGrabberApi"]);
             //config.Timeout = TimeSpan.FromSeconds(10);
         });
     }
+    public static void AddCustomBackgroundJobs(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddScoped(typeof(YandeMetadataJob));
+    }
+
     public static void AddCustomProblemDetails(this WebApplicationBuilder builder)
     {
         builder.Services.AddProblemDetails(c =>
@@ -94,10 +101,6 @@ public static class ProgramExtensions
         });
     }
 
-    public static void AddCustomBackgroundJobs(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddScoped(typeof(PostMetadataJobService));
-    }
 
     public static void AddCustomRepositories(this WebApplicationBuilder builder)
     {

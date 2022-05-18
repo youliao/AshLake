@@ -1,4 +1,4 @@
-﻿namespace AshLake.Services.ArchiveBox.Controllers;
+﻿namespace AshLake.Services.Archiver.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

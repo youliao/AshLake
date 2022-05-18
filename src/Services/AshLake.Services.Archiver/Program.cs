@@ -1,10 +1,12 @@
+using Hellang.Middleware.ProblemDetails;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddCustomProblemDetails();
 builder.AddCustomControllers();
 builder.AddCustomSwagger();
 builder.AddCustomDatabase();
-builder.AddCustomHttpClient();
+builder.AddCustomGrabberServices();
 builder.AddCustomRepositories();
 builder.AddCustomBackgroundJobs();
 builder.AddCustomAddHangfire();

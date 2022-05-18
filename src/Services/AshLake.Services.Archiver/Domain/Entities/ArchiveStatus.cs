@@ -1,4 +1,4 @@
-﻿namespace AshLake.Services.ArchiveBox;
+﻿namespace AshLake.Services.Archiver.Domain.Entities;
 
 public enum ArchiveStatus
 {

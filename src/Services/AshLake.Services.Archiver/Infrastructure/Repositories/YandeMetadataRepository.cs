@@ -1,8 +1,6 @@
-﻿using AshLake.Contracts.Seedwork;
+﻿namespace AshLake.Services.Archiver.Infrastructure.Repositories;
 
-namespace AshLake.Services.ArchiveBox.Infrastructure.Repositories;
-
-public class YandeMetadataRepository<T> : MetadataRepository<T>, IYandeMetadataRepository<T> where T : Mesadata
+public class YandeMetadataRepository<T> : MetadataRepository<T>, IYandeMetadataRepository<T> where T : Metadata
 {
     public YandeMetadataRepository(MongoClient mongoClient) : base(mongoClient)
     {

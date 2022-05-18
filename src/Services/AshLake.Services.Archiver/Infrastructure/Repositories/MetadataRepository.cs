@@ -1,9 +1,6 @@
-﻿using AshLake.Contracts.Seedwork;
-using AshLake.Contracts.Seedwork.Extensions;
+﻿namespace AshLake.Services.Archiver.Infrastructure.Repositories;
 
-namespace AshLake.Services.ArchiveBox.Infrastructure.Repositories;
-
-public abstract class MetadataRepository<T> : IMetadataRepository<T> where T : Mesadata
+public abstract class MetadataRepository<T> : IMetadataRepository<T> where T : Metadata
 {
     protected readonly MongoClient _mongoClient;
     protected abstract IMongoDatabase _database { get; }
@@ -15,7 +12,7 @@ public abstract class MetadataRepository<T> : IMetadataRepository<T> where T : M
 
     public async Task<ArchiveStatus> AddOrUpdateAsync(T post)
     {
-        var before = await _database.GetEntityCollection<T>().FindOneAndReplaceAsync(x => x.Id == post.Id,
+        var before = await _database.GetEntityCollection<T>().FindOneAndReplaceAsync(x => x.Id == post.Data["id"],
                                                                                post,
                                                                                new() { IsUpsert = true, ReturnDocument = ReturnDocument.Before });
 
