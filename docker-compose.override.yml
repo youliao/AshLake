@@ -30,6 +30,10 @@ services:
       MINIO_SECRET_KEY: minio123
     command: server /data --console-address ":9001"
 
+  zipkin:
+    ports:
+      - "9411:9411"
+
   archiver:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development

@@ -13,6 +13,9 @@ services:
   minio:
     image: minio/minio:latest
 
+  zipkin:
+    image: openzipkin/zipkin-slim
+
   grabber:
     image: ${DOCKER_REGISTRY-}ashlakeservicesgrabber
     build:
