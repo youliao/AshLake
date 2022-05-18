@@ -1,4 +1,6 @@
-﻿namespace AshLake.Services.Archiver.Domain.Repositories;
+﻿using AshLake.Services.Archiver.Infrastructure;
+
+namespace AshLake.Services.Archiver.Domain.Repositories;
 
 public interface IMetadataRepository<T> where T : Metadata
 {

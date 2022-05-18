@@ -1,7 +1,4 @@
-﻿using AshLake.Services.Archiver.Integration.GrabberServices;
-using System.Text.Json;
-
-namespace AshLake.Services.Archiver.Application.BackgroundJobs;
+﻿namespace AshLake.Services.Archiver.Application.BackgroundJobs;
 
 public class YandeMetadataJob 
 {
