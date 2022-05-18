@@ -1,6 +1,6 @@
 ﻿namespace AshLake.Services.Archiver.Application.BackgroundJobs;
 
-public class YandeMetadataJob 
+public class YandeMetadataJob
 {
     private readonly IYandeMetadataRepository<PostMetadata> _repository;
     private readonly YandeGrabberService _grabberService;
@@ -12,13 +12,13 @@ public class YandeMetadataJob
     }
 
     [Queue("metadata")]
-    public async Task<int> AddOrUpdatePostMetadata(int startId, int limit)
+    public async Task<int> AddOrUpdatePostMetadata(int startId, int endId, int limit)
     {
         var metadataList = await _grabberService.GetPostMetadataList(startId, limit);
 
         if (metadataList is null || metadataList.Count == 0) return 0;
 
-        metadataList.RemoveAll(x => x["id"].AsInt32 >= startId + limit);
+        metadataList.RemoveAll(x => x["id"].AsInt32 >= endId);
 
         foreach (var item in metadataList)
         {

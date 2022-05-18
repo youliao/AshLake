@@ -23,11 +23,10 @@ public class YandeArchiverController : ApiControllerBase
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
     public ActionResult<List<string>> CreatePostMetadataJobs(CreatePostMetadataJobsCommand command)
     {
-        var step = 100;
         var jobIdList = new List<string>();
-        for (int i = command.StartPostId; i < command.EndPostId; i += step)
+        for (int i = command.StartPostId; i < command.EndPostId; i += command.Step)
         {
-            var jobId = BackgroundJob.Enqueue<YandeMetadataJob>(x => x.AddOrUpdatePostMetadata(i, step));
+            var jobId = BackgroundJob.Enqueue<YandeMetadataJob>(x => x.AddOrUpdatePostMetadata(i, command.EndPostId, command.Step));
             jobIdList.Add(jobId);
         }
 
