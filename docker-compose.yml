@@ -10,6 +10,9 @@ services:
   redis:
     image: redis:7
 
+  rabbitmq:
+    image: rabbitmq:management-alpine
+
   minio:
     image: minio/minio:latest
 

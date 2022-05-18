@@ -21,6 +21,10 @@ services:
     ports:
       - "6379:6379"
 
+  rabbitmq:
+    ports:
+      - "5672:5672"
+
   minio:
     ports:
       - "9000:9000"
@@ -37,7 +41,7 @@ services:
   archiver:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - ASPNETCORE_URLS=http://+:80
       - MongoDBConnectionString=mongodb://mongoadmin:mongoadmin@mongo:27017
       - HangfireConnectionString=redis:6379
     ports:
@@ -46,13 +50,16 @@ services:
   archiver-dapr:
     command: ["./daprd",
       "-app-id", "archiver",
-      "-app-port", "80"
+      "-app-port", "80",
+      "-components-path", "/components"
       ]
+    volumes:
+      - "./dapr/components/:/components"
 
   grabber:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - ASPNETCORE_URLS=http://+:80
       - YandeUrl=https://yande.re/
     ports:
       - "80"
@@ -60,5 +67,8 @@ services:
   grabber-dapr:
     command: ["./daprd",
       "-app-id", "grabber",
-      "-app-port", "80"
+      "-app-port", "80",
+      "-components-path", "/components"
       ]
+    volumes:
+      - "./dapr/components/:/components"
