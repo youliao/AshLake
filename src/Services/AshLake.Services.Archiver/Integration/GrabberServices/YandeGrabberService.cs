@@ -25,7 +25,7 @@ public class YandeGrabberService : IYandeGrabberService
 
     public async Task<string> GetPostPreview(int postId)
     {
-        var response = await _httpClient.GetByteArrayAsync($"/api/sites/yande/postpreviews/{postId}");
-        return Convert.ToBase64String(response);
+        var bytes = await _httpClient.GetByteArrayAsync($"/api/sites/yande/postpreviews/{postId}");
+        return Convert.ToBase64String(bytes);
     }
 }

@@ -37,11 +37,11 @@ public class YandeJob
     [Queue("preview")]
     public async Task AddOrUpdatePreview(int postId, string md5)
     {
-        var base64 = await _grabberService.GetPostPreview(postId);
+        var base64Data = await _grabberService.GetPostPreview(postId);
 
         await _daprClient.InvokeBindingAsync(ObjectStorageBinding,
                                              CreateBindingOperation,
-                                             base64,
+                                             base64Data,
                                              new Dictionary<string, string>() { { "key", $"{md5}.jpg" } });
 
     }
