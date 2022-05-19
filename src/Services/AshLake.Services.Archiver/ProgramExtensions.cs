@@ -19,11 +19,11 @@ public static class ProgramExtensions
 
     public static void AddCustomGrabberServices(this WebApplicationBuilder builder)
     {
-        builder.Services.AddSingleton(_ => new YandeGrabberService(DaprClient.CreateInvokeHttpClient("Grabber")));
+        builder.Services.AddSingleton<IYandeGrabberService>( _ => new YandeGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
     }
     public static void AddCustomBackgroundJobs(this WebApplicationBuilder builder)
     {
-        builder.Services.AddScoped(typeof(YandeMetadataJob));
+        builder.Services.AddScoped(typeof(YandeJob));
     }
 
     public static void AddCustomProblemDetails(this WebApplicationBuilder builder)

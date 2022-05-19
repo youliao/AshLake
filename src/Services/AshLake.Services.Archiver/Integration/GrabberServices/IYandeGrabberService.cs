@@ -1,6 +1,8 @@
 ﻿namespace AshLake.Services.Archiver.Integration.GrabberServices;
 
-public interface IGrabberService
+public interface IYandeGrabberService
 {
     Task<List<BsonDocument>> GetPostMetadataList(int startId, int limit);
+
+    Task<string> GetPostPreview(int postId);
 }

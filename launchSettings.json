@@ -14,7 +14,9 @@
         "minio": "StartWithoutDebugging",
         "mongo": "StartWithoutDebugging",
         "postgres": "StartWithoutDebugging",
-        "redis": "StartWithoutDebugging"
+        "redis": "StartWithoutDebugging",
+        "rabbitmq": "StartWithoutDebugging",
+        "zipkin": "StartWithoutDebugging"
       }
     }
   }

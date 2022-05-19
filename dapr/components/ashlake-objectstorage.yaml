@@ -11,11 +11,15 @@ spec:
   - name: region
     value: us-east-1
   - name: endpoint
-    value: http://minio.local:9000
+    value: http://minio:9000
   - name: accessKey
     value: minio
   - name: secretKey
     value: minio123
+  - name: decodeBase64
+    value: true
+  - name: encodeBase64
+    value: false
   - name: forcePathStyle
     value: true
   - name: disableSSL
