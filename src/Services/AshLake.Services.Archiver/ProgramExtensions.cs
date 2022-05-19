@@ -1,4 +1,5 @@
-﻿using Dapr.Client;
+﻿using AshLake.Services.Archiver.Infrastructure;
+using Dapr.Client;
 using Hellang.Middleware.ProblemDetails;
 using System.Text.Json.Serialization;
 
@@ -74,6 +75,13 @@ public static class ProgramExtensions
         });
     }
 
+    public static void AddCustomRepositories(this WebApplicationBuilder builder)
+    {
+        builder.Services.Configure<YandeMongoDatabaseSetting>(builder.Configuration.GetSection(nameof(YandeMongoDatabaseSetting)));
+
+        builder.Services.AddSingleton(typeof(IYandeMetadataRepository<>), typeof(YandeMetadataRepository<>));
+    }
+
     public static void AddCustomAddHangfire(this WebApplicationBuilder builder)
     {
         builder.Services.AddHangfire(c =>
@@ -88,19 +96,5 @@ public static class ProgramExtensions
         });
     }
 
-    public static void AddCustomDatabase(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddSingleton(s =>
-        {
-            var settings = MongoClientSettings.FromConnectionString(builder.Configuration["MongoDBConnectionString"]);
-            return new MongoClient(settings);
-        });
-    }
-
-
-    public static void AddCustomRepositories(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddScoped(typeof(IYandeMetadataRepository<>), typeof(YandeMetadataRepository<>));
-    }
 
 }

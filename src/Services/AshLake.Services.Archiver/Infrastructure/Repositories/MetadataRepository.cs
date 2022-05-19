@@ -1,13 +1,16 @@
-﻿namespace AshLake.Services.Archiver.Infrastructure.Repositories;
+﻿using Microsoft.Extensions.Options;
+
+namespace AshLake.Services.Archiver.Infrastructure.Repositories;
 
 public abstract class MetadataRepository<T> : IMetadataRepository<T> where T : Metadata
 {
-    protected readonly MongoClient _mongoClient;
-    protected abstract IMongoDatabase _database { get; }
+    protected readonly IMongoDatabase _database;
 
-    public MetadataRepository(MongoClient mongoClient)
+    public MetadataRepository(IOptions<MongoDatabaseSetting> mongoDatabaseSetting)
     {
-        _mongoClient = mongoClient;
+        var mongoClient = new MongoClient(mongoDatabaseSetting.Value.ConnectionString);
+
+        _database = mongoClient.GetDatabase(mongoDatabaseSetting.Value.DatabaseName);
     }
 
     public async Task<ArchiveStatus> AddOrUpdateAsync(T post)

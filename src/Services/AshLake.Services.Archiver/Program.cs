@@ -8,9 +8,8 @@ builder.Services.AddMediatR(typeof(Program));
 builder.AddCustomProblemDetails();
 builder.AddCustomControllers();
 builder.AddCustomSwagger();
-builder.AddCustomDatabase();
-builder.AddCustomGrabberServices();
 builder.AddCustomRepositories();
+builder.AddCustomGrabberServices();
 builder.AddCustomBackgroundJobs();
 builder.AddCustomAddHangfire();
 

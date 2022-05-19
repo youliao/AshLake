@@ -1,10 +1,10 @@
-﻿namespace AshLake.Services.Archiver.Infrastructure.Repositories;
+﻿using Microsoft.Extensions.Options;
+
+namespace AshLake.Services.Archiver.Infrastructure.Repositories;
 
 public class YandeMetadataRepository<T> : MetadataRepository<T>, IYandeMetadataRepository<T> where T : Metadata
 {
-    public YandeMetadataRepository(MongoClient mongoClient) : base(mongoClient)
+    public YandeMetadataRepository(IOptions<YandeMongoDatabaseSetting> mongoDatabaseSetting) : base(mongoDatabaseSetting)
     {
     }
-
-    protected override IMongoDatabase _database => _mongoClient.GetDatabase(BooruSites.Yande);
 }

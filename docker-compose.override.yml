@@ -42,7 +42,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - MongoDBConnectionString=mongodb://mongoadmin:mongoadmin@mongo:27017
+      - YandeMongoDatabaseSetting__ConnectionString=mongodb://mongoadmin:mongoadmin@mongo:27017
+      - YandeMongoDatabaseSetting__DatabaseName=yande
       - HangfireConnectionString=redis:6379
     ports:
       - "80"
