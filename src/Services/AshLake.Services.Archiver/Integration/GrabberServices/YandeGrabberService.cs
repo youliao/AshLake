@@ -20,19 +20,17 @@ public class YandeGrabberService : IYandeGrabberService
 
         return response ?? new List<BsonDocument>();
 
-
     }
 
-    public async Task<string> GetPostPreview(int postId)
+    public async Task<Stream> GetPostPreview(int postId)
     {
-        var bytes = await _httpClient.GetByteArrayAsync($"/api/sites/yande/postpreviews/{postId}");
-        return Convert.ToBase64String(bytes);
+        return await _httpClient.GetStreamAsync($"/api/sites/yande/postpreviews/{postId}");
     }
 
-    public async Task<(string,string)> GetPostFile(int postId)
+    public async Task<(Stream, string)> GetPostFile(int postId)
     {
         var response = await _httpClient.GetAsync($"/api/sites/yande/postfiles/{postId}");
-        if(!response.IsSuccessStatusCode)
+        if (!response.IsSuccessStatusCode)
         {
             throw new HttpRequestException(await response.Content.ReadAsStringAsync());
         }
@@ -44,9 +42,7 @@ public class YandeGrabberService : IYandeGrabberService
         var allowedFileExt = new string[] { "jpg", "jpeg", "png", "gif" };
         if (!allowedFileExt.Contains(fileExt)) throw new FormatException($"FileExt must be {allowedFileExt}");
 
-        var bytes = await response.Content.ReadAsByteArrayAsync();
-        var base64Data = Convert.ToBase64String(bytes);
-
-        return (base64Data, fileExt);
+        var stream = await response.Content.ReadAsStreamAsync();
+        return (stream, fileExt);
     }
 }

@@ -38,11 +38,11 @@ public class YandeJob
     [Queue("preview")]
     public async Task AddOrUpdatePreview(int postId)
     {
-        var base64Data = await _grabberService.GetPostPreview(postId);
+        var stream = await _grabberService.GetPostPreview(postId);
 
         await _daprClient.InvokeBindingAsync(PreviewStorageBindingName,
                                              CreateBindingOperation,
-                                             base64Data,
+                                             stream.ToBase64(),
                                              new Dictionary<string, string>() { { "key", $"{postId}.jpg" } });
 
     }
@@ -50,11 +50,12 @@ public class YandeJob
     [Queue("file")]
     public async Task AddOrUpdateFile(int postId)
     {
-        (var base64Data,var fileExt) = await _grabberService.GetPostFile(postId);
+        (var stream,var fileExt) = await _grabberService.GetPostFile(postId);
+
 
         await _daprClient.InvokeBindingAsync(FileStorageBindingName,
                                              CreateBindingOperation,
-                                             base64Data,
+                                             stream.ToBase64(),
                                              new Dictionary<string, string>() { { "key", $"{postId}.{fileExt}" } });
 
     }

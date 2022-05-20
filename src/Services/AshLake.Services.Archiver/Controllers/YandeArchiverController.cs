@@ -2,7 +2,7 @@
 
 namespace AshLake.Services.Archiver.Controllers;
 
-public class YandeArchiverController : ApiControllerBase
+public class YandeArchiverController : ControllerBase
 {
     [Route("/api/sites/yande/postmetadata/{id:int}")]
     [HttpGet]
