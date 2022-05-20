@@ -44,23 +44,29 @@ public class YandeSourceSiteRepository
         var metadata = await GetMetadataAsync(id);
         Guard.Against.Null(metadata,nameof(metadata));
 
-        string key = "preview_url";
-        var previewUrl = metadata[key]?.AsValue()?.ToString();
-        Guard.Against.NullOrEmpty(previewUrl, key);
+        string previewUrlKey = "preview_url";
+        var previewUrl = metadata[previewUrlKey]?.AsValue()?.ToString();
+        Guard.Against.NullOrEmpty(previewUrl, previewUrlKey);
 
         return await _httpClient.GetStreamAsync(previewUrl);
     }
 
-    public async Task<Stream> GetFileAsync(int id)
+    public async Task<(Stream, string)> GetFileAsync(int id)
     {
         var metadata = await GetMetadataAsync(id);
         Guard.Against.Null(metadata, nameof(metadata));
 
-        string key = "file_url";
-        var previewUrl = metadata[key]?.AsValue()?.ToString();
-        Guard.Against.NullOrEmpty(previewUrl, key);
+        string fileUrlKey = "file_url";
+        var fileUrl = metadata[fileUrlKey]?.AsValue()?.ToString();
+        Guard.Against.NullOrEmpty(fileUrl, fileUrlKey);
 
-        _httpClient.Timeout = TimeSpan.FromMinutes(1);
-        return await _httpClient.GetStreamAsync(previewUrl);
+        string fileExtKey = "file_ext";
+        var fileExt = metadata[fileExtKey]?.AsValue()?.ToString();
+        Guard.Against.NullOrEmpty(fileExt, fileExtKey);
+
+        var fileStream = await _httpClient.GetStreamAsync(fileUrl);
+        Guard.Against.Null(fileStream, nameof(fileStream));
+
+        return (fileStream, fileExt);
     }
 }

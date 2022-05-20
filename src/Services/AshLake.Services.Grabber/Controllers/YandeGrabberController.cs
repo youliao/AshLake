@@ -37,8 +37,8 @@ public class YandeGrabberController : ApiControllerBase
     public async Task<FileResult> GetPostFile(int id)
     {
         var query = new GetYandePostFileQuery() { Id = id };
-        var stream = await Mediator.Send(query);
+        (var stream, var fileExt) = await Mediator.Send(query);
 
-        return File(stream, MediaTypeNames.Image.Jpeg);
+        return File(stream, $"image/{fileExt}");
     }
 }

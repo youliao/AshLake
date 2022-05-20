@@ -2,7 +2,8 @@
 
 public class YandeJob
 {
-    private const string ObjectStorageBinding = "objectstorage";
+    private const string PreviewStorageBindingName = "yande-preview-storage";
+    private const string FileStorageBindingName = "yande-file-storage";
     private const string CreateBindingOperation = "create";
 
     private readonly DaprClient _daprClient;
@@ -35,14 +36,26 @@ public class YandeJob
     }
 
     [Queue("preview")]
-    public async Task AddOrUpdatePreview(int postId, string md5)
+    public async Task AddOrUpdatePreview(int postId)
     {
         var base64Data = await _grabberService.GetPostPreview(postId);
 
-        await _daprClient.InvokeBindingAsync(ObjectStorageBinding,
+        await _daprClient.InvokeBindingAsync(PreviewStorageBindingName,
                                              CreateBindingOperation,
                                              base64Data,
-                                             new Dictionary<string, string>() { { "key", $"{md5}.jpg" } });
+                                             new Dictionary<string, string>() { { "key", $"{postId}.jpg" } });
+
+    }
+
+    [Queue("file")]
+    public async Task AddOrUpdateFile(int postId)
+    {
+        (var base64Data,var fileExt) = await _grabberService.GetPostFile(postId);
+
+        await _daprClient.InvokeBindingAsync(FileStorageBindingName,
+                                             CreateBindingOperation,
+                                             base64Data,
+                                             new Dictionary<string, string>() { { "key", $"{postId}.{fileExt}" } });
 
     }
 }

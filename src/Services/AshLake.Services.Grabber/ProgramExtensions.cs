@@ -65,7 +65,7 @@ public static class ProgramExtensions
         builder.Services.AddHttpClient<YandeSourceSiteRepository>(config =>
         {
             config.BaseAddress = new Uri(builder.Configuration["YandeUrl"]);
-            //config.Timeout = TimeSpan.FromSeconds(10);
+            config.Timeout = TimeSpan.FromSeconds(30);
         });
     }
 

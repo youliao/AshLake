@@ -2,12 +2,12 @@
 
 namespace AshLake.Services.Grabber.Application.Yande.Queries;
 
-public record GetYandePostFileQuery : IRequest<Stream>
+public record GetYandePostFileQuery : IRequest<(Stream, string)>
 {
     public int Id { get; init; }
 }
 
-public class GetYandePostFileQueryHandler : IRequestHandler<GetYandePostFileQuery, Stream>
+public class GetYandePostFileQueryHandler : IRequestHandler<GetYandePostFileQuery, (Stream, string)>
 {
     private readonly YandeSourceSiteRepository _repository;
 
@@ -16,7 +16,7 @@ public class GetYandePostFileQueryHandler : IRequestHandler<GetYandePostFileQuer
         _repository = repository;
     }
 
-    public async Task<Stream> Handle(GetYandePostFileQuery query, CancellationToken cancellationToken)
+    public async Task<(Stream, string)> Handle(GetYandePostFileQuery query, CancellationToken cancellationToken)
     {
         return await _repository.GetFileAsync(query.Id);
     }

@@ -1,13 +1,13 @@
 apiVersion: dapr.io/v1alpha1
 kind: Component
 metadata:
-  name: objectstorage
+  name: yande-file-storage
 spec:
   type: bindings.aws.s3
   version: v1
   metadata:
   - name: bucket
-    value: mybucket
+    value: yande-file
   - name: region
     value: us-east-1
   - name: endpoint

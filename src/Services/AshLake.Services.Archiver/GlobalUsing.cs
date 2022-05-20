@@ -15,3 +15,4 @@ global using AshLake.Services.Archiver.Domain.Entities;
 global using AshLake.Services.Archiver.Integration.GrabberServices;
 global using System.Text.Json;
 global using Dapr.Client;
+global using Ardalis.GuardClauses;

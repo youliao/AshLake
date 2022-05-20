@@ -38,7 +38,16 @@ public class YandeArchiverController : ApiControllerBase
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
     public ActionResult<string> CreatePostPreviewJobs(int postId)
     {
-        var jobId = BackgroundJob.Enqueue<YandeJob>(x => x.AddOrUpdatePreview(postId,"12334ababab1a151b5a1ba"));
+        var jobId = BackgroundJob.Enqueue<YandeJob>(x => x.AddOrUpdatePreview(postId));
+        return Ok(jobId);
+    }
+
+    [Route("/api/sites/yande/postfilejobs")]
+    [HttpPost]
+    [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
+    public ActionResult<string> CreatePostFileJobs(int postId)
+    {
+        var jobId = BackgroundJob.Enqueue<YandeJob>(x => x.AddOrUpdateFile(postId));
         return Ok(jobId);
     }
 }

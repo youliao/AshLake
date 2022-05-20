@@ -52,7 +52,8 @@ services:
     command: ["./daprd",
       "-app-id", "archiver",
       "-app-port", "80",
-      "-components-path", "/components"
+      "-components-path", "/components",
+      "-dapr-http-max-request-size","50"
       ]
     volumes:
       - "./dapr/components/:/components"
@@ -69,7 +70,8 @@ services:
     command: ["./daprd",
       "-app-id", "grabber",
       "-app-port", "80",
-      "-components-path", "/components"
+      "-components-path", "/components",
+      "-dapr-http-max-request-size","50"
       ]
     volumes:
       - "./dapr/components/:/components"
