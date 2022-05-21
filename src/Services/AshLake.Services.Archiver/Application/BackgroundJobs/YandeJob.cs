@@ -20,7 +20,7 @@ public class YandeJob
     [Queue("metadata")]
     public async Task<int> AddOrUpdatePostMetadata(int startId, int endId, int limit)
     {
-        var metadataList = await _grabberService.GetPostMetadataList(startId, limit);
+        var metadataList = (await _grabberService.GetPostMetadataList(startId, limit)).ToList();
 
         if (metadataList is null || metadataList.Count == 0) return 0;
 
@@ -38,11 +38,11 @@ public class YandeJob
     [Queue("preview")]
     public async Task AddOrUpdatePreview(int postId)
     {
-        var stream = await _grabberService.GetPostPreview(postId);
+        var base64Data = await _grabberService.GetPostPreview(postId);
 
         await _daprClient.InvokeBindingAsync(PreviewStorageBindingName,
                                              CreateBindingOperation,
-                                             stream.ToBase64(),
+                                             base64Data,
                                              new Dictionary<string, string>() { { "key", $"{postId}.jpg" } });
 
     }

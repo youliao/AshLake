@@ -16,7 +16,7 @@ public abstract class PostObjectRepositoty : IPostObjectRepositoty
 
     public async Task AddOrUpdateAsync(string objectKey, string base64Data)
     {
-        var result = _daprClient.InvokeBindingAsync<string,BindingResponse>(_bindingName,
+        var result = await _daprClient.InvokeBindingAsync<string,BindingResponse>(_bindingName,
                                      _createBindingOperation,
                                      base64Data,
                                      new Dictionary<string, string>() { { "key", objectKey } });

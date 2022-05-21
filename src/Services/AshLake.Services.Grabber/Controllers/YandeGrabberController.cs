@@ -4,7 +4,7 @@ public class YandeGrabberController : ApiControllerBase
 {
     [Route("/api/sites/yande/postmetadata")]
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<JsonNode>>> GetPostsMetadataArray([FromQuery] GetYandePostsMetadataListQuery query)
+    public async Task<ActionResult<IEnumerable<JsonObject>>> GetPostsMetadataList([FromQuery] GetYandePostsMetadataListQuery query)
     {
         var result = await Mediator.Send(query);
         return Ok(result);
@@ -12,7 +12,7 @@ public class YandeGrabberController : ApiControllerBase
 
     [Route("/api/sites/yande/postmetadata/{id:int}")]
     [HttpGet]
-    public async Task<ActionResult<JsonNode>> GetPostMetadata(int id)
+    public async Task<ActionResult<JsonObject>> GetPostMetadata(int id)
     {
         var query = new GetYandePostMetadataQuery() { Id = id };
         var result = await Mediator.Send(query);

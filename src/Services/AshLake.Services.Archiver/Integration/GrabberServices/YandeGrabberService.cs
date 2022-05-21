@@ -11,15 +11,13 @@ public class YandeGrabberService : IYandeGrabberService
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     }
 
-    public async Task<List<BsonDocument>> GetPostMetadataList(int startId, int limit)
+    public async Task<IEnumerable<BsonDocument>> GetPostMetadataList(int startId, int limit)
     {
-        var serializeOptions = new JsonSerializerOptions();
-        serializeOptions.Converters.Add(new BsonDocumentJsonConverter());
+        var json = await _httpClient.GetStringAsync($"/api/sites/yande/postmetadata?StartId={startId}&Page=1&Limit={limit}");
+        var list = BsonSerializer.Deserialize<BsonArray>(json)
+            .Select(x => x.AsBsonDocument);
 
-        var response = await _httpClient.GetFromJsonAsync<List<BsonDocument>>($"/api/sites/yande/postmetadata?StartId={startId}&Page=1&Limit={limit}", serializeOptions);
-
-        return response ?? new List<BsonDocument>();
-
+        return list ?? new List<BsonDocument>();
     }
 
     public async Task<Stream> GetPostPreview(int postId)

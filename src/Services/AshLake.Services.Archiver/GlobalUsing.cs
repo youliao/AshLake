@@ -1,5 +1,4 @@
 ﻿global using AshLake.Services.Archiver;
-global using MongoDB.Driver;
 global using Microsoft.OpenApi.Models;
 global using AshLake.Services.Archiver.Domain.Repositories;
 global using AshLake.Contracts.Seedwork.Extensions;

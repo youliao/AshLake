@@ -2,14 +2,14 @@
 
 namespace AshLake.Services.Grabber.Application.Yande.Queries;
 
-public record GetYandePostsMetadataListQuery : IRequest<IReadOnlyList<JsonNode>>
+public record GetYandePostsMetadataListQuery : IRequest<IReadOnlyList<JsonObject>>
 {
     public int StartId { get; init; }
     public int Page { get; init; }
     public int Limit { get; init; }
 }
 
-public class GetYandePostsMetadataArrayQueryHandler : IRequestHandler<GetYandePostsMetadataListQuery, IReadOnlyList<JsonNode>>
+public class GetYandePostsMetadataArrayQueryHandler : IRequestHandler<GetYandePostsMetadataListQuery, IReadOnlyList<JsonObject>>
 {
     private readonly YandeSourceSiteRepository _repository;
 
@@ -18,7 +18,7 @@ public class GetYandePostsMetadataArrayQueryHandler : IRequestHandler<GetYandePo
         _repository = repository;
     }
 
-    public async Task<IReadOnlyList<JsonNode>> Handle(GetYandePostsMetadataListQuery query, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<JsonObject>> Handle(GetYandePostsMetadataListQuery query, CancellationToken cancellationToken)
     {
         string tags = $"id:>={query.StartId} order:id";
 

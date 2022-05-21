@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using MongoDB.Driver;
 
 namespace AshLake.Services.Archiver.Infrastructure.Repositories;
 

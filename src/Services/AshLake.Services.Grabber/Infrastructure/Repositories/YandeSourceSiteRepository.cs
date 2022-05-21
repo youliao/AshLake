@@ -13,7 +13,7 @@ public class YandeSourceSiteRepository
 
     private IEasyCachingProvider _cachingProvider { get => _cachingProviderFactory.GetCachingProvider(BooruSites.Yande); }
 
-    public async Task<JsonNode?> GetMetadataAsync(int id, bool cachedEnable = true)
+    public async Task<JsonObject?> GetMetadataAsync(int id, bool cachedEnable = true)
     {
         string tags = $"id:{id}";
 
@@ -26,11 +26,11 @@ public class YandeSourceSiteRepository
         return cache.Value;
     }
 
-    public async Task<IReadOnlyList<JsonNode>> GetMetadataListAsync(string tags,int limit,int page)
+    public async Task<IReadOnlyList<JsonObject>> GetMetadataListAsync(string tags,int limit,int page)
     {
         string urlEncoded = WebUtility.UrlEncode(tags ?? "order:id");
 
-        var list = await _httpClient.GetFromJsonAsync<IReadOnlyList<JsonNode>>($"/post.json?tags={urlEncoded}&limit={limit}&page={page}") ?? new List<JsonNode>();
+        var list = await _httpClient.GetFromJsonAsync<IReadOnlyList<JsonObject>>($"/post.json?tags={urlEncoded}&limit={limit}&page={page}") ?? new List<JsonObject>();
         if (list.Count == 0) return list;
 
         var dic = list!.ToDictionary(x => x["id"]!.AsValue().ToString());

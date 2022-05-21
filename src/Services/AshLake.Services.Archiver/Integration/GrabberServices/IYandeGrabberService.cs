@@ -2,7 +2,7 @@
 
 public interface IYandeGrabberService
 {
-    Task<List<BsonDocument>> GetPostMetadataList(int startId, int limit);
+    Task<IEnumerable<BsonDocument>> GetPostMetadataList(int startId, int limit);
 
     Task<Stream> GetPostPreview(int postId);
 
