@@ -11,7 +11,7 @@ public class YandeSourceSiteRepository
         _httpClient = httpClient;
     }
 
-    private IEasyCachingProvider _cachingProvider { get => _cachingProviderFactory.GetCachingProvider(BooruSites.Yande); }
+    private IEasyCachingProvider _cachingProvider { get => _cachingProviderFactory.GetCachingProvider(nameof(Yande)); }
 
     public async Task<JsonObject?> GetMetadataAsync(int id, bool cachedEnable = true)
     {

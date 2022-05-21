@@ -50,12 +50,12 @@ public static class ProgramExtensions
     {
         builder.Services.AddEasyCaching(options =>
         {
-            options.UseInMemory(BooruSites.Yande);
+            options.UseInMemory(nameof(Yande));
         });
 
         builder.Services.AddEasyCaching(options =>
         {
-            options.UseInMemory(BooruSites.Danbooru);
+            options.UseInMemory(nameof(Danbooru));
         });
     }
 

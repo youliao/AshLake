@@ -10,6 +10,9 @@ services:
   redis:
     image: redis:7
 
+  redis-hangfire:
+    image: redis:7
+
   rabbitmq:
     image: rabbitmq:management-alpine
 
@@ -36,6 +39,9 @@ services:
     build:
       context: .
       dockerfile: src/Services/AshLake.Services.Archiver/Dockerfile
+    depends_on:
+      - redis-hangfire
+      - grabber
 
   archiver-dapr:
     image: "daprio/daprd:latest"

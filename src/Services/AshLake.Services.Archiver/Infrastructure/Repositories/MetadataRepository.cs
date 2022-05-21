@@ -1,25 +1,24 @@
-﻿using AshLake.Services.Archiver.Infrastructure.Settings;
-using Microsoft.Extensions.Options;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 
 namespace AshLake.Services.Archiver.Infrastructure.Repositories;
 
-public abstract class MetadataRepository<T> : IMetadataRepository<T> where T : Metadata
+public class MetadataRepository<TSouceSite, TMetadata> : IMetadataRepository<TSouceSite, TMetadata>
+    where TSouceSite : ISouceSite
+    where TMetadata : Metadata
 {
-    protected readonly IMongoDatabase _database;
+    private readonly IMongoDatabase _database;
 
-    public MetadataRepository(IOptions<MongoDatabaseSetting> mongoDatabaseSetting)
+    public MetadataRepository(MongoClient mongoClient)
     {
-        var mongoClient = new MongoClient(mongoDatabaseSetting.Value.ConnectionString);
-
-        _database = mongoClient.GetDatabase(mongoDatabaseSetting.Value.DatabaseName);
+        _database = mongoClient.GetDatabase(typeof(TSouceSite).Name);
     }
 
-    public async Task<ArchiveStatus> AddOrUpdateAsync(T post)
+    public async Task<ArchiveStatus> AddOrUpdateAsync(TMetadata post)
     {
-        var before = await _database.GetEntityCollection<T>().FindOneAndReplaceAsync(x => x.Id == post.Data["id"],
-                                                                               post,
-                                                                               new() { IsUpsert = true, ReturnDocument = ReturnDocument.Before });
+        var before = await _database.GetEntityCollection<TMetadata>()
+            .FindOneAndReplaceAsync(x => x.Id == post.Data["id"],
+                                   post,
+                                   new() { IsUpsert = true, ReturnDocument = ReturnDocument.Before });
 
         if (before is null) return ArchiveStatus.Added;
 
@@ -28,14 +27,15 @@ public abstract class MetadataRepository<T> : IMetadataRepository<T> where T : M
         return ArchiveStatus.Updated;
     }
 
-    public async Task<T> DeleteAsync(string postId)
+    public async Task<TMetadata> DeleteAsync(string postId)
     {
-        return await _database.GetEntityCollection<T>().FindOneAndDeleteAsync(x => x.Id == postId);
+        return await _database.GetEntityCollection<TMetadata>()
+            .FindOneAndDeleteAsync(x => x.Id == postId);
     }
 
-    public async Task<T> SingleAsync(string postId)
+    public async Task<TMetadata> SingleAsync(string postId)
     {
-        return await _database.GetEntityCollection<T>()
+        return await _database.GetEntityCollection<TMetadata>()
             .Find(x => x.Id == postId)
             .Limit(1)
             .SingleOrDefaultAsync();

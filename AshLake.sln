@@ -26,11 +26,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "components", "components", "{34B56E0F-7C5F-420E-8E7F-F1DC9C9BE334}"
 	ProjectSection(SolutionItems) = preProject
 		dapr\components\ashlake-pubsub.yaml = dapr\components\ashlake-pubsub.yaml
-		dapr\components\ashlake-secrets.json = dapr\components\ashlake-secrets.json
-		dapr\components\ashlake-secretstore.yaml = dapr\components\ashlake-secretstore.yaml
 		dapr\components\ashlake-statestore.yaml = dapr\components\ashlake-statestore.yaml
-		dapr\components\ashlake-yande-file-storage.yaml = dapr\components\ashlake-yande-file-storage.yaml
-		dapr\components\ashlake-yande-preview-storage.yaml = dapr\components\ashlake-yande-preview-storage.yaml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "configuration", "configuration", "{E7B2573E-B82E-4DE7-AB6E-BE1CDB64CE6B}"

@@ -1,7 +1,5 @@
-﻿using AshLake.Services.Archiver.Infrastructure.Repositories.ObjectStorage;
-using AshLake.Services.Archiver.Infrastructure.Settings;
-using Dapr.Client;
-using Hellang.Middleware.ProblemDetails;
+﻿using Hellang.Middleware.ProblemDetails;
+using MongoDB.Driver;
 using System.Text.Json.Serialization;
 
 namespace AshLake.Services.Archiver;
@@ -78,14 +76,21 @@ public static class ProgramExtensions
 
     public static void AddCustomRepositories(this WebApplicationBuilder builder)
     {
-        builder.Services.Configure<YandeMongoDatabaseSetting>(builder.Configuration.GetSection(nameof(YandeMongoDatabaseSetting)));
+        builder.Services.AddSingleton(_ =>
+        {
+            return new MongoClient(builder.Configuration["MongoDatabaseConnectionString"]);
+        });
+        builder.Services.AddSingleton(typeof(IMetadataRepository<,>), typeof(MetadataRepository<,>));
 
-        builder.Services.AddSingleton(typeof(IYandeMetadataRepository<>), typeof(YandeMetadataRepository<>));
-
-        builder.Services.Configure<PostFileStorageSetting>(builder.Configuration.GetSection(nameof(PostFileStorageSetting)));
-        builder.Services.Configure<PostPreviewStorageSetting>(builder.Configuration.GetSection(nameof(PostPreviewStorageSetting)));
-        builder.Services.AddScoped(typeof(IPostFileRepositoty), typeof(PostFileRepositoty));
-        builder.Services.AddScoped(typeof(IPostPreviewRepositoty), typeof(PostPreviewRepositoty));
+        builder.Services.AddSingleton(_ =>
+        {
+            return new Minio.MinioClient()
+                            .WithEndpoint(builder.Configuration["ImageStorageEndpoint"])
+                            .WithCredentials(builder.Configuration["ImageStorageAccessKey"],
+                                             builder.Configuration["ImageStorageSecretKey"])
+                            .Build();
+        });
+        builder.Services.AddSingleton(typeof(IPostImageRepositoty<>), typeof(PostImageRepositoty<>));
 
     }
 

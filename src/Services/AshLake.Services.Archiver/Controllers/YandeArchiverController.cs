@@ -9,7 +9,7 @@ public class YandeArchiverController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> GetPostMetadata(int id,
-        [FromServices] IYandeMetadataRepository<PostMetadata> repository)
+        [FromServices] IMetadataRepository<Yande,PostMetadata> repository)
     {
         var metadata = await repository.SingleAsync(id.ToString());
 

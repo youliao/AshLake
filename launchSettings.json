@@ -15,6 +15,7 @@
         "mongo": "StartWithoutDebugging",
         "postgres": "StartWithoutDebugging",
         "redis": "StartWithoutDebugging",
+        "redis-hangfire": "StartWithoutDebugging",
         "rabbitmq": "StartWithoutDebugging",
         "zipkin": "StartWithoutDebugging"
       }

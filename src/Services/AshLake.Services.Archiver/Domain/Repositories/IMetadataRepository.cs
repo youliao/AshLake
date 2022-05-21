@@ -2,11 +2,13 @@
 
 namespace AshLake.Services.Archiver.Domain.Repositories;
 
-public interface IMetadataRepository<T> where T : Metadata
+public interface IMetadataRepository<TSouceSite, TMetadata> 
+    where TSouceSite : ISouceSite
+    where TMetadata : Metadata
 {
-    Task<ArchiveStatus> AddOrUpdateAsync(T post);
+    Task<ArchiveStatus> AddOrUpdateAsync(TMetadata metadata);
 
-    Task<T> DeleteAsync(string postId);
+    Task<TMetadata> DeleteAsync(string postId);
 
-    Task<T> SingleAsync(string postId);
+    Task<TMetadata> SingleAsync(string postId);
 }

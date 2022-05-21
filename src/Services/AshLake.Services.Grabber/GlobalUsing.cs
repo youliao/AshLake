@@ -1,4 +1,5 @@
 ﻿global using AshLake.Contracts.Seedwork;
+global using AshLake.Contracts.Seedwork.SourceSites;
 global using AshLake.Services.Grabber;
 global using System.Text.Json.Nodes;
 global using FluentValidation;

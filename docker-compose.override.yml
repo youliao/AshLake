@@ -21,6 +21,10 @@ services:
     ports:
       - "6379:6379"
 
+  redis-hangfire:
+    ports:
+      - "6380:6379"
+
   rabbitmq:
     ports:
       - "5672:5672"
@@ -38,32 +42,6 @@ services:
     ports:
       - "9411:9411"
 
-  archiver:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-      - YandeMongoDatabaseSetting__ConnectionString=mongodb://mongoadmin:mongoadmin@mongo:27017
-      - YandeMongoDatabaseSetting__DatabaseName=yande
-      - PostFileStorageSetting__Endpoint=minio:9000
-      - PostFileStorageSetting__AccessKey=minio
-      - PostFileStorageSetting__SecretKey=minio123
-      - PostPreviewStorageSetting__Endpoint=minio:9000
-      - PostPreviewStorageSetting__AccessKey=minio
-      - PostPreviewStorageSetting__SecretKey=minio123
-      - HangfireConnectionString=redis:6379
-    ports:
-      - "80"
-
-  archiver-dapr:
-    command: ["./daprd",
-      "-app-id", "archiver",
-      "-app-port", "80",
-      "-components-path", "/components",
-      "-dapr-http-max-request-size","50"
-      ]
-    volumes:
-      - "./dapr/components/:/components"
-
   grabber:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -75,6 +53,28 @@ services:
   grabber-dapr:
     command: ["./daprd",
       "-app-id", "grabber",
+      "-app-port", "80",
+      "-components-path", "/components",
+      "-dapr-http-max-request-size","50"
+      ]
+    volumes:
+      - "./dapr/components/:/components"
+
+  archiver:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - MongoDatabaseConnectionString=mongodb://mongoadmin:mongoadmin@mongo:27017
+      - ImageStorageEndpoint=minio:9000
+      - ImageStorageAccessKey=minio
+      - ImageStorageSecretKey=minio123
+      - HangfireConnectionString=redis-hangfire:6379
+    ports:
+      - "80"
+
+  archiver-dapr:
+    command: ["./daprd",
+      "-app-id", "archiver",
       "-app-port", "80",
       "-components-path", "/components",
       "-dapr-http-max-request-size","50"
