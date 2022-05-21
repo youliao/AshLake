@@ -12,6 +12,6 @@ global using AshLake.Services.Archiver.Application.BackgroundJobs;
 global using AshLake.Contracts.Seedwork;
 global using AshLake.Services.Archiver.Domain.Entities;
 global using AshLake.Services.Archiver.Integration.GrabberServices;
-global using System.Text.Json;
+global using System.Text.Json.Nodes;
 global using Dapr.Client;
 global using Ardalis.GuardClauses;

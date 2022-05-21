@@ -3,27 +3,28 @@
 public abstract class PostObjectRepositoty : IPostObjectRepositoty
 {
     private readonly DaprClient _daprClient;
-    private readonly string _bindingName;
+    protected abstract string BindingName { get; }
 
-    private const string _createBindingOperation = "create";
-    private const string _deleteBindingOperation = "delete";
-
-    protected PostObjectRepositoty(string bindingName)
+    protected PostObjectRepositoty(DaprClient daprClient)
     {
-        _daprClient = new DaprClientBuilder().Build();
-        _bindingName = bindingName ?? throw new ArgumentNullException(nameof(bindingName));
+        _daprClient = daprClient ?? throw new ArgumentNullException(nameof(daprClient));
     }
 
-    public async Task AddOrUpdateAsync(string objectKey, string base64Data)
+    public async Task<string> AddOrUpdateAsync(string objectKey, Stream stream)
     {
-        var result = await _daprClient.InvokeBindingAsync<string,BindingResponse>(_bindingName,
-                                     _createBindingOperation,
-                                     base64Data,
+        var response = await _daprClient.InvokeBindingAsync<string, JsonObject>(BindingName,
+                                     DaprBindingOperations.Create,
+                                     stream.ToBase64(),
                                      new Dictionary<string, string>() { { "key", objectKey } });
+
+        return response.ToJsonString();
     }
 
-    public Task DeleteAsync(string key)
+    public async Task DeleteAsync(string objectKey)
     {
-        throw new NotImplementedException();
+        await _daprClient.InvokeBindingAsync(BindingName,
+                                     DaprBindingOperations.Delete,
+                                     string.Empty,
+                                     new Dictionary<string, string>() { { "key", objectKey } });
     }
 }

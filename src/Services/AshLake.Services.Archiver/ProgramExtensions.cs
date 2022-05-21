@@ -80,6 +80,8 @@ public static class ProgramExtensions
         builder.Services.Configure<YandeMongoDatabaseSetting>(builder.Configuration.GetSection(nameof(YandeMongoDatabaseSetting)));
 
         builder.Services.AddSingleton(typeof(IYandeMetadataRepository<>), typeof(YandeMetadataRepository<>));
+        builder.Services.AddScoped(typeof(IYandePostFileRepositoty), typeof(YandePostFileRepositoty));
+
     }
 
     public static void AddCustomAddHangfire(this WebApplicationBuilder builder)

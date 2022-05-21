@@ -7,13 +7,15 @@ public class YandeJob
     private const string CreateBindingOperation = "create";
 
     private readonly DaprClient _daprClient;
-    private readonly IYandeMetadataRepository<PostMetadata> _repository;
+    private readonly IYandeMetadataRepository<PostMetadata> _postMetadataRepository;
+    private readonly IYandePostFileRepositoty _postFileRepositoty;
     private readonly IYandeGrabberService _grabberService;
 
-    public YandeJob(DaprClient daprClient, IYandeMetadataRepository<PostMetadata> repository, IYandeGrabberService grabberService)
+    public YandeJob(DaprClient daprClient, IYandeMetadataRepository<PostMetadata> postMetadataRepository, IYandePostFileRepositoty postFileRepositoty, IYandeGrabberService grabberService)
     {
         _daprClient = daprClient ?? throw new ArgumentNullException(nameof(daprClient));
-        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _postMetadataRepository = postMetadataRepository ?? throw new ArgumentNullException(nameof(postMetadataRepository));
+        _postFileRepositoty = postFileRepositoty ?? throw new ArgumentNullException(nameof(postFileRepositoty));
         _grabberService = grabberService ?? throw new ArgumentNullException(nameof(grabberService));
     }
 
@@ -29,7 +31,7 @@ public class YandeJob
         foreach (var item in metadataList)
         {
             var postMetadata = new PostMetadata() { Data = item };
-            var status = await _repository.AddOrUpdateAsync(postMetadata);
+            var status = await _postMetadataRepository.AddOrUpdateAsync(postMetadata);
         }
 
         return metadataList.Count;
@@ -38,25 +40,21 @@ public class YandeJob
     [Queue("preview")]
     public async Task AddOrUpdatePreview(int postId)
     {
-        var base64Data = await _grabberService.GetPostPreview(postId);
+        var stream = await _grabberService.GetPostPreview(postId);
 
         await _daprClient.InvokeBindingAsync(PreviewStorageBindingName,
                                              CreateBindingOperation,
-                                             base64Data,
+                                             stream,
                                              new Dictionary<string, string>() { { "key", $"{postId}.jpg" } });
 
     }
 
     [Queue("file")]
-    public async Task AddOrUpdateFile(int postId)
+    public async Task<string> AddOrUpdateFile(int postId)
     {
         (var stream,var fileExt) = await _grabberService.GetPostFile(postId);
+        var objectKey = $"{postId}.{fileExt}";
 
-
-        await _daprClient.InvokeBindingAsync(FileStorageBindingName,
-                                             CreateBindingOperation,
-                                             stream.ToBase64(),
-                                             new Dictionary<string, string>() { { "key", $"{postId}.{fileExt}" } });
-
+        return await _postFileRepositoty.AddOrUpdateAsync(objectKey, stream);
     }
 }

@@ -2,7 +2,7 @@
 
 public interface IPostObjectRepositoty
 {
-    Task AddOrUpdateAsync(string key, string base64Data);
+    Task<string> AddOrUpdateAsync(string objectKey, Stream stream);
 
-    Task DeleteAsync(string key);
+    Task DeleteAsync(string objectKey);
 }
