@@ -1,4 +1,5 @@
-﻿using AshLake.Services.Archiver.Infrastructure;
+﻿using AshLake.Services.Archiver.Infrastructure.Repositories.ObjectStorage;
+using AshLake.Services.Archiver.Infrastructure.Settings;
 using Dapr.Client;
 using Hellang.Middleware.ProblemDetails;
 using System.Text.Json.Serialization;
@@ -80,8 +81,11 @@ public static class ProgramExtensions
         builder.Services.Configure<YandeMongoDatabaseSetting>(builder.Configuration.GetSection(nameof(YandeMongoDatabaseSetting)));
 
         builder.Services.AddSingleton(typeof(IYandeMetadataRepository<>), typeof(YandeMetadataRepository<>));
-        builder.Services.AddScoped(typeof(IYandeFileRepositoty), typeof(YandeFileRepositoty));
-        builder.Services.AddScoped(typeof(IYandePreviewRepositoty), typeof(YandePreviewMinioRepositoty));
+
+        builder.Services.Configure<PostFileStorageSetting>(builder.Configuration.GetSection(nameof(PostFileStorageSetting)));
+        builder.Services.Configure<PostPreviewStorageSetting>(builder.Configuration.GetSection(nameof(PostPreviewStorageSetting)));
+        builder.Services.AddScoped(typeof(IPostFileRepositoty), typeof(PostFileRepositoty));
+        builder.Services.AddScoped(typeof(IPostPreviewRepositoty), typeof(PostPreviewRepositoty));
 
     }
 

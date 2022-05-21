@@ -3,11 +3,11 @@
 public class YandeJob
 {
     private readonly IYandeMetadataRepository<PostMetadata> _postMetadataRepository;
-    private readonly IYandeFileRepositoty _fileRepositoty;
-    private readonly IYandePreviewRepositoty _previewRepositoty;
+    private readonly IPostFileRepositoty _fileRepositoty;
+    private readonly IPostPreviewRepositoty _previewRepositoty;
     private readonly IYandeGrabberService _grabberService;
 
-    public YandeJob(IYandeMetadataRepository<PostMetadata> postMetadataRepository, IYandeFileRepositoty fileRepositoty, IYandePreviewRepositoty previewRepositoty, IYandeGrabberService grabberService)
+    public YandeJob(IYandeMetadataRepository<PostMetadata> postMetadataRepository, IPostFileRepositoty fileRepositoty, IPostPreviewRepositoty previewRepositoty, IYandeGrabberService grabberService)
     {
         _postMetadataRepository = postMetadataRepository ?? throw new ArgumentNullException(nameof(postMetadataRepository));
         _fileRepositoty = fileRepositoty ?? throw new ArgumentNullException(nameof(fileRepositoty));
@@ -34,21 +34,21 @@ public class YandeJob
     }
 
     [Queue("preview")]
-    public async Task<string> AddOrUpdatePreview(int postId)
+    public async Task AddOrUpdatePreview(int postId)
     {
         var stream = await _grabberService.GetPostPreview(postId);
 
         var objectKey = $"{postId}.jpg";
-        return await _previewRepositoty.AddOrUpdateAsync(objectKey, stream);
+        await _previewRepositoty.PutAsync(objectKey, stream);
 
     }
 
     [Queue("file")]
-    public async Task<string> AddOrUpdateFile(int postId)
+    public async Task AddOrUpdateFile(int postId)
     {
         (var stream,var fileExt) = await _grabberService.GetPostFile(postId);
         var objectKey = $"{postId}.{fileExt}";
 
-        return await _fileRepositoty.AddOrUpdateAsync(objectKey, stream);
+        await _fileRepositoty.PutAsync(objectKey, stream);
     }
 }

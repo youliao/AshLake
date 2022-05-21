@@ -1,4 +1,4 @@
-﻿namespace AshLake.Services.Archiver.Infrastructure;
+﻿namespace AshLake.Services.Archiver.Infrastructure.Settings;
 
 public abstract class MongoDatabaseSetting
 {

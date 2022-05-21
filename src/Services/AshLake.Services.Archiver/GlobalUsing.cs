@@ -5,6 +5,7 @@ global using AshLake.Contracts.Seedwork.Extensions;
 global using Microsoft.AspNetCore.Mvc;
 global using MediatR;
 global using AshLake.Services.Archiver.Infrastructure.Repositories;
+global using AshLake.Services.Archiver.Domain.Repositories.ObjectStorage;
 global using MongoDB.Bson;
 global using AshLake.Contracts.Seedwork.Converts;
 global using Hangfire;

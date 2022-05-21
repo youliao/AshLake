@@ -44,6 +44,12 @@ services:
       - ASPNETCORE_URLS=http://+:80
       - YandeMongoDatabaseSetting__ConnectionString=mongodb://mongoadmin:mongoadmin@mongo:27017
       - YandeMongoDatabaseSetting__DatabaseName=yande
+      - PostFileStorageSetting__Endpoint=minio:9000
+      - PostFileStorageSetting__AccessKey=minio
+      - PostFileStorageSetting__SecretKey=minio123
+      - PostPreviewStorageSetting__Endpoint=minio:9000
+      - PostPreviewStorageSetting__AccessKey=minio
+      - PostPreviewStorageSetting__SecretKey=minio123
       - HangfireConnectionString=redis:6379
     ports:
       - "80"
