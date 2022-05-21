@@ -10,11 +10,13 @@ public abstract class PostObjectRepositoty : IPostObjectRepositoty
         _daprClient = daprClient ?? throw new ArgumentNullException(nameof(daprClient));
     }
 
-    public async Task<string> AddOrUpdateAsync(string objectKey, Stream stream)
+    public async Task<string> AddOrUpdateAsync(string objectKey, byte[] bytes)
     {
+        var base64Data = Convert.ToBase64String(bytes);
+
         var response = await _daprClient.InvokeBindingAsync<string, JsonObject>(BindingName,
                                      DaprBindingOperations.Create,
-                                     stream.ToBase64(),
+                                     base64Data,
                                      new Dictionary<string, string>() { { "key", objectKey } });
 
         return response.ToJsonString();

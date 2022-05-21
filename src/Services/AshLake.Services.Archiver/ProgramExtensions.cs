@@ -80,7 +80,8 @@ public static class ProgramExtensions
         builder.Services.Configure<YandeMongoDatabaseSetting>(builder.Configuration.GetSection(nameof(YandeMongoDatabaseSetting)));
 
         builder.Services.AddSingleton(typeof(IYandeMetadataRepository<>), typeof(YandeMetadataRepository<>));
-        builder.Services.AddScoped(typeof(IYandePostFileRepositoty), typeof(YandePostFileRepositoty));
+        builder.Services.AddScoped(typeof(IYandeFileRepositoty), typeof(YandeFileRepositoty));
+        builder.Services.AddScoped(typeof(IYandePreviewRepositoty), typeof(YandePreviewMinioRepositoty));
 
     }
 

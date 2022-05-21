@@ -2,7 +2,7 @@
 
 public interface IPostObjectRepositoty
 {
-    Task<string> AddOrUpdateAsync(string objectKey, Stream stream);
+    Task AddOrUpdateAsync(string objectKey, byte[] data);
 
     Task DeleteAsync(string objectKey);
 }

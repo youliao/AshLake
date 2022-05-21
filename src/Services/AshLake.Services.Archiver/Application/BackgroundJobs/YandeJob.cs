@@ -2,20 +2,16 @@
 
 public class YandeJob
 {
-    private const string PreviewStorageBindingName = "yande-preview-storage";
-    private const string FileStorageBindingName = "yande-file-storage";
-    private const string CreateBindingOperation = "create";
-
-    private readonly DaprClient _daprClient;
     private readonly IYandeMetadataRepository<PostMetadata> _postMetadataRepository;
-    private readonly IYandePostFileRepositoty _postFileRepositoty;
+    private readonly IYandeFileRepositoty _fileRepositoty;
+    private readonly IYandePreviewRepositoty _previewRepositoty;
     private readonly IYandeGrabberService _grabberService;
 
-    public YandeJob(DaprClient daprClient, IYandeMetadataRepository<PostMetadata> postMetadataRepository, IYandePostFileRepositoty postFileRepositoty, IYandeGrabberService grabberService)
+    public YandeJob(IYandeMetadataRepository<PostMetadata> postMetadataRepository, IYandeFileRepositoty fileRepositoty, IYandePreviewRepositoty previewRepositoty, IYandeGrabberService grabberService)
     {
-        _daprClient = daprClient ?? throw new ArgumentNullException(nameof(daprClient));
         _postMetadataRepository = postMetadataRepository ?? throw new ArgumentNullException(nameof(postMetadataRepository));
-        _postFileRepositoty = postFileRepositoty ?? throw new ArgumentNullException(nameof(postFileRepositoty));
+        _fileRepositoty = fileRepositoty ?? throw new ArgumentNullException(nameof(fileRepositoty));
+        _previewRepositoty = previewRepositoty ?? throw new ArgumentNullException(nameof(previewRepositoty));
         _grabberService = grabberService ?? throw new ArgumentNullException(nameof(grabberService));
     }
 
@@ -38,14 +34,12 @@ public class YandeJob
     }
 
     [Queue("preview")]
-    public async Task AddOrUpdatePreview(int postId)
+    public async Task<string> AddOrUpdatePreview(int postId)
     {
         var stream = await _grabberService.GetPostPreview(postId);
 
-        await _daprClient.InvokeBindingAsync(PreviewStorageBindingName,
-                                             CreateBindingOperation,
-                                             stream,
-                                             new Dictionary<string, string>() { { "key", $"{postId}.jpg" } });
+        var objectKey = $"{postId}.jpg";
+        return await _previewRepositoty.AddOrUpdateAsync(objectKey, stream);
 
     }
 
@@ -55,6 +49,6 @@ public class YandeJob
         (var stream,var fileExt) = await _grabberService.GetPostFile(postId);
         var objectKey = $"{postId}.{fileExt}";
 
-        return await _postFileRepositoty.AddOrUpdateAsync(objectKey, stream);
+        return await _fileRepositoty.AddOrUpdateAsync(objectKey, stream);
     }
 }
