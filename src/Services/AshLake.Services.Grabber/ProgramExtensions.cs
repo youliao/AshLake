@@ -66,6 +66,11 @@ public static class ProgramExtensions
         {
             config.BaseAddress = new Uri(builder.Configuration["YandeUrl"]);
             config.Timeout = TimeSpan.FromSeconds(30);
+            config.DefaultRequestHeaders.AcceptEncoding.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue("gzip"));
+
+        }).ConfigurePrimaryHttpMessageHandler(provider => new HttpClientHandler
+        {
+            AutomaticDecompression = DecompressionMethods.GZip
         });
     }
 
