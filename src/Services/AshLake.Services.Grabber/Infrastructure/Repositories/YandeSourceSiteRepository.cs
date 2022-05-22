@@ -77,7 +77,7 @@ public class YandeSourceSiteRepository : IYandeSourceSiteRepository
         var fileExtKey = "file_ext";
         var fileExt = metadata[fileExtKey]?.AsValue()?.ToString();
         Guard.Against.NullOrEmpty(fileExt, fileExtKey);
-        var imagetType = Enum.Parse<ImageType>(fileExt);
+        var imagetType = Enum.Parse<ImageType>(fileExt.ToUpper());
 
         var md5Key = "md5";
         var md5 = metadata[md5Key]?.AsValue()?.ToString();

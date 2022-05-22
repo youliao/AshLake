@@ -36,9 +36,7 @@ public class YandeJob
     [Queue("preview")]
     public async Task AddOrUpdatePreview(int postId)
     {
-        var data = await _grabberService.GetPostPreview(postId);
-
-        var preview = new PostPreview($"{postId}", data);
+        var preview = await _grabberService.GetPostPreview(postId);
 
         await _postPreviewRepositoty.PutAsync(preview);
 
@@ -47,9 +45,7 @@ public class YandeJob
     [Queue("file")]
     public async Task AddOrUpdateFile(int postId)
     {
-        (var data,var fileExt) = await _grabberService.GetPostFile(postId);
-
-        var file = new PostFile($"{postId}",ImageType.JPG ,data);
+        var file = await _grabberService.GetPostFile(postId);
 
         await _postFileRepositoty.PutAsync(file);
     }

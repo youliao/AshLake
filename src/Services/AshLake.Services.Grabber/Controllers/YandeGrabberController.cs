@@ -34,7 +34,7 @@ public class YandeGrabberController : ControllerBase
     {
         var image = await _sourceSiteRepository.GetPreviewAsync(id);
 
-        Response.Headers.ContentMD5 = image.PostMD5;
+        Response.Headers.Add("postmd5", image.PostMD5);
         return File(image.Data, $"image/{image.Type}".ToLower());
     }
 
@@ -44,7 +44,7 @@ public class YandeGrabberController : ControllerBase
     {
         var image = await _sourceSiteRepository.GetFileAsync(id);
 
-        Response.Headers.ContentMD5 = image.PostMD5;
+        Response.Headers.Add("postmd5", image.PostMD5);
         return File(image.Data, $"image/{image.Type}".ToLower());
     }
 }

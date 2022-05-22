@@ -4,7 +4,7 @@ public interface IYandeGrabberService
 {
     Task<IEnumerable<BsonDocument>> GetPostMetadataList(int startId, int limit);
 
-    Task<byte[]> GetPostPreview(int postId);
+    Task<PostPreview> GetPostPreview(int postId);
 
-    Task<(byte[], string)> GetPostFile(int postId);
+    Task<PostFile> GetPostFile(int postId);
 }
