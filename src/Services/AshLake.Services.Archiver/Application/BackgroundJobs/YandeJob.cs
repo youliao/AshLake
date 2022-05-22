@@ -39,7 +39,18 @@ public class YandeJob
         var preview = await _grabberService.GetPostPreview(postId);
 
         await _postPreviewRepositoty.PutAsync(preview);
+    }
 
+    [Queue("preview")]
+    public async Task<string> AddPreview(int postId)
+    {
+        var preview = await _grabberService.GetPostPreview(postId);
+
+        var isExists = await _postPreviewRepositoty.ExistsAsync(preview.ObjectKey);
+        if (isExists) return ArchiveStatus.Untouched.ToString();
+
+        await _postPreviewRepositoty.PutAsync(preview);
+        return ArchiveStatus.Added.ToString();
     }
 
     [Queue("file")]
@@ -48,5 +59,17 @@ public class YandeJob
         var file = await _grabberService.GetPostFile(postId);
 
         await _postFileRepositoty.PutAsync(file);
+    }
+
+    [Queue("file")]
+    public async Task<string> AddFile(int postId)
+    {
+        var file = await _grabberService.GetPostFile(postId);
+
+        var isExists = await _postPreviewRepositoty.ExistsAsync(file.ObjectKey);
+        if (isExists) return ArchiveStatus.Untouched.ToString();
+
+        await _postFileRepositoty.PutAsync(file);
+        return ArchiveStatus.Added.ToString();
     }
 }

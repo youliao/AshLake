@@ -16,3 +16,4 @@ global using AshLake.Services.Archiver.Integration.GrabberServices;
 global using System.Text.Json.Nodes;
 global using Dapr.Client;
 global using Ardalis.GuardClauses;
+global using AshLake.Services.Archiver.Infrastructure;

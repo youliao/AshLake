@@ -35,7 +35,7 @@ public class PostImageRepositoty<T> : IPostImageRepositoty<T> where T : IStoragb
         await _minioClient.PutObjectAsync(args);
     }
 
-    public async Task<ObjectStat> StatAsync(string objectKey)
+    public async Task<bool> ExistsAsync(string objectKey)
     {
         var args = new StatObjectArgs()
             .WithBucket(_bucketName)
@@ -43,11 +43,12 @@ public class PostImageRepositoty<T> : IPostImageRepositoty<T> where T : IStoragb
 
         try
         {
-            return await _minioClient.StatObjectAsync(args);
+            await _minioClient.StatObjectAsync(args);
+            return true;
         }
         catch (Minio.Exceptions.ObjectNotFoundException)
         {
-            return null!;
+            return false;
         }
         catch
         {
@@ -66,7 +67,7 @@ public class PostImageRepositoty<T> : IPostImageRepositoty<T> where T : IStoragb
 
     private async Task CreateBucketAsync(string bucketName)
     {
-        var isExists = await CheckBucketExistsAsync(bucketName);
+        var isExists = await BucketExistsAsync(bucketName);
         if (isExists) return;
 
         var args = new MakeBucketArgs()
@@ -76,7 +77,7 @@ public class PostImageRepositoty<T> : IPostImageRepositoty<T> where T : IStoragb
         await SetBucketPolicyAsync(bucketName);
     }
 
-    private async Task<bool> CheckBucketExistsAsync(string bucketName)
+    private async Task<bool> BucketExistsAsync(string bucketName)
     {
         var args = new BucketExistsArgs()
             .WithBucket(bucketName);

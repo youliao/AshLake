@@ -38,7 +38,7 @@ public class YandeArchiverController : ControllerBase
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
     public ActionResult<string> CreatePostPreviewJobs(int postId)
     {
-        var jobId = BackgroundJob.Enqueue<YandeJob>(x => x.AddOrUpdatePreview(postId));
+        var jobId = BackgroundJob.Enqueue<YandeJob>(x => x.AddPreview(postId));
         return Ok(jobId);
     }
 
@@ -47,7 +47,7 @@ public class YandeArchiverController : ControllerBase
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
     public ActionResult<string> CreatePostFileJobs(int postId)
     {
-        var jobId = BackgroundJob.Enqueue<YandeJob>(x => x.AddOrUpdateFile(postId));
+        var jobId = BackgroundJob.Enqueue<YandeJob>(x => x.AddFile(postId));
         return Ok(jobId);
     }
 }
