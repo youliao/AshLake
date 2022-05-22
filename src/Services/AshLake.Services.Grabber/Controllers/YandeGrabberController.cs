@@ -10,6 +10,7 @@ public class YandeGrabberController : ControllerBase
     }
 
     [Route("/api/sites/yande/postmetadata")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<JsonObject>>> GetPostsMetadataList(int startId, int limit, int page)
     {
@@ -18,6 +19,8 @@ public class YandeGrabberController : ControllerBase
     }
 
     [Route("/api/sites/yande/postmetadata/{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpGet]
     public async Task<ActionResult<JsonObject>> GetPostMetadata(int id)
     {
@@ -28,23 +31,56 @@ public class YandeGrabberController : ControllerBase
         return Ok(metadata);
     }
 
-    [Route("/api/sites/yande/postpreviews/{id:int}")]
+    [Route("/api/sites/yande/postmetadata/lastest")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpGet]
-    public async Task<FileResult> GetPostPreview(int id)
+    public async Task<ActionResult<string>> GetLatestPost()
     {
-        var image = await _sourceSiteRepository.GetPreviewAsync(id);
+        var post = await _sourceSiteRepository.GetLatestPostAsync();
+        return Ok(post);
+    }
 
-        Response.Headers.Add("postmd5", image.PostMD5);
-        return File(image.Data, $"image/{image.Type}".ToLower());
+    [Route("/api/sites/yande/postpreviews/{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [HttpGet]
+    public async Task<ActionResult> GetPostPreview(int id)
+    {
+        try
+        {
+            var image = await _sourceSiteRepository.GetPreviewAsync(id);
+            Response.Headers.Add("postmd5", image.PostMD5);
+            return File(image.Data, $"image/{image.Type}".ToLower());
+        }
+        catch (ArgumentException)
+        {
+            return NotFound();
+        }
+        catch
+        {
+            throw;
+        }
     }
 
     [Route("/api/sites/yande/postfiles/{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpGet]
-    public async Task<FileResult> GetPostFile(int id)
+    public async Task<ActionResult> GetPostFile(int id)
     {
-        var image = await _sourceSiteRepository.GetFileAsync(id);
-
-        Response.Headers.Add("postmd5", image.PostMD5);
-        return File(image.Data, $"image/{image.Type}".ToLower());
+        try
+        {
+            var image = await _sourceSiteRepository.GetFileAsync(id);
+            Response.Headers.Add("postmd5", image.PostMD5);
+            return File(image.Data, $"image/{image.Type}".ToLower());
+        }
+        catch(ArgumentException)
+        {
+            return NotFound();
+        }
+        catch
+        {
+            throw;
+        }
     }
 }

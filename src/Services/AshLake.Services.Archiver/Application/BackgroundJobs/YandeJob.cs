@@ -15,6 +15,7 @@ public class YandeJob
         _grabberService = grabberService ?? throw new ArgumentNullException(nameof(grabberService));
     }
 
+    
     [Queue("metadata")]
     public async Task<int> AddOrUpdatePostMetadata(int startId, int endId, int limit)
     {
@@ -41,6 +42,7 @@ public class YandeJob
         await _postPreviewRepositoty.PutAsync(preview);
     }
 
+    [MaximumConcurrentExecutions(1)]
     [Queue("preview")]
     public async Task<string> AddPreview(int postId)
     {

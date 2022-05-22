@@ -99,11 +99,12 @@ public static class ProgramExtensions
         builder.Services.AddHangfire(c =>
         {
             c.UseRedisStorage(builder.Configuration["HangfireConnectionString"]);
+
         });
         builder.Services.AddHangfireServer(opt =>
         {
             opt.ShutdownTimeout = TimeSpan.FromMinutes(30);
-            opt.WorkerCount = 5;
+            opt.WorkerCount = 10;
             opt.Queues = new[] { "metadata", "file", "preview" };
         });
     }
