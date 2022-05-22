@@ -18,15 +18,24 @@ public class YandeArchiverController : ControllerBase
         return Ok(metadata.Data);
     }
 
-    [Route("/api/sites/yande/postmetadatajobs")]
+    [Route("/api/sites/yande/postmetadatajobs/batches")]
     [HttpPost]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
     public ActionResult<List<string>> CreatePostMetadataJobs(CreatePostMetadataJobsCommand command)
     {
+        var jobId = string.Empty;
         var jobIdList = new List<string>();
-        for (int i = command.StartPostId; i < command.EndPostId; i += command.Step)
+        for (int i = command.StartId; i <= command.EndId; i += command.Step)
         {
-            var jobId = BackgroundJob.Enqueue<YandeJob>(x => x.AddOrUpdatePostMetadata(i, command.EndPostId, command.Step));
+            if (i == command.StartId)
+            {
+                jobId = BackgroundJob.Enqueue<YandeJob>(x => x.AddOrUpdatePostMetadata(i, command.EndId, command.Step));
+            }
+
+            jobId = BackgroundJob.ContinueJobWith<YandeJob>(jobId,
+                                                            x => x.AddOrUpdatePostMetadata(i, command.EndId, command.Step),
+                                                            JobContinuationOptions.OnAnyFinishedState);
+
             jobIdList.Add(jobId);
         }
 
@@ -35,7 +44,7 @@ public class YandeArchiverController : ControllerBase
 
     [Route("/api/sites/yande/postpreviewjobs")]
     [HttpPost]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status202Accepted)]
     public ActionResult<string> CreatePostPreviewJobs(int postId)
     {
         var jobId = BackgroundJob.Enqueue<YandeJob>(x => x.AddPreview(postId));
@@ -44,10 +53,25 @@ public class YandeArchiverController : ControllerBase
 
     [Route("/api/sites/yande/postfilejobs")]
     [HttpPost]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status202Accepted)]
     public ActionResult<string> CreatePostFileJobs(int postId)
     {
         var jobId = BackgroundJob.Enqueue<YandeJob>(x => x.AddFile(postId));
         return Ok(jobId);
+    }
+
+    [Route("/api/sites/yande/postfilejobs/batches")]
+    [HttpPost]
+    [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
+    public ActionResult<List<string>> CreatePostFileJobs(int startId, int endId)
+    {
+        var jobIdList = new List<string>();
+        for (int i = startId; i <= endId; i++)
+        {
+            var jobId = BackgroundJob.Enqueue<YandeJob>(x => x.AddFile(i));
+            jobIdList.Add(jobId);
+        }
+
+        return Ok(jobIdList);
     }
 }

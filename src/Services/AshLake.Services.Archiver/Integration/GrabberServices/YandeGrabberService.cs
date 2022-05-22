@@ -20,9 +20,13 @@ public class YandeGrabberService : IYandeGrabberService
         return list ?? new List<BsonDocument>();
     }
 
-    public async Task<PostPreview> GetPostPreview(int postId)
+    public async Task<PostPreview?> GetPostPreview(int postId)
     {
         var response = await _httpClient.GetAsync($"/api/sites/yande/postpreviews/{postId}");
+        if(response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
         if (!response.IsSuccessStatusCode)
         {
             throw new HttpRequestException(await response.Content.ReadAsStringAsync());
@@ -33,7 +37,7 @@ public class YandeGrabberService : IYandeGrabberService
 
         var fileExt = contentType?.Split('/').LastOrDefault();
         Guard.Against.NullOrWhiteSpace(fileExt);
-        var imageType = Enum.Parse<ImageType>(fileExt.ToUpper());
+        Enum.Parse<ImageType>(fileExt.ToUpper());
 
         var postmd5 = response.Headers?.GetValues("postmd5").FirstOrDefault();
         Guard.Against.NullOrWhiteSpace(postmd5);
@@ -44,9 +48,13 @@ public class YandeGrabberService : IYandeGrabberService
         return new PostPreview(postmd5, data);
     }
 
-    public async Task<PostFile> GetPostFile(int postId)
+    public async Task<PostFile?> GetPostFile(int postId)
     {
         var response = await _httpClient.GetAsync($"/api/sites/yande/postfiles/{postId}");
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
         if (!response.IsSuccessStatusCode)
         {
             throw new HttpRequestException(await response.Content.ReadAsStringAsync());
