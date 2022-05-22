@@ -1,44 +1,50 @@
 ﻿namespace AshLake.Services.Grabber.Controllers;
 
-public class YandeGrabberController : ApiControllerBase
+public class YandeGrabberController : ControllerBase
 {
+    private readonly IYandeSourceSiteRepository _sourceSiteRepository;
+
+    public YandeGrabberController(IYandeSourceSiteRepository sourceSiteRepository)
+    {
+        _sourceSiteRepository = sourceSiteRepository ?? throw new ArgumentNullException(nameof(sourceSiteRepository));
+    }
+
     [Route("/api/sites/yande/postmetadata")]
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<JsonObject>>> GetPostsMetadataList([FromQuery] GetYandePostsMetadataListQuery query)
+    public async Task<ActionResult<IEnumerable<JsonObject>>> GetPostsMetadataList(int startId, int limit, int page)
     {
-        var result = await Mediator.Send(query);
-        return Ok(result);
+        var list = await _sourceSiteRepository.GetMetadataListAsync(startId, limit, page);
+        return Ok(list);
     }
 
     [Route("/api/sites/yande/postmetadata/{id:int}")]
     [HttpGet]
     public async Task<ActionResult<JsonObject>> GetPostMetadata(int id)
     {
-        var query = new GetYandePostMetadataQuery() { Id = id };
-        var result = await Mediator.Send(query);
+        var metadata = await _sourceSiteRepository.GetMetadataAsync(id);
 
-        if (result is null) return NotFound();
+        if (metadata is null) return NotFound();
 
-        return Ok(result);
+        return Ok(metadata);
     }
 
     [Route("/api/sites/yande/postpreviews/{id:int}")]
     [HttpGet]
     public async Task<FileResult> GetPostPreview(int id)
     {
-        var query = new GetYandePostPreviewQuery() { Id = id };
-        var stream = await Mediator.Send(query);
+        var image = await _sourceSiteRepository.GetPreviewAsync(id);
 
-        return File(stream, MediaTypeNames.Image.Jpeg);
+        Response.Headers.ContentMD5 = image.PostMD5;
+        return File(image.Data, $"image/{image.Type}".ToLower());
     }
 
     [Route("/api/sites/yande/postfiles/{id:int}")]
     [HttpGet]
     public async Task<FileResult> GetPostFile(int id)
     {
-        var query = new GetYandePostFileQuery() { Id = id };
-        (var stream, var fileExt) = await Mediator.Send(query);
+        var image = await _sourceSiteRepository.GetFileAsync(id);
 
-        return File(stream, $"image/{fileExt}");
+        Response.Headers.ContentMD5 = image.PostMD5;
+        return File(image.Data, $"image/{image.Type}".ToLower());
     }
 }

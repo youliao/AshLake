@@ -62,7 +62,7 @@ public static class ProgramExtensions
     public static void AddCustomRepositories(this WebApplicationBuilder builder)
     {
         builder.Services.AddScoped<YandeSourceSiteRepository>();
-        builder.Services.AddHttpClient<YandeSourceSiteRepository>(config =>
+        builder.Services.AddHttpClient<IYandeSourceSiteRepository, YandeSourceSiteRepository>(config =>
         {
             config.BaseAddress = new Uri(builder.Configuration["YandeUrl"]);
             config.Timeout = TimeSpan.FromSeconds(30);

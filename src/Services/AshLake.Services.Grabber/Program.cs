@@ -8,8 +8,6 @@ builder.AddCustomDatabase();
 builder.AddCustomRepositories();
 builder.AddCustomEasyCaching();
 
-builder.Services.AddMediatR(typeof(Program));
-
 var app = builder.Build();
 
 if (true)

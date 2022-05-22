@@ -1,6 +1,6 @@
 ﻿namespace AshLake.Services.Grabber.Infrastructure.Repositories;
 
-public class YandeSourceSiteRepository
+public class YandeSourceSiteRepository : IYandeSourceSiteRepository
 {
     private readonly IEasyCachingProviderFactory _cachingProviderFactory;
     private readonly HttpClient _httpClient;
@@ -26,7 +26,7 @@ public class YandeSourceSiteRepository
         return cache.Value;
     }
 
-    public async Task<IReadOnlyList<JsonObject>> GetMetadataListAsync(string tags,int limit,int page)
+    public async Task<IReadOnlyList<JsonObject>> GetMetadataListAsync(string tags, int limit, int page)
     {
         string urlEncoded = WebUtility.UrlEncode(tags ?? "order:id");
 
@@ -39,34 +39,53 @@ public class YandeSourceSiteRepository
         return list;
     }
 
-    public async Task<Stream> GetPreviewAsync(int id)
+    public async Task<IReadOnlyList<JsonObject>> GetMetadataListAsync(int startId, int limit, int page)
+    {
+        string tags = $"id:>={startId} order:id";
+
+        return await GetMetadataListAsync(tags, limit, page);
+    }
+
+    public async Task<ImageFile> GetPreviewAsync(int id)
     {
         var metadata = await GetMetadataAsync(id);
-        Guard.Against.Null(metadata,nameof(metadata));
+        Guard.Against.Null(metadata, nameof(metadata));
 
         string previewUrlKey = "preview_url";
         var previewUrl = metadata[previewUrlKey]?.AsValue()?.ToString();
         Guard.Against.NullOrEmpty(previewUrl, previewUrlKey);
 
-        return await _httpClient.GetStreamAsync(previewUrl);
+        var md5Key = "md5";
+        var md5 = metadata[md5Key]?.AsValue()?.ToString();
+        Guard.Against.NullOrEmpty(md5, md5Key);
+
+        var data = await _httpClient.GetStreamAsync(previewUrl);
+        Guard.Against.Null(data, nameof(data));
+
+        return new ImageFile(md5, ImageType.JPG, data);
     }
 
-    public async Task<(Stream, string)> GetFileAsync(int id)
+    public async Task<ImageFile> GetFileAsync(int id)
     {
         var metadata = await GetMetadataAsync(id);
         Guard.Against.Null(metadata, nameof(metadata));
 
-        string fileUrlKey = "file_url";
+        var fileUrlKey = "file_url";
         var fileUrl = metadata[fileUrlKey]?.AsValue()?.ToString();
         Guard.Against.NullOrEmpty(fileUrl, fileUrlKey);
 
-        string fileExtKey = "file_ext";
+        var fileExtKey = "file_ext";
         var fileExt = metadata[fileExtKey]?.AsValue()?.ToString();
         Guard.Against.NullOrEmpty(fileExt, fileExtKey);
+        var imagetType = Enum.Parse<ImageType>(fileExt);
 
-        var fileStream = await _httpClient.GetStreamAsync(fileUrl);
-        Guard.Against.Null(fileStream, nameof(fileStream));
+        var md5Key = "md5";
+        var md5 = metadata[md5Key]?.AsValue()?.ToString();
+        Guard.Against.NullOrEmpty(md5, md5Key);
 
-        return (fileStream, fileExt);
+        var data = await _httpClient.GetStreamAsync(fileUrl);
+        Guard.Against.Null(data, nameof(data));
+
+        return new ImageFile(md5, imagetType, data);
     }
 }
