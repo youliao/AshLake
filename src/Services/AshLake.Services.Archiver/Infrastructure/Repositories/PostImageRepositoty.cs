@@ -12,10 +12,14 @@ public class PostImageRepositoty<T> : IPostImageRepositoty<T> where T : IStoragb
     {
         _minioClient = minioClient ?? throw new ArgumentNullException(nameof(minioClient));
 
-        if (typeof(T) == typeof(PostFile)) _bucketName = "post-file";
-        if (typeof(T) == typeof(PostPreview)) _bucketName = "post-preview";
+        _bucketName = typeof(T).Name switch
+        {
+            nameof(PostFile) => "post-file",
+            nameof(PostPreview) => "post-preview",
+            _ => throw new NotSupportedException(typeof(T).Name)
+        };
 
-        Guard.Against.Null(_bucketName);
+        CreateBucketAsync(_bucketName).Wait();
     }
 
     public async Task PutAsync(T post)
@@ -58,5 +62,35 @@ public class PostImageRepositoty<T> : IPostImageRepositoty<T> where T : IStoragb
             .WithObject(objectKey);
 
         await _minioClient.RemoveObjectAsync(args);
+    }
+
+    private async Task CreateBucketAsync(string bucketName)
+    {
+        var isExists = await CheckBucketExistsAsync(bucketName);
+        if (isExists) return;
+
+        var args = new MakeBucketArgs()
+            .WithBucket(bucketName);
+        await _minioClient.MakeBucketAsync(args);
+
+        await SetBucketPolicyAsync(bucketName);
+    }
+
+    private async Task<bool> CheckBucketExistsAsync(string bucketName)
+    {
+        var args = new BucketExistsArgs()
+            .WithBucket(bucketName);
+
+        return await _minioClient.BucketExistsAsync(args);
+    }
+
+    private async Task SetBucketPolicyAsync(string bucketName)
+    {
+        var policyJson = $"{{\"Version\":\"2012-10-17\",\"Statement\":[{{\"Effect\":\"Allow\",\"Principal\":{{\"AWS\":[\"*\"]}},\"Action\":[\"s3:GetObject\"],\"Resource\":[\"arn:aws:s3:::{bucketName}/*\"]}}]}}";
+        var args = new SetPolicyArgs()
+            .WithBucket(bucketName)
+            .WithPolicy(policyJson);
+
+        await _minioClient.SetPolicyAsync(args);
     }
 }

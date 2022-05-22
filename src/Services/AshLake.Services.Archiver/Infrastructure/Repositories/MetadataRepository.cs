@@ -10,7 +10,8 @@ public class MetadataRepository<TSouceSite, TMetadata> : IMetadataRepository<TSo
 
     public MetadataRepository(MongoClient mongoClient)
     {
-        _database = mongoClient.GetDatabase(typeof(TSouceSite).Name);
+        var databaseName = typeof(TSouceSite).Name;
+        _database = mongoClient.GetDatabase(databaseName);
     }
 
     public async Task<ArchiveStatus> AddOrUpdateAsync(TMetadata post)

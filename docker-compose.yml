@@ -48,3 +48,6 @@ services:
     network_mode: "service:archiver"
     depends_on:
       - archiver
+
+  dapr-placement:
+    image: "daprio/dapr:latest"
