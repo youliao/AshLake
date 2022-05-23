@@ -29,7 +29,10 @@ public class YandeSourceSiteRepository : IYandeSourceSiteRepository
         if (!cachedEnable) return (await GetMetadataListAsync(tags, 1, 1)).FirstOrDefault();
 
         var cache = await _cachingProvider.GetAsync($"{id}",
-                                             async () => (await GetMetadataListAsync(tags, 1, 1)).FirstOrDefault(),
+                                             async () => (await GetMetadataListAsync(tags,
+                                                                                     1,
+                                                                                     1,
+                                                                                     false)).FirstOrDefault(),
                                              _cacheExpiration);
 
         return cache.Value;
@@ -43,7 +46,7 @@ public class YandeSourceSiteRepository : IYandeSourceSiteRepository
         if (list.Count == 0) return list;
         if(!cachedEnable) return list;
 
-        var dic = list!.ToDictionary(x => x["id"]!.AsValue().ToString());
+        var dic = list!.ToDictionary(x => x[YandePostMetadataKeys.id]!.AsValue().ToString());
         await _cachingProvider.SetAllAsync(dic, _cacheExpiration);
 
         return list;
