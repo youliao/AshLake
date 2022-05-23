@@ -2,27 +2,25 @@
 
 public class YandeSourceSiteRepository : IYandeSourceSiteRepository
 {
-    private readonly IEasyCachingProviderFactory _cachingProviderFactory;
+    private readonly IEasyCachingProvider _cachingProvider;
     private readonly HttpClient _httpClient;
-    private readonly TimeSpan _cacheExpiration = TimeSpan.FromHours(1);
+    private readonly TimeSpan _cacheExpiration = TimeSpan.FromDays(1);
 
-    public YandeSourceSiteRepository(IEasyCachingProviderFactory cachingProviderFactory, HttpClient httpClient)
+    public YandeSourceSiteRepository(IEasyCachingProvider cachingProvider, HttpClient httpClient)
     {
-        _cachingProviderFactory = cachingProviderFactory;
+        _cachingProvider = cachingProvider;
         _httpClient = httpClient;
     }
 
-    private IEasyCachingProvider _cachingProvider { get => _cachingProviderFactory.GetCachingProvider(nameof(Yande)); }
-
-    public async Task<JsonObject?> GetLatestPostAsync()
+    public async Task<JsonNode?> GetLatestPostAsync()
     {
-        var list = await _httpClient.GetFromJsonAsync<IReadOnlyList<JsonObject>>($"/post.json?limit=1");
+        var list = await _httpClient.GetFromJsonAsync<IReadOnlyList<JsonNode>>($"/post.json?limit=1");
         if(list is null || list.Count ==0) return null;
 
         return list.FirstOrDefault();
     }
 
-    public async Task<JsonObject?> GetMetadataAsync(int id, bool cachedEnable = true)
+    public async Task<JsonNode?> GetMetadataAsync(int id, bool cachedEnable = true)
     {
         string tags = $"id:{id}";
 
@@ -32,27 +30,29 @@ public class YandeSourceSiteRepository : IYandeSourceSiteRepository
                                              async () => (await GetMetadataListAsync(tags,
                                                                                      1,
                                                                                      1,
-                                                                                     false)).FirstOrDefault(),
+                                                                                     false)).FirstOrDefault()?.ToString(),
                                              _cacheExpiration);
 
-        return cache.Value;
+        if (cache.Value is null) return null;
+        return JsonNode.Parse(cache.Value);
     }
 
-    public async Task<IReadOnlyList<JsonObject>> GetMetadataListAsync(string tags, int limit, int page, bool cachedEnable = true)
+    public async Task<IReadOnlyList<JsonNode>> GetMetadataListAsync(string tags, int limit, int page, bool cachedEnable = true)
     {
         string urlEncoded = WebUtility.UrlEncode(tags ?? "order:id");
 
-        var list = await _httpClient.GetFromJsonAsync<IReadOnlyList<JsonObject>>($"/post.json?tags={urlEncoded}&limit={limit}&page={page}") ?? new List<JsonObject>();
+        var list = await _httpClient.GetFromJsonAsync<IReadOnlyList<JsonNode>>($"/post.json?tags={urlEncoded}&limit={limit}&page={page}") ?? new List<JsonNode>();
         if (list.Count == 0) return list;
         if(!cachedEnable) return list;
 
-        var dic = list!.ToDictionary(x => x[YandePostMetadataKeys.id]!.AsValue().ToString());
+        var dic = list!.ToDictionary(x => x[YandePostMetadataKeys.id]!.AsValue().ToString(),
+                                     x => x.ToString());
         await _cachingProvider.SetAllAsync(dic, _cacheExpiration);
 
         return list;
     }
 
-    public async Task<IReadOnlyList<JsonObject>> GetMetadataListAsync(int startId, int limit, int page, bool cachedEnable = true)
+    public async Task<IReadOnlyList<JsonNode>> GetMetadataListAsync(int startId, int limit, int page, bool cachedEnable = true)
     {
         string tags = $"id:>={startId} order:id";
 

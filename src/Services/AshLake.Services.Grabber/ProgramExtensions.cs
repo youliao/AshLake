@@ -48,14 +48,12 @@ public static class ProgramExtensions
 
     public static void AddCustomEasyCaching(this WebApplicationBuilder builder)
     {
-        builder.Services.AddEasyCaching(options =>
+        builder.Services.AddEasyCaching(option =>
         {
-            options.UseInMemory(nameof(Yande));
-        });
-
-        builder.Services.AddEasyCaching(options =>
-        {
-            options.UseInMemory(nameof(Danbooru));
+            option.UseLiteDB(config =>
+            {
+                config.DBConfig = new EasyCaching.LiteDB.LiteDBDBOptions { FileName = "yande.ldb"};
+            });
         });
     }
 
@@ -64,7 +62,8 @@ public static class ProgramExtensions
         builder.Services.AddScoped<YandeSourceSiteRepository>();
         builder.Services.AddHttpClient<IYandeSourceSiteRepository, YandeSourceSiteRepository>(config =>
         {
-            config.BaseAddress = new Uri(builder.Configuration["YandeUrl"]);
+            //config.BaseAddress = new Uri(builder.Configuration["YandeUrl"]);
+            config.BaseAddress = new Uri("https://yande.re/");
             config.Timeout = TimeSpan.FromSeconds(30);
             config.DefaultRequestHeaders.AcceptEncoding.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue("gzip"));
 
