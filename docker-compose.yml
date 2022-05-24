@@ -10,6 +10,9 @@ services:
   redis:
     image: redis:7
 
+  redis-easycaching:
+    image: redis:7
+
   redis-hangfire:
     image: redis:7
 

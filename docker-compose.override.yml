@@ -21,9 +21,11 @@ services:
     ports:
       - "6379:6379"
 
-  redis-hangfire:
-    ports:
+  redis-easycaching:
+      ports:
       - "6380:6379"
+
+  redis-hangfire:
 
   rabbitmq:
     ports:
@@ -47,6 +49,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
       - YandeUrl=https://yande.re/
+      - EasycachingRedisHost=redis-easycaching
     ports:
       - "80"
 

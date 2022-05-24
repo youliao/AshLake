@@ -1,5 +1,5 @@
-﻿using AshLake.Services.Grabber.Infrastructure;
-using System.Text.Json.Serialization;
+﻿using EasyCaching.Core.Configurations;
+using Newtonsoft.Json.Converters;
 
 namespace AshLake.Services.Grabber;
 
@@ -20,11 +20,16 @@ public static class ProgramExtensions
         builder.Services
             .AddControllers()
             .AddDapr()
-            .AddJsonOptions(options =>
+            .AddNewtonsoftJson(options =>
             {
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                options.JsonSerializerOptions.Converters.Add(new BsonDocumentJsonConverter());
+                options.SerializerSettings.Converters.Add(new StringEnumConverter());
             });
+
+        //.AddJsonOptions(options =>
+        //{
+        //    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        //    options.JsonSerializerOptions.Converters.Add(new BsonDocumentJsonConverter());
+        //});
 
         builder.Services.AddEndpointsApiExplorer();
     }
@@ -52,19 +57,23 @@ public static class ProgramExtensions
 
     public static void AddCustomEasyCaching(this WebApplicationBuilder builder)
     {
-        Newtonsoft.Json.JsonConvert.DefaultSettings = new Func<Newtonsoft.Json.JsonSerializerSettings>(() =>
-        {
-            Newtonsoft.Json.JsonSerializerSettings setting = new Newtonsoft.Json.JsonSerializerSettings();
-            setting.Converters.Add(new BsonDocumentNewtonsoftConverter());
-            return setting;
-        });
-
         builder.Services.AddEasyCaching(options =>
         {
-            options.UseLiteDB(config =>
+            options.UseRedis(config =>
             {
-                config.DBConfig = new EasyCaching.LiteDB.LiteDBDBOptions { FileName = "yande.ldb"};
-            });
+                config.DBConfig.Endpoints.Add(new ServerEndPoint(builder.Configuration["EasycachingRedisHost"], 6379));
+                config.SerializerName = "json";
+                config.DBConfig.Database = 0;
+            },nameof(Yande));
+
+            options.UseRedis(config =>
+            {
+                config.DBConfig.Endpoints.Add(new ServerEndPoint(builder.Configuration["EasycachingRedisHost"], 6379));
+                config.SerializerName = "json";
+                config.DBConfig.Database = 1;
+            }, nameof(Danbooru));
+
+            options.WithJson("json");
         });
     }
 
@@ -73,8 +82,8 @@ public static class ProgramExtensions
         builder.Services.AddScoped<YandeSourceSiteRepository>();
         builder.Services.AddHttpClient<IYandeSourceSiteRepository, YandeSourceSiteRepository>(config =>
         {
-            //config.BaseAddress = new Uri(builder.Configuration["YandeUrl"]);
-            config.BaseAddress = new Uri("https://yande.re/");
+            config.BaseAddress = new Uri(builder.Configuration["YandeUrl"]);
+            //config.BaseAddress = new Uri("https://yande.re/");
             config.Timeout = TimeSpan.FromSeconds(30);
             config.DefaultRequestHeaders.AcceptEncoding.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue("gzip"));
 

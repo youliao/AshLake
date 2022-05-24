@@ -10,4 +10,3 @@ global using Ardalis.GuardClauses;
 global using EasyCaching.Core;
 global using AshLake.Services.Grabber.Domain.Repositories;
 global using AshLake.Services.Grabber.Domain.Entities;
-global using LiteDB;

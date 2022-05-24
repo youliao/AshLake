@@ -17,6 +17,7 @@
         "postgres": "StartWithoutDebugging",
         "redis": "StartWithoutDebugging",
         "redis-hangfire": "StartWithoutDebugging",
+        "redis-easycaching": "StartWithoutDebugging",
         "rabbitmq": "StartWithoutDebugging",
         "zipkin": "StartWithoutDebugging"
       }
