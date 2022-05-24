@@ -22,8 +22,6 @@ services:
       - "6379:6379"
 
   redis-easycaching:
-      ports:
-      - "6380:6379"
 
   redis-hangfire:
 

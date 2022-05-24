@@ -1,4 +1,6 @@
 ﻿using AshLake.Services.Archiver.Application.Commands.CreateJobsForAddOrUpdateMetadata;
+using System.Linq.Expressions;
+using AshLake.Services.Archiver.Infrastructure.Extensions;
 
 namespace AshLake.Services.Archiver.Controllers;
 
@@ -12,7 +14,6 @@ public class YandeArchiverController : ControllerBase
         [FromServices] IMetadataRepository<Yande,PostMetadata> repository)
     {
         var metadata = await repository.SingleAsync(id.ToString());
-
         if (metadata is null) return NotFound();
 
         return Ok(metadata.Data);
@@ -21,24 +22,18 @@ public class YandeArchiverController : ControllerBase
     [Route("/api/sites/yande/postmetadatajobs/batches")]
     [HttpPost]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
-    public ActionResult<List<string>> CreatePostMetadataJobs(CreatePostMetadataJobsCommand command)
+    public ActionResult<List<string>> CreatePostMetadataJobs(CreatePostMetadataJobsCommand command,
+                [FromServices] IBackgroundJobClient backgroundJobClient)
     {
-        var jobId = string.Empty;
-        var jobIdList = new List<string>();
+        var calls = new List<Expression<Func<YandeJob, Task>>>();
+
         for (int i = command.StartId; i <= command.EndId; i += command.Step)
         {
-            if (i == command.StartId)
-            {
-                jobId = BackgroundJob.Enqueue<YandeJob>(x => x.AddOrUpdatePostMetadata(i, command.EndId, command.Step));
-            }
-
-            jobId = BackgroundJob.ContinueJobWith<YandeJob>(jobId,
-                                                            x => x.AddOrUpdatePostMetadata(i, command.EndId, command.Step),
-                                                            JobContinuationOptions.OnAnyFinishedState);
-
-            jobIdList.Add(jobId);
+            int startId = i;
+            calls.Add(x => x.AddOrUpdatePostMetadata(startId, command.EndId, command.Step));
         }
 
+        var jobIdList = backgroundJobClient.EnqueueSuccessively(calls);
         return Ok(jobIdList);
     }
 
