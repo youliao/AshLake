@@ -12,7 +12,7 @@ public class YandeGrabberController : ControllerBase
     [Route("/api/sites/yande/postmetadata")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<JsonNode>>> GetPostsMetadataList(int startId, int limit, int page)
+    public async Task<ActionResult> GetPostsMetadataList(int startId, int limit, int page)
     {
         var list = await _sourceSiteRepository.GetMetadataListAsync(startId, limit, page);
         return Ok(list);
@@ -22,7 +22,7 @@ public class YandeGrabberController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpGet]
-    public async Task<ActionResult<JsonNode>> GetPostMetadata(int id)
+    public async Task<ActionResult> GetPostMetadata(int id)
     {
         var metadata = await _sourceSiteRepository.GetMetadataAsync(id);
 
@@ -34,7 +34,7 @@ public class YandeGrabberController : ControllerBase
     [Route("/api/sites/yande/postmetadata/lastest")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpGet]
-    public async Task<ActionResult<string>> GetLatestPost()
+    public async Task<ActionResult> GetLatestPost()
     {
         var post = await _sourceSiteRepository.GetLatestPostAsync();
         return Ok(post);

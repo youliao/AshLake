@@ -12,47 +12,43 @@ public class YandeSourceSiteRepository : IYandeSourceSiteRepository
         _httpClient = httpClient;
     }
 
-    public async Task<JsonNode?> GetLatestPostAsync()
+    public async Task<BsonDocument> GetLatestPostAsync()
     {
-        var list = await _httpClient.GetFromJsonAsync<IReadOnlyList<JsonNode>>($"/post.json?limit=1");
-        if(list is null || list.Count ==0) return null;
+        var json = await _httpClient.GetStringAsync("/post.json?limit=1");
+        Guard.Against.NullOrEmpty(json);
 
-        return list.FirstOrDefault();
+        var bson = JsonSerializer.DeserializeArray(json).First().AsDocument;
+        return bson;
     }
 
-    public async Task<JsonNode?> GetMetadataAsync(int id, bool cachedEnable = true)
+    public async Task<BsonDocument?> GetMetadataAsync(int id, bool cachedEnable = true)
     {
         string tags = $"id:{id}";
+        var cache = await _cachingProvider.GetAsync($"{id}",async () => (await GetMetadataListAsync(tags, 1, 1,false)).FirstOrDefault(), _cacheExpiration);
 
-        if (!cachedEnable) return (await GetMetadataListAsync(tags, 1, 1)).FirstOrDefault();
-
-        var cache = await _cachingProvider.GetAsync($"{id}",
-                                             async () => (await GetMetadataListAsync(tags,
-                                                                                     1,
-                                                                                     1,
-                                                                                     false)).FirstOrDefault()?.ToString(),
-                                             _cacheExpiration);
-
-        if (cache.Value is null) return null;
-        return JsonNode.Parse(cache.Value);
+        return cache.Value;
     }
 
-    public async Task<IReadOnlyList<JsonNode>> GetMetadataListAsync(string tags, int limit, int page, bool cachedEnable = true)
+    public async Task<IEnumerable<BsonDocument>> GetMetadataListAsync(string tags, int limit, int page, bool cachedEnable = true)
     {
         string urlEncoded = WebUtility.UrlEncode(tags ?? "order:id");
 
-        var list = await _httpClient.GetFromJsonAsync<IReadOnlyList<JsonNode>>($"/post.json?tags={urlEncoded}&limit={limit}&page={page}") ?? new List<JsonNode>();
-        if (list.Count == 0) return list;
-        if(!cachedEnable) return list;
+        var json = await _httpClient.GetStringAsync($"/post.json?tags={urlEncoded}&limit={limit}&page={page}");
+        Guard.Against.NullOrEmpty(json);
 
-        var dic = list!.ToDictionary(x => x[YandePostMetadataKeys.id]!.AsValue().ToString(),
-                                     x => x.ToString());
+        var list = JsonSerializer.DeserializeArray(json).Select(x=>x.AsDocument).ToList();
+        if (list.Count == 0) return new List<BsonDocument>();
+
+        if (!cachedEnable) return list;
+
+        var dic = list!.ToDictionary(x => x[YandePostMetadataKeys.id]!.AsInt32.ToString(),
+                                     x => x.AsDocument);
         await _cachingProvider.SetAllAsync(dic, _cacheExpiration);
 
         return list;
     }
 
-    public async Task<IReadOnlyList<JsonNode>> GetMetadataListAsync(int startId, int limit, int page, bool cachedEnable = true)
+    public async Task<IEnumerable<BsonDocument>> GetMetadataListAsync(int startId, int limit, int page, bool cachedEnable = true)
     {
         string tags = $"id:>={startId} order:id";
 
@@ -64,17 +60,17 @@ public class YandeSourceSiteRepository : IYandeSourceSiteRepository
         var metadata = await GetMetadataAsync(id);
         Guard.Against.Null(metadata, nameof(metadata));
 
-        var status = metadata[YandePostMetadataKeys.status]?.AsValue()?.ToString();
+        var status = metadata[YandePostMetadataKeys.status]?.AsString;
         Guard.Against.NullOrEmpty(status);
         var postStatus = Enum.Parse<PostStatus>(status.ToUpper());
         Guard.Against.InvalidInput(postStatus,
                                    YandePostMetadataKeys.status,
                                    x => x != PostStatus.DELETED);
 
-        var previewUrl = metadata[YandePostMetadataKeys.preview_url]?.AsValue()?.ToString();
+        var previewUrl = metadata[YandePostMetadataKeys.preview_url]?.AsString;
         Guard.Against.NullOrEmpty(previewUrl);
 
-        var md5 = metadata[YandePostMetadataKeys.md5]?.AsValue()?.ToString();
+        var md5 = metadata[YandePostMetadataKeys.md5]?.AsString;
         Guard.Against.NullOrEmpty(md5);
 
         var data = await _httpClient.GetStreamAsync(previewUrl);
@@ -88,21 +84,21 @@ public class YandeSourceSiteRepository : IYandeSourceSiteRepository
         var metadata = await GetMetadataAsync(id);
         Guard.Against.Null(metadata, nameof(metadata));
 
-        var status = metadata[YandePostMetadataKeys.status]?.AsValue()?.ToString();
+        var status = metadata[YandePostMetadataKeys.status]?.AsString;
         Guard.Against.NullOrEmpty(status);
         var postStatus = Enum.Parse<PostStatus>(status.ToUpper());
         Guard.Against.InvalidInput(postStatus,
                                    YandePostMetadataKeys.status,
                                    x => x != PostStatus.DELETED);
 
-        var fileUrl = metadata[YandePostMetadataKeys.file_url]?.AsValue()?.ToString();
+        var fileUrl = metadata[YandePostMetadataKeys.file_url]?.AsString;
         Guard.Against.NullOrEmpty(fileUrl);
 
-        var fileExt = metadata[YandePostMetadataKeys.file_ext]?.AsValue()?.ToString();
+        var fileExt = metadata[YandePostMetadataKeys.file_ext]?.AsString;
         Guard.Against.NullOrEmpty(fileExt);
         var imagetType = Enum.Parse<ImageType>(fileExt.ToUpper());
 
-        var md5 = metadata[YandePostMetadataKeys.md5]?.AsValue()?.ToString();
+        var md5 = metadata[YandePostMetadataKeys.md5]?.AsString;
         Guard.Against.NullOrEmpty(md5);
 
         var data = await _httpClient.GetStreamAsync(fileUrl);

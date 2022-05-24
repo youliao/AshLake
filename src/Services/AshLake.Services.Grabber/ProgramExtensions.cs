@@ -1,4 +1,7 @@
-﻿namespace AshLake.Services.Grabber;
+﻿using AshLake.Services.Grabber.Infrastructure;
+using System.Text.Json.Serialization;
+
+namespace AshLake.Services.Grabber;
 
 public static class ProgramExtensions
 {
@@ -19,7 +22,8 @@ public static class ProgramExtensions
             .AddDapr()
             .AddJsonOptions(options =>
             {
-                options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                options.JsonSerializerOptions.Converters.Add(new BsonDocumentJsonConverter());
             });
 
         builder.Services.AddEndpointsApiExplorer();
@@ -48,9 +52,16 @@ public static class ProgramExtensions
 
     public static void AddCustomEasyCaching(this WebApplicationBuilder builder)
     {
-        builder.Services.AddEasyCaching(option =>
+        Newtonsoft.Json.JsonConvert.DefaultSettings = new Func<Newtonsoft.Json.JsonSerializerSettings>(() =>
         {
-            option.UseLiteDB(config =>
+            Newtonsoft.Json.JsonSerializerSettings setting = new Newtonsoft.Json.JsonSerializerSettings();
+            setting.Converters.Add(new BsonDocumentNewtonsoftConverter());
+            return setting;
+        });
+
+        builder.Services.AddEasyCaching(options =>
+        {
+            options.UseLiteDB(config =>
             {
                 config.DBConfig = new EasyCaching.LiteDB.LiteDBDBOptions { FileName = "yande.ldb"};
             });

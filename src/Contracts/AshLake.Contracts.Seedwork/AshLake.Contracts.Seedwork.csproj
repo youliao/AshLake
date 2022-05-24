@@ -8,7 +8,11 @@
 
   <ItemGroup>
     <PackageReference Include="Hellang.Middleware.ProblemDetails" Version="6.4.2" />
-    <PackageReference Include="MongoDB.Driver" Version="2.15.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Converts\" />
+    <Folder Include="Extensions\" />
   </ItemGroup>
 
 </Project>

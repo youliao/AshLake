@@ -1,6 +1,6 @@
 ﻿using MongoDB.Driver;
 
-namespace AshLake.Contracts.Seedwork.Extensions;
+namespace AshLake.Services.Archiver.Infrastructure;
 public static class MongoCollectionExtensions
 {
     public static IMongoCollection<T> GetEntityCollection<T>(this IMongoDatabase database)

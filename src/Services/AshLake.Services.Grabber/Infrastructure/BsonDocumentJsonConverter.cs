@@ -1,9 +1,8 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.IO;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace AshLake.Contracts.Seedwork.Converts;
+namespace AshLake.Services.Grabber.Infrastructure;
+
 public class BsonDocumentJsonConverter : JsonConverter<BsonDocument>
 {
     public override BsonDocument? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -14,14 +13,12 @@ public class BsonDocumentJsonConverter : JsonConverter<BsonDocument>
         jsonDoc.WriteTo(writer);
         writer.Flush();
         string json = System.Text.Encoding.UTF8.GetString(stream.ToArray());
-        return BsonDocument.Parse(json);
+
+        return LiteDB.JsonSerializer.Deserialize(json).AsDocument;
     }
 
     public override void Write(Utf8JsonWriter writer, BsonDocument value, JsonSerializerOptions options)
     {
-        if(value is null)
-            writer.WriteStringValue(string.Empty);
-        else 
-            writer.WriteRawValue(value.ToJson());
+        writer.WriteRawValue(LiteDB.JsonSerializer.Serialize(value));
     }
 }
