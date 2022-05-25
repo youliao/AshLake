@@ -1,4 +1,5 @@
-﻿using Hellang.Middleware.ProblemDetails;
+﻿using AshLake.Services.Archiver.Integration.EventHandling;
+using Hellang.Middleware.ProblemDetails;
 using MongoDB.Driver;
 using System.Text.Json.Serialization;
 
@@ -49,6 +50,7 @@ public static class ProgramExtensions
     {
         builder.Services
             .AddControllers()
+            .AddDapr()
             .AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -109,5 +111,9 @@ public static class ProgramExtensions
         });
     }
 
-
+    public static void AddCustomApplicationServices(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddScoped<IEventBus, DaprEventBus>();
+        builder.Services.AddScoped<PostMetadataAddedIntegrationEventHandler>();
+    }
 }

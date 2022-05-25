@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Contracts\AshLake.Contracts.Archiver\AshLake.Contracts.Archiver.csproj" />
     <ProjectReference Include="..\..\Contracts\AshLake.Contracts.Seedwork\AshLake.Contracts.Seedwork.csproj" />
   </ItemGroup>
 

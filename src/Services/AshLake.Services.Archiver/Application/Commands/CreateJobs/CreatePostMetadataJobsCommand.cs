@@ -4,5 +4,5 @@ public record CreatePostMetadataJobsCommand
 {
     public int StartId { get; init; }
     public int EndId { get; init; }
-    public int Step { get; init; } = 100;
+    public int Step { get; init; }
 }

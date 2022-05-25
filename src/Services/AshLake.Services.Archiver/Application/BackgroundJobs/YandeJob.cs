@@ -1,4 +1,6 @@
-﻿namespace AshLake.Services.Archiver.Application.BackgroundJobs;
+﻿using AshLake.Contracts.Archiver.Events;
+
+namespace AshLake.Services.Archiver.Application.BackgroundJobs;
 
 public class YandeJob
 {
@@ -6,13 +8,15 @@ public class YandeJob
     private readonly IPostImageRepositoty<PostFile> _postFileRepositoty;
     private readonly IPostImageRepositoty<PostPreview> _postPreviewRepositoty;
     private readonly IYandeGrabberService _grabberService;
+    private readonly IEventBus _eventBus;
 
-    public YandeJob(IMetadataRepository<Yande, PostMetadata> postMetadataRepository, IPostImageRepositoty<PostFile> postFileRepositoty, IPostImageRepositoty<PostPreview> postPreviewRepositoty, IYandeGrabberService grabberService)
+    public YandeJob(IMetadataRepository<Yande, PostMetadata> postMetadataRepository, IPostImageRepositoty<PostFile> postFileRepositoty, IPostImageRepositoty<PostPreview> postPreviewRepositoty, IYandeGrabberService grabberService, IEventBus eventBus)
     {
         _postMetadataRepository = postMetadataRepository ?? throw new ArgumentNullException(nameof(postMetadataRepository));
         _postFileRepositoty = postFileRepositoty ?? throw new ArgumentNullException(nameof(postFileRepositoty));
         _postPreviewRepositoty = postPreviewRepositoty ?? throw new ArgumentNullException(nameof(postPreviewRepositoty));
         _grabberService = grabberService ?? throw new ArgumentNullException(nameof(grabberService));
+        _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
     }
 
     [Queue("metadata")]
@@ -28,6 +32,18 @@ public class YandeJob
         {
             var postMetadata = new PostMetadata() { Data = item };
             var status = await _postMetadataRepository.AddOrUpdateAsync(postMetadata);
+
+            switch (status)
+            {
+                case ArchiveStatus.Added:
+                    await _eventBus.PublishAsync(new PostMetadataAddedIntegrationEvent<Yande>(postMetadata.Id));
+                    break;
+                case ArchiveStatus.Updated:
+                    await _eventBus.PublishAsync(new PostMetadataUpdatedIntegrationEvent<Yande>(postMetadata.Id));
+                    break;
+                default:
+                    break;
+            };
         }
 
         return metadataList.Count;
