@@ -5,16 +5,16 @@ namespace AshLake.Services.Archiver.Application.BackgroundJobs;
 public class YandeJob
 {
     private readonly IMetadataRepository<Yande,PostMetadata> _postMetadataRepository;
-    private readonly IPostImageRepositoty<PostFile> _postFileRepositoty;
-    private readonly IPostImageRepositoty<PostPreview> _postPreviewRepositoty;
+    private readonly IPostImageRepositoty<PostFile> _fileRepositoty;
+    private readonly IPostImageRepositoty<PostPreview> _previewRepositoty;
     private readonly IYandeGrabberService _grabberService;
     private readonly IEventBus _eventBus;
 
-    public YandeJob(IMetadataRepository<Yande, PostMetadata> postMetadataRepository, IPostImageRepositoty<PostFile> postFileRepositoty, IPostImageRepositoty<PostPreview> postPreviewRepositoty, IYandeGrabberService grabberService, IEventBus eventBus)
+    public YandeJob(IMetadataRepository<Yande, PostMetadata> postMetadataRepository, IPostImageRepositoty<PostFile> fileRepositoty, IPostImageRepositoty<PostPreview> previewRepositoty, IYandeGrabberService grabberService, IEventBus eventBus)
     {
         _postMetadataRepository = postMetadataRepository ?? throw new ArgumentNullException(nameof(postMetadataRepository));
-        _postFileRepositoty = postFileRepositoty ?? throw new ArgumentNullException(nameof(postFileRepositoty));
-        _postPreviewRepositoty = postPreviewRepositoty ?? throw new ArgumentNullException(nameof(postPreviewRepositoty));
+        _fileRepositoty = fileRepositoty ?? throw new ArgumentNullException(nameof(fileRepositoty));
+        _previewRepositoty = previewRepositoty ?? throw new ArgumentNullException(nameof(previewRepositoty));
         _grabberService = grabberService ?? throw new ArgumentNullException(nameof(grabberService));
         _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
     }
@@ -56,9 +56,9 @@ public class YandeJob
         var preview = await _grabberService.GetPostPreview(postId);
         if (preview is null) return ArchiveStatus.None.ToString();
 
-        var isExists = await _postPreviewRepositoty.ExistsAsync(preview.ObjectKey);
+        var isExists = await _previewRepositoty.ExistsAsync(preview.ObjectKey);
 
-        await _postPreviewRepositoty.PutAsync(preview);
+        await _previewRepositoty.PutAsync(preview);
         return isExists ? ArchiveStatus.Updated.ToString() : ArchiveStatus.Added.ToString();
     }
 
@@ -66,13 +66,15 @@ public class YandeJob
     [MaximumConcurrentExecutions(2)]
     public async Task<string> AddPreview(int postId)
     {
+        var objectKey = await _grabberService.GetPostObjectKey(postId);
+        if(objectKey is null) return ArchiveStatus.None.ToString();
+        var isExists = await _previewRepositoty.ExistsAsync(objectKey);
+        if (isExists) return ArchiveStatus.Untouched.ToString();
+
         var preview = await _grabberService.GetPostPreview(postId);
         if (preview is null) return ArchiveStatus.None.ToString();
 
-        var isExists = await _postPreviewRepositoty.ExistsAsync(preview.ObjectKey);
-        if (isExists) return ArchiveStatus.Untouched.ToString();
-
-        await _postPreviewRepositoty.PutAsync(preview);
+        await _previewRepositoty.PutAsync(preview);
         return ArchiveStatus.Added.ToString();
     }
 
@@ -83,9 +85,9 @@ public class YandeJob
         var file = await _grabberService.GetPostFile(postId);
         if (file is null) return ArchiveStatus.None.ToString();
 
-        var isExists = await _postPreviewRepositoty.ExistsAsync(file.ObjectKey);
+        var isExists = await _fileRepositoty.ExistsAsync(file.ObjectKey);
 
-        await _postFileRepositoty.PutAsync(file);
+        await _fileRepositoty.PutAsync(file);
         return isExists ? ArchiveStatus.Updated.ToString() : ArchiveStatus.Added.ToString();
     }
 
@@ -93,13 +95,15 @@ public class YandeJob
     [Queue("file")]
     public async Task<string> AddFile(int postId)
     {
+        var objectKey = await _grabberService.GetPostObjectKey(postId);
+        if (objectKey is null) return ArchiveStatus.None.ToString();
+        var isExists = await _fileRepositoty.ExistsAsync(objectKey);
+        if (isExists) return ArchiveStatus.Untouched.ToString();
+
         var file = await _grabberService.GetPostFile(postId);
         if (file is null) return ArchiveStatus.None.ToString();
 
-        var isExists = await _postPreviewRepositoty.ExistsAsync(file.ObjectKey);
-        if (isExists) return ArchiveStatus.Untouched.ToString();
-
-        await _postFileRepositoty.PutAsync(file);
+        await _fileRepositoty.PutAsync(file);
         return ArchiveStatus.Added.ToString();
     }
 }
