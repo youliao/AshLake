@@ -75,4 +75,27 @@ public class YandeGrabberService : IYandeGrabberService
 
         return new PostFile(postmd5, imageType, data);
     }
+
+    public async Task<string?> GetPostObjectKey(int postId)
+    {
+        var response = await _httpClient.GetAsync($"/api/sites/yande/postmetadata/{postId}");
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new HttpRequestException(await response.Content.ReadAsStringAsync());
+        }
+
+        var postmetadata = BsonSerializer.Deserialize<BsonDocument>(await response.Content.ReadAsStringAsync());
+
+        var postmd5 = postmetadata[YandePostMetadataKeys.md5].AsString;
+        Guard.Against.NullOrWhiteSpace(postmd5);
+
+        var fileExt = postmetadata[YandePostMetadataKeys.file_ext].AsString;
+        Guard.Against.NullOrWhiteSpace(fileExt);
+
+        return $"{postmd5}.{fileExt}";
+    }
 }
