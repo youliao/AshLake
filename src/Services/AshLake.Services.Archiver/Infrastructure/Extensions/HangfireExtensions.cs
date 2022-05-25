@@ -9,15 +9,14 @@ public static class HangfireBackgroundJob
         Guard.Against.Null(methodCalls);
         if (methodCalls.Count == 0) yield break;
 
-        var jobId = string.Empty;
-
-        jobId = client.Enqueue(methodCalls.First());
+        var jobId = client.Enqueue(methodCalls.First());
         yield return jobId;
+
         if (methodCalls.Count == 1) yield break;
 
         foreach (var methodCall in methodCalls.Skip(1))
         {
-            jobId = client.ContinueJobWith(jobId, methodCall);
+            jobId = client.ContinueJobWith(jobId, methodCall,null,JobContinuationOptions.OnAnyFinishedState);
             yield return jobId;
         }
     }
