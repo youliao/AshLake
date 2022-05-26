@@ -3,7 +3,7 @@
     "Docker Compose": {
       "commandName": "DockerCompose",
       "composeLaunchAction": "LaunchBrowser",
-      "composeLaunchServiceName": "yande",
+      "composeLaunchServiceName": "yandestore",
       "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger",
       "commandVersion": "1.0",
       "serviceActions": {
@@ -19,8 +19,8 @@
         "redis-hangfire": "StartWithoutDebugging",
         "redis-easycaching": "StartWithoutDebugging",
         "rabbitmq": "StartWithoutDebugging",
-        "yande": "StartDebugging",
-        "yande-dapr": "StartWithoutDebugging",
+        "yandestore": "StartDebugging",
+        "yandestore-dapr": "StartWithoutDebugging",
         "zipkin": "StartWithoutDebugging"
       }
     }

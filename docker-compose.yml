@@ -55,14 +55,14 @@ services:
     depends_on:
       - archiver
 
-  yande:
-    image: ${DOCKER_REGISTRY-}ashlakeservicesyande
+  yandestore:
+    image: ${DOCKER_REGISTRY-}ashlakeservicesyandestore
     build:
       context: .
-      dockerfile: src/Services/AshLake.Services.Yande/Dockerfile
+      dockerfile: src/Services/AshLake.Services.YandeStore/Dockerfile
 
-  yande-dapr:
+  yandestore-dapr:
     image: "daprio/daprd:latest"
-    network_mode: "service:yande"
+    network_mode: "service:yandestore"
     depends_on:
-      - yande
+      - yandestore

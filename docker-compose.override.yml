@@ -91,14 +91,14 @@ services:
     volumes:
       - "./dapr/components/:/components"
 
-  yande:
+  yandestore:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - DBConnectionString=Host=postgres;Database=postgres;Username=root;Password=postgres
     ports:
       - "80"
 
-  yande-dapr:
+  yandestore-dapr:
     command: ["./daprd",
       "-app-id", "archiver",
       "-app-port", "80",
