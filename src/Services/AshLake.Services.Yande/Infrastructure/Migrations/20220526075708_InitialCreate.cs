@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace AshLake.Services.Yande.Migrations
+namespace AshLake.Services.Yande.Infrastructure.Migrations
 {
     public partial class InitialCreate : Migration
     {
