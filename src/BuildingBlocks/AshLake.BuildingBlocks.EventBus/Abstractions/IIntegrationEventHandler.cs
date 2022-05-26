@@ -3,7 +3,7 @@
 public interface IIntegrationEventHandler<in TIntegrationEvent> : IIntegrationEventHandler
     where TIntegrationEvent : IntegrationEvent
 {
-    Task Handle(TIntegrationEvent @event);
+    Task Handle(TIntegrationEvent e);
 }
 
 public interface IIntegrationEventHandler

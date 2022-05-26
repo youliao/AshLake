@@ -1,13 +1,11 @@
 ﻿namespace AshLake.Services.Archiver.Controllers;
 
-[Route("api/v1/[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class IntegrationEventController : ControllerBase
 {
-    private const string DAPR_PUBSUB_NAME = "pubsub";
-
     [HttpPost("YandePostMetadataAdded")]
-    [Topic(DAPR_PUBSUB_NAME, "PostMetadataAddedIntegrationEvent<Yande>")]
+    [Topic(DaprEventBus.DaprPubsubName, $"{nameof(PostMetadataAddedIntegrationEvent<ISouceSite>)}<{nameof(Yande)}>")]
     public Task HandleAsync(
         PostMetadataAddedIntegrationEvent<Yande> e,
         [FromServices] PostMetadataAddedIntegrationEventHandler handler)
