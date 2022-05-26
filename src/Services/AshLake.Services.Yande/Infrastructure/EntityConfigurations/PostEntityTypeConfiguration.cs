@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace AshLake.Services.Yande.Infrastructure.EntityConfigurations;
 
@@ -23,11 +22,6 @@ public class PostEntityTypeConfiguration : IEntityTypeConfiguration<Post>
             .IsRequired()
             .IsFixedLength()
             .HasMaxLength(32);
-
-        builder.Property(x => x.Rating)
-            .IsRequired()
-            .IsFixedLength()
-            .HasMaxLength(1);
 
         builder.Property(x => x.Tags)
             .HasColumnType("character varying[]");

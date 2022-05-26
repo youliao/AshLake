@@ -6,13 +6,13 @@ public class Post
     public DateTimeOffset CreatedAt { get; private set; }
     public string FileExt { get; private set; } = null!;
     public long FileSize { get; private set; }
-    public string FileUrl { get; private set; } = null!;
+    public string? FileUrl { get; private set; } = null!;
     public bool HasChildren { get; private set; }
     public int Height { get; private set; }
     public int Id { get; private set; }
     public string Md5 { get; private set; } = null!;
     public int? ParentId { get; private set; }
-    public string Rating { get; private set; } = null!;
+    public PostRating Rating { get; private set; }
     public int Score { get; private set; }
     public string? Source { get; private set; }
     public PostStatus Status { get; private set; }
@@ -24,13 +24,13 @@ public class Post
                 DateTimeOffset createdAt,
                 string fileExt,
                 long fileSize,
-                string fileUrl,
+                string? fileUrl,
                 bool hasChildren,
                 int height,
                 int id,
                 string md5,
                 int? parentId,
-                string rating,
+                PostRating rating,
                 int score,
                 string? source,
                 PostStatus status,

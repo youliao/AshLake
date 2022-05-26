@@ -4,10 +4,6 @@ public class CreatePostCommandValidator : AbstractValidator<AddPostCommand>
 {
     public CreatePostCommandValidator()
     {
-        RuleFor(v => v.Rating)
-            .Length(1)
-            .NotEmpty();
-
         RuleFor(v => v.Width)
             .GreaterThan(100)
             .NotEmpty();

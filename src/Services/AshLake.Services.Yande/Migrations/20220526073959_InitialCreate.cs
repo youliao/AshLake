@@ -12,6 +12,7 @@ namespace AshLake.Services.Yande.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
+                .Annotation("Npgsql:Enum:post_rating", "none,safe,questionable,explicit")
                 .Annotation("Npgsql:Enum:post_status", "deleted,flagged,pending,active");
 
             migrationBuilder.CreateTable(
@@ -23,12 +24,12 @@ namespace AshLake.Services.Yande.Migrations
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     FileExt = table.Column<string>(type: "character varying(4)", maxLength: 4, nullable: false),
                     FileSize = table.Column<long>(type: "bigint", nullable: false),
-                    FileUrl = table.Column<string>(type: "text", nullable: false),
+                    FileUrl = table.Column<string>(type: "text", nullable: true),
                     HasChildren = table.Column<bool>(type: "boolean", nullable: false),
                     Height = table.Column<int>(type: "integer", nullable: false),
                     Md5 = table.Column<string>(type: "character(32)", fixedLength: true, maxLength: 32, nullable: false),
                     ParentId = table.Column<int>(type: "integer", nullable: true),
-                    Rating = table.Column<string>(type: "character(1)", fixedLength: true, maxLength: 1, nullable: false),
+                    Rating = table.Column<PostRating>(type: "post_rating", nullable: false),
                     Score = table.Column<int>(type: "integer", nullable: false),
                     Source = table.Column<string>(type: "text", nullable: true),
                     Status = table.Column<PostStatus>(type: "post_status", nullable: false),

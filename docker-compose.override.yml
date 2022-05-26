@@ -42,6 +42,11 @@ services:
     ports:
       - "9411:9411"
 
+  dapr-placement:
+    command: ["./placement", "-port", "50000", "-log-level", "debug"]
+    ports:
+      - "50000:50000"
+
   grabber:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -86,7 +91,20 @@ services:
     volumes:
       - "./dapr/components/:/components"
 
-  dapr-placement:
-    command: ["./placement", "-port", "50000", "-log-level", "debug"]
+  yande:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DBConnectionString=Host=postgres;Database=postgres;Username=root;Password=postgres
     ports:
-      - "50000:50000"
+      - "80"
+
+  yande-dapr:
+    command: ["./daprd",
+      "-app-id", "archiver",
+      "-app-port", "80",
+      "-components-path", "/components",
+      "-log-level", "debug",
+      "-placement-host-address", "dapr-placement:50000"
+      ]
+    volumes:
+      - "./dapr/components/:/components"

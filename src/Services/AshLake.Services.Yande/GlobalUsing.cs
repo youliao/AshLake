@@ -2,9 +2,6 @@
 global using FluentValidation;
 global using FluentValidation.AspNetCore;
 global using Polly;
-global using Carter;
-global using Carter.ModelBinding;
-global using Carter.OpenApi;
 global using MediatR;
 global using System.Text.Json.Serialization;
 global using Microsoft.Extensions.Options;

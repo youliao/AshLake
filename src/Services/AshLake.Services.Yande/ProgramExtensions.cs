@@ -1,4 +1,6 @@
-﻿using Serilog;
+﻿using Hellang.Middleware.ProblemDetails;
+using Newtonsoft.Json.Converters;
+using Serilog;
 
 namespace AshLake.Services.Yande;
 
@@ -12,6 +14,39 @@ public static class ProgramExtensions
         //builder.Configuration.AddDaprSecretStore(
         //    "eshop-secretstore",
         //    new DaprClientBuilder().Build());
+    }
+
+    public static void AddCustomControllers(this WebApplicationBuilder builder)
+    {
+        builder.Services
+            .AddControllers()
+            .AddDapr()
+            .AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.Converters.Add(new StringEnumConverter());
+            });
+
+        builder.Services.AddEndpointsApiExplorer();
+    }
+
+    public static void AddCustomProblemDetails(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddProblemDetails(c =>
+        {
+            // You can configure the middleware to re-throw certain types of exceptions, all exceptions or based on a predicate.
+            // This is useful if you have upstream middleware that needs to do additional handling of exceptions.
+            c.Rethrow<NotSupportedException>();
+
+            // This will map NotImplementedException to the 501 Not Implemented status code.
+            c.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
+
+            // This will map HttpRequestException to the 503 Service Unavailable status code.
+            c.MapToStatusCode<HttpRequestException>(StatusCodes.Status503ServiceUnavailable);
+
+            // Because exceptions are handled polymorphically, this will act as a "catch all" mapping, which is why it's added last.
+            // If an exception other than NotImplementedException and HttpRequestException is thrown, this will handle it.
+            c.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
+        });
     }
 
     public static void AddCustomSerilog(this WebApplicationBuilder builder)
@@ -34,19 +69,8 @@ public static class ProgramExtensions
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = $"Ash Lake - {AppName}", Version = "v1" });
         });
-    }
 
-    public static void AddCustomJsonOptions(this WebApplicationBuilder builder)
-    {
-        builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
-        {
-            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
-        });
-
-        builder.Services.Configure<Microsoft.AspNetCore.Mvc.JsonOptions>(options =>
-        {
-            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-        });
+        builder.Services.AddSwaggerGenNewtonsoftSupport();
     }
 
     public static void UseCustomSwagger(this WebApplication app)
@@ -62,19 +86,16 @@ public static class ProgramExtensions
         builder.Services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddNpgSql(
-                builder.Configuration["ConnectionString"],
+                builder.Configuration["DBConnectionString"],
                 name: "YandeDB-check",
                 tags: new string[] { "yandedb" });
     }
 
-    public static void AddCustomDatabase(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddDbContext<YandeDbContext>(
-            options => options.UseNpgsql(builder.Configuration["ConnectionString"]));
-    }
-
     public static void AddCustomRepositories(this WebApplicationBuilder builder)
     {
+        builder.Services.AddDbContext<YandeDbContext>(
+    options => options.UseNpgsql(builder.Configuration["DBConnectionString"]));
+
         builder.Services.AddScoped<IPostRepository, PostRepository>();
     }
 
@@ -108,7 +129,7 @@ public static class ProgramExtensions
                             exception.GetType().Name,
                             exception.Message,
                             retry,
-                            configuration["ConnectionString"]);
+                            configuration["DBConnectionString"]);
                     }
                 );
         }

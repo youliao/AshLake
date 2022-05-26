@@ -1,25 +1,23 @@
 ﻿namespace AshLake.Services.Yande.Application.Posts.Commands;
 
-public record AddPostCommand : IRequest<Unit>
-{
-    public string? Author { get; set; }
-    public DateTimeOffset CreatedAt { get; set; }
-    public string FileExt { get; set; } = null!;
-    public long FileSize { get; set; }
-    public string FileUrl { get; set; } = null!;
-    public bool HasChildren { get; set; }
-    public int Height { get; set; }
-    public int PostId { get; set; }
-    public string Md5 { get; set; } = null!;
-    public int? ParentId { get; set; }
-    public string Rating { get; set; } = null!;
-    public int Score { get; set; }
-    public string? Source { get; set; }
-    public PostStatus Status { get; set; }
-    public List<string> Tags { get; set; } = null!;
-    public DateTimeOffset UpdatedAt { get; set; }
-    public int Width { get; set; }
-}
+public record AddPostCommand(string? Author,
+                             DateTimeOffset CreatedAt,
+                             string FileExt,
+                             long FileSize,
+                             string? FileUrl,
+                             bool HasChildren,
+                             int Height,
+                             int PostId,
+                             string Md5,
+                             int? ParentId,
+                             PostRating Rating,
+                             int Score,
+                             string? Source,
+                             PostStatus Status,
+                             List<string> Tags,
+                             DateTimeOffset UpdatedAt,
+                             int Width) : IRequest<Unit>;
+
 
 public class CreateTodoListCommandHandler : IRequestHandler<AddPostCommand, Unit>
 {

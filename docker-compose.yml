@@ -25,6 +25,9 @@ services:
   zipkin:
     image: openzipkin/zipkin-slim
 
+  dapr-placement:
+    image: "daprio/dapr:latest"
+
   grabber:
     image: ${DOCKER_REGISTRY-}ashlakeservicesgrabber
     build:
@@ -52,5 +55,14 @@ services:
     depends_on:
       - archiver
 
-  dapr-placement:
-    image: "daprio/dapr:latest"
+  yande:
+    image: ${DOCKER_REGISTRY-}ashlakeservicesyande
+    build:
+      context: .
+      dockerfile: src/Services/AshLake.Services.Yande/Dockerfile
+
+  yande-dapr:
+    image: "daprio/daprd:latest"
+    network_mode: "service:yande"
+    depends_on:
+      - yande

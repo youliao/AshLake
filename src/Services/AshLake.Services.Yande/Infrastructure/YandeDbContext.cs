@@ -13,12 +13,15 @@ public class YandeDbContext : DbContext
 
     static YandeDbContext()
     {
+        NpgsqlConnection.GlobalTypeMapper.MapEnum<PostRating>();
         NpgsqlConnection.GlobalTypeMapper.MapEnum<PostStatus>();
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        builder.HasPostgresEnum<PostRating>();
         builder.HasPostgresEnum<PostStatus>();
+
         builder.ApplyConfiguration(new PostEntityTypeConfiguration());
     }
 }

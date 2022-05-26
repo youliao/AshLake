@@ -14,7 +14,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AshLake.Services.Yande.Migrations
 {
     [DbContext(typeof(YandeDbContext))]
-    [Migration("20220504115244_InitialCreate")]
+    [Migration("20220526073959_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,7 @@ namespace AshLake.Services.Yande.Migrations
                 .HasAnnotation("ProductVersion", "6.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "post_rating", new[] { "none", "safe", "questionable", "explicit" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "post_status", new[] { "deleted", "flagged", "pending", "active" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
@@ -48,7 +49,6 @@ namespace AshLake.Services.Yande.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("FileUrl")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("HasChildren")
@@ -66,11 +66,8 @@ namespace AshLake.Services.Yande.Migrations
                     b.Property<int?>("ParentId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Rating")
-                        .IsRequired()
-                        .HasMaxLength(1)
-                        .HasColumnType("character(1)")
-                        .IsFixedLength();
+                    b.Property<PostRating>("Rating")
+                        .HasColumnType("post_rating");
 
                     b.Property<int>("Score")
                         .HasColumnType("integer");
