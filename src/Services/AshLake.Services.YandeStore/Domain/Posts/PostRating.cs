@@ -2,8 +2,8 @@
 
 public enum PostRating
 {
-    None,
-    SAFE,
-    QUESTIONABLE,
-    EXPLICIT
+    None = 0,
+    SAFE = 1,
+    QUESTIONABLE = 2,
+    EXPLICIT = 3,
 }

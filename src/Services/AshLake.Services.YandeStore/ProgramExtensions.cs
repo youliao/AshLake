@@ -1,4 +1,8 @@
-﻿using Hellang.Middleware.ProblemDetails;
+﻿using AshLake.Services.YandeStore.Application.Posts;
+using AshLake.Services.YandeStore.Integration.ArchiverServices;
+using AshLake.Services.YandeStore.Integration.EventHandling;
+using Dapr.Client;
+using Hellang.Middleware.ProblemDetails;
 using Newtonsoft.Json.Converters;
 using Serilog;
 
@@ -21,10 +25,7 @@ public static class ProgramExtensions
         builder.Services
             .AddControllers()
             .AddDapr()
-            .AddNewtonsoftJson(options =>
-            {
-                options.SerializerSettings.Converters.Add(new StringEnumConverter());
-            });
+            .AddNewtonsoftJson(options => { options.SerializerSettings.Converters.Add(new StringEnumConverter()); });
 
         builder.Services.AddEndpointsApiExplorer();
     }
@@ -75,10 +76,7 @@ public static class ProgramExtensions
 
     public static void UseCustomSwagger(this WebApplication app)
     {
-        app.UseSwagger().UseSwaggerUI(c =>
-        {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{AppName} V1");
-        });
+        app.UseSwagger().UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{AppName} V1"); });
     }
 
     public static void AddCustomHealthChecks(this WebApplicationBuilder builder)
@@ -89,14 +87,6 @@ public static class ProgramExtensions
                 builder.Configuration["DBConnectionString"],
                 name: "YandeDB-check",
                 tags: new string[] { "yandedb" });
-    }
-
-    public static void AddCustomRepositories(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddDbContext<YandeDbContext>(
-    options => options.UseNpgsql(builder.Configuration["DBConnectionString"]));
-
-        builder.Services.AddScoped<IPostRepository, PostRepository>();
     }
 
     public static void ApplyDatabaseMigration(this WebApplication app)
@@ -118,22 +108,38 @@ public static class ProgramExtensions
         // When running in an orchestrator/K8s, it will take care of restarting failed services.
         if (bool.TryParse(configuration["RetryMigrations"], out bool retryMigrations))
         {
-            return Policy.Handle<Exception>().
-                WaitAndRetryForever(
-                    sleepDurationProvider: retry => TimeSpan.FromSeconds(5),
-                    onRetry: (exception, retry, timeSpan) =>
-                    {
-                        logger.Warning(
-                            exception,
-                            "Exception {ExceptionType} with message {Message} detected during database migration (retry attempt {retry}, connection {connection})",
-                            exception.GetType().Name,
-                            exception.Message,
-                            retry,
-                            configuration["DBConnectionString"]);
-                    }
-                );
+            return Policy.Handle<Exception>().WaitAndRetryForever(
+                sleepDurationProvider: retry => TimeSpan.FromSeconds(5),
+                onRetry: (exception, retry, timeSpan) =>
+                {
+                    logger.Warning(
+                        exception,
+                        "Exception {ExceptionType} with message {Message} detected during database migration (retry attempt {retry}, connection {connection})",
+                        exception.GetType().Name,
+                        exception.Message,
+                        retry,
+                        configuration["DBConnectionString"]);
+                }
+            );
         }
 
         return Policy.NoOp();
+    }
+
+    public static void AddCustomApplicationServices(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddSingleton<IYandeArchiverService>(_ =>
+            new YandeArchiverService(DaprClient.CreateInvokeHttpClient("archiver")));
+
+        builder.Services.AddDbContext<YandeDbContext>(
+            options => options.UseNpgsql(builder.Configuration["DBConnectionString"]));
+        builder.Services.AddScoped<IPostRepository, PostRepository>();
+
+        builder.Services.AddScoped<PostMetadataAddedIntegrationEventHandler>();
+    }
+
+    public static void AddCustomTypeAdapterConfigs(this WebApplicationBuilder builder)
+    {
+        PostTypeAdapterConfigs.AddPostCommandTypeAdapterConfig();
     }
 }

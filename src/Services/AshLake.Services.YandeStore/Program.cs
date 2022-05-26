@@ -6,8 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddCustomProblemDetails();
 builder.AddCustomControllers();
-builder.AddCustomRepositories();
+builder.AddCustomApplicationServices();
 builder.AddCustomSwagger();
+builder.AddCustomTypeAdapterConfigs();
 
 builder.Services.AddMediatR(typeof(Program));
 var app = builder.Build();

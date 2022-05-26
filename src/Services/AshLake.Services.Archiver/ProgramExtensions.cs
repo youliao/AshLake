@@ -1,5 +1,4 @@
-﻿using AshLake.Services.Archiver.Integration.EventHandling;
-using Hellang.Middleware.ProblemDetails;
+﻿using Hellang.Middleware.ProblemDetails;
 using MongoDB.Driver;
 using System.Text.Json.Serialization;
 
@@ -19,8 +18,8 @@ public static class ProgramExtensions
 
     public static void AddCustomGrabberServices(this WebApplicationBuilder builder)
     {
-        builder.Services.AddSingleton<IYandeGrabberService>( _ => new YandeGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
     }
+
     public static void AddCustomBackgroundJobs(this WebApplicationBuilder builder)
     {
         builder.Services.AddScoped(typeof(YandeJob));
@@ -93,7 +92,6 @@ public static class ProgramExtensions
                             .Build();
         });
         builder.Services.AddSingleton(typeof(IPostImageRepositoty<>), typeof(PostImageRepositoty<>));
-
     }
 
     public static void AddCustomAddHangfire(this WebApplicationBuilder builder)
@@ -101,7 +99,6 @@ public static class ProgramExtensions
         builder.Services.AddHangfire(c =>
         {
             c.UseRedisStorage(builder.Configuration["HangfireConnectionString"]);
-
         });
         builder.Services.AddHangfireServer(opt =>
         {
@@ -113,6 +110,8 @@ public static class ProgramExtensions
 
     public static void AddCustomApplicationServices(this WebApplicationBuilder builder)
     {
+        builder.Services.AddSingleton<IYandeGrabberService>(_ => new YandeGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
+
         builder.Services.AddScoped<IEventBus, DaprEventBus>();
         builder.Services.AddScoped<PostMetadataAddedIntegrationEventHandler>();
     }

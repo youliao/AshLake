@@ -1,4 +1,7 @@
-﻿global using Dapr;
+// Global using directives
+
+global using Mapster;
+global using Dapr;
 global using FluentValidation;
 global using FluentValidation.AspNetCore;
 global using Polly;
@@ -16,6 +19,7 @@ global using System.Globalization;
 global using System.IO.Compression;
 global using System.Linq.Expressions;
 global using System.Text.RegularExpressions;
+global using AshLake.Contracts.Seedwork.SourceSites;
 global using HealthChecks.UI.Client;
 global using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 global using AshLake.Services.YandeStore.Domain.Posts;
@@ -24,3 +28,4 @@ global using AshLake.Services.YandeStore.Application.Posts.Queries;
 global using AshLake.Services.YandeStore.Infrastructure;
 global using AshLake.Services.YandeStore;
 global using AshLake.Services.YandeStore.Infrastructure.Repositories;
+global using MongoDB.Bson;

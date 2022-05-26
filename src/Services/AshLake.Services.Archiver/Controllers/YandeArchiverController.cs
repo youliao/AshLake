@@ -10,7 +10,7 @@ public class YandeArchiverController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> GetPostMetadata(int id,
+    public async Task<ActionResult> GetPostMetadataAsync(int id,
         [FromServices] IMetadataRepository<Yande,PostMetadata> repository)
     {
         var metadata = await repository.SingleAsync(id.ToString());
@@ -22,7 +22,7 @@ public class YandeArchiverController : ControllerBase
     [Route("/api/sites/yande/postmetadatajobs/batches")]
     [HttpPost]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
-    public ActionResult<List<string>> CreatePostMetadataJobs(CreatePostMetadataJobsCommand command,
+    public ActionResult<List<string>> CreatePostMetadataJobsAsync(CreatePostMetadataJobsCommand command,
                 [FromServices] IBackgroundJobClient backgroundJobClient)
     {
         var calls = new List<Expression<Func<YandeJob, Task>>>();
@@ -40,7 +40,7 @@ public class YandeArchiverController : ControllerBase
     [Route("/api/sites/yande/postpreviewjobs")]
     [HttpPost]
     [ProducesResponseType(typeof(string), StatusCodes.Status202Accepted)]
-    public ActionResult<string> CreatePostPreviewJobs(int postId)
+    public ActionResult<string> CreatePostPreviewJobsAsync(int postId)
     {
         var jobId = BackgroundJob.Enqueue<YandeJob>(x => x.AddPreview(postId));
         return Ok(jobId);
@@ -49,7 +49,7 @@ public class YandeArchiverController : ControllerBase
     [Route("/api/sites/yande/postfilejobs")]
     [HttpPost]
     [ProducesResponseType(typeof(string), StatusCodes.Status202Accepted)]
-    public ActionResult<string> CreatePostFileJobs(int postId)
+    public ActionResult<string> CreatePostFileJobsAsync(int postId)
     {
         var jobId = BackgroundJob.Enqueue<YandeJob>(x => x.AddFile(postId));
         return Ok(jobId);
@@ -58,7 +58,7 @@ public class YandeArchiverController : ControllerBase
     [Route("/api/sites/yande/postfilejobs/batches")]
     [HttpPost]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
-    public ActionResult<List<string>> CreatePostFileJobs(int startId, int endId)
+    public ActionResult<List<string>> CreatePostFileJobsAsync(int startId, int endId)
     {
         var jobIdList = new List<string>();
         for (int i = startId; i <= endId; i++)
