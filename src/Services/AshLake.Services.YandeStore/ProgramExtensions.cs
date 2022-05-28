@@ -141,5 +141,6 @@ public static class ProgramExtensions
     public static void AddCustomTypeAdapterConfigs(this WebApplicationBuilder builder)
     {
         PostTypeAdapterConfigs.AddPostCommandTypeAdapterConfig();
+        PostTypeAdapterConfigs.PostMetadataDtoTypeAdapterConfig();
     }
 }

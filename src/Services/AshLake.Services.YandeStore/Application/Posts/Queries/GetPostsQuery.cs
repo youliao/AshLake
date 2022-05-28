@@ -1,8 +1,8 @@
 ﻿namespace AshLake.Services.YandeStore.Application.Posts.Queries;
 
-public record GetPostsQuery(List<string>? Tags, List<PostRating>? Ratings,List<PostStatus>? Statuses) : IRequest<IEnumerable<object>>;
+public record GetPostsQuery(List<string>? Tags, List<PostRating>? Ratings,List<PostStatus>? Statuses) : IRequest<IEnumerable<PostListItemDto>>;
 
-public class GetPostsByTagsQueryHandler : IRequestHandler<GetPostsQuery, IEnumerable<object>>
+public class GetPostsByTagsQueryHandler : IRequestHandler<GetPostsQuery, IEnumerable<PostListItemDto>>
 {
     private readonly IPostRepository _repository;
 
@@ -11,8 +11,13 @@ public class GetPostsByTagsQueryHandler : IRequestHandler<GetPostsQuery, IEnumer
         _repository = repository;
     }
 
-    public async Task<IEnumerable<object>> Handle(GetPostsQuery query, CancellationToken cancellationToken)
+    public async Task<IEnumerable<PostListItemDto>> Handle(GetPostsQuery query, CancellationToken cancellationToken)
     {
-        return await _repository.FindAsync(query.Tags, query.Ratings, query.Statuses);
+        var objectList = await _repository.FindAsync(query.Tags ?? new List<string>(),
+            query.Ratings ?? new List<PostRating>(),
+            query.Statuses ?? new List<PostStatus>());
+
+        var dtoList = objectList.Adapt<IEnumerable<PostListItemDto>>();
+        return dtoList;
     }
 }

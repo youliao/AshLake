@@ -45,4 +45,14 @@ public static class PostTypeAdapterConfigs
             .Map(dest => dest.Width,
                 src => src[YandePostMetadataKeys.width].AsInt32);
     }
+
+    public static void PostMetadataDtoTypeAdapterConfig()
+    {
+        TypeAdapterConfig<(Post, IEnumerable<int>), PostMetadataDto>
+            .NewConfig()
+            .Map(dest=>dest,
+                src=>src.Item1)
+            .Map(dest => dest.ChildIds,
+                src => src.Item2);
+    }
 }

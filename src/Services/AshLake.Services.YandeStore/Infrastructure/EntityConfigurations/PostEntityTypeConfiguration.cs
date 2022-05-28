@@ -28,7 +28,13 @@ public class PostEntityTypeConfiguration : IEntityTypeConfiguration<Post>
 
         builder.HasIndex(x => x.Tags)
             .HasMethod("gin");
-
         builder.HasIndex(x => x.Score);
+        builder.HasIndex(x => x.ParentId);
+        builder.HasIndex(x => x.Rating);
+        builder.HasIndex(x => x.Status);
+        builder.HasIndex(x => x.FileSize);
+        builder.HasIndex(x => x.FileExt);
+        builder.HasIndex(x => x.Width);
+        builder.HasIndex(x => x.Height);
     }
 }
