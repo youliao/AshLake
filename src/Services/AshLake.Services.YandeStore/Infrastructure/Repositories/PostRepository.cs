@@ -33,4 +33,27 @@ public class PostRepository : IPostRepository
     {
         return await _dbContext.Posts.SingleOrDefaultAsync(post => post.Id == postId);
     }
+
+    public async Task<IEnumerable<object>> FindAsync(List<string>? tags, List<PostRating>? ratings,
+        List<PostStatus>? statuses)
+    {
+        var queryable = _dbContext.Posts.AsQueryable();
+
+        if (tags != null && tags.Count > 0)
+        {
+            queryable = queryable.Where(post => tags.All(t => post.Tags.Contains(t)));
+        }
+
+        if (ratings != null && ratings.Count > 0)
+        {
+            queryable = queryable.Where(post => ratings.Contains(post.Rating));
+        }
+
+        if (statuses != null && statuses.Count > 0)
+        {
+            queryable = queryable.Where(post => statuses.Contains(post.Status));
+        }
+
+        return await queryable.Select(post => new { post.Id, post.Md5 }).ToListAsync();
+    }
 }

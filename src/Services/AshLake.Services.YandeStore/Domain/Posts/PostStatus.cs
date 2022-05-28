@@ -2,8 +2,8 @@
 
 public enum PostStatus
 {
-    DELETED,
-    FLAGGED,
-    PENDING,
-    ACTIVE
+    ACTIVE = 1,
+    PENDING = 2,
+    FLAGGED = 4,
+    DELETED = 8
 }

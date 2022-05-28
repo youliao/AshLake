@@ -6,4 +6,5 @@ public interface IPostRepository
     Task UpdateAsync(Post post);
     Task DeleteAsync(int postId);
     Task<Post?> GetAsync(int postId);
+    Task<IEnumerable<object>> FindAsync(List<string> tags, List<PostRating> rating, List<PostStatus> status);
 }
