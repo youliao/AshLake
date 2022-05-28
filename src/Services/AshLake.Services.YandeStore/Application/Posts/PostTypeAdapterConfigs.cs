@@ -13,7 +13,7 @@ public static class PostTypeAdapterConfigs
             .Map(dest => dest.FileExt,
                 src => src[YandePostMetadataKeys.file_ext].AsString)
             .Map(dest => dest.FileSize,
-                src => src[YandePostMetadataKeys.file_size].AsInt64)
+                src => src[YandePostMetadataKeys.file_size].ToInt64())
             .Map(dest => dest.FileUrl,
                 src => src[YandePostMetadataKeys.file_url].AsString)
             .Map(dest => dest.HasChildren,
@@ -27,11 +27,11 @@ public static class PostTypeAdapterConfigs
             .Map(dest => dest.ParentId,
                 src => src[YandePostMetadataKeys.parent_id].AsNullableInt32)
             .Map(dest => dest.Rating,
-                src => PostRating.SAFE, srcCond => srcCond[YandePostMetadataKeys.rating] == "s")
+                src => PostRating.SAFE, srcCond => srcCond[YandePostMetadataKeys.rating].AsString == "s")
             .Map(dest => dest.Rating,
-                src => PostRating.QUESTIONABLE, srcCond => srcCond[YandePostMetadataKeys.rating] == "q")
+                src => PostRating.QUESTIONABLE, srcCond => srcCond[YandePostMetadataKeys.rating].AsString == "q")
             .Map(dest => dest.Rating,
-                src => PostRating.EXPLICIT, srcCond => srcCond[YandePostMetadataKeys.rating] == "e")
+                src => PostRating.EXPLICIT, srcCond => srcCond[YandePostMetadataKeys.rating].AsString == "e")
             .Map(dest => dest.Score,
                 src => src[YandePostMetadataKeys.score].AsInt32)
             .Map(dest => dest.Source,

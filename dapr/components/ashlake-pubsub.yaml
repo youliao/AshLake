@@ -9,12 +9,4 @@ spec:
   - name: host
     value: "amqp://rabbitmq:5672"
   - name: durable
-    value: "false"
-  - name: deletedWhenUnused
-    value: "false"
-  - name: autoAck
-    value: "false"
-  - name: reconnectWait
-    value: "0"
-  - name: concurrency
-    value: parallel
+    value: true

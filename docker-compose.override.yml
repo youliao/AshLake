@@ -100,7 +100,7 @@ services:
 
   yandestore-dapr:
     command: ["./daprd",
-      "-app-id", "archiver",
+      "-app-id", "yandestore",
       "-app-port", "80",
       "-components-path", "/components",
       "-log-level", "debug",

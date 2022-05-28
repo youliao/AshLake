@@ -110,7 +110,8 @@ public static class ProgramExtensions
 
     public static void AddCustomApplicationServices(this WebApplicationBuilder builder)
     {
-        builder.Services.AddSingleton<IYandeGrabberService>(_ => new YandeGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
+        builder.Services.AddSingleton<IYandeGrabberService>(_ =>
+            new YandeGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
 
         builder.Services.AddScoped<IEventBus, DaprEventBus>();
         builder.Services.AddScoped<PostMetadataAddedIntegrationEventHandler>();

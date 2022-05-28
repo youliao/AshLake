@@ -26,7 +26,7 @@ public class YandeJob
 
         if (metadataList is null || metadataList.Count == 0) return 0;
 
-        metadataList.RemoveAll(x => x["id"].AsInt32 >= endId);
+        metadataList.RemoveAll(x => x["id"].AsInt32 > endId);
 
         foreach (var item in metadataList)
         {
