@@ -63,9 +63,19 @@ namespace AshLake.Services.YandeStore.Infrastructure.Migrations
                 column: "ParentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Post_Rating",
+                table: "Post",
+                column: "Rating");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Post_Score",
                 table: "Post",
                 column: "Score");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Post_Status",
+                table: "Post",
+                column: "Status");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Post_Tags",

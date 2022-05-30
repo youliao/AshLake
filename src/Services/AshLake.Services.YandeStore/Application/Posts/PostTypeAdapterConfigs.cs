@@ -1,9 +1,12 @@
-﻿namespace AshLake.Services.YandeStore.Application.Posts;
+﻿using AshLake.Services.YandeStore.Infrastructure.Extensions;
+
+namespace AshLake.Services.YandeStore.Application.Posts;
 
 public static class PostTypeAdapterConfigs
 {
     public static void AddPostCommandTypeAdapterConfig()
     {
+        var dic = new Dictionary<string, string>();
         TypeAdapterConfig<BsonDocument, AddPostCommand>
             .NewConfig()
             .Map(dest => dest.Author,
@@ -15,7 +18,9 @@ public static class PostTypeAdapterConfigs
             .Map(dest => dest.FileSize,
                 src => src[YandePostMetadataKeys.file_size].ToInt64())
             .Map(dest => dest.FileUrl,
-                src => src[YandePostMetadataKeys.file_url].AsString)
+                src => src.ContainsKey(YandePostMetadataKeys.file_url)
+                    ? src[YandePostMetadataKeys.file_url].AsString
+                    : null)
             .Map(dest => dest.HasChildren,
                 src => src[YandePostMetadataKeys.has_children].AsBoolean)
             .Map(dest => dest.Height,

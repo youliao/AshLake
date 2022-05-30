@@ -96,7 +96,11 @@ namespace AshLake.Services.YandeStore.Infrastructure.Migrations
 
                     b.HasIndex("ParentId");
 
+                    b.HasIndex("Rating");
+
                     b.HasIndex("Score");
+
+                    b.HasIndex("Status");
 
                     b.HasIndex("Tags");
 
