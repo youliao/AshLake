@@ -12,8 +12,8 @@ namespace AshLake.Services.YandeStore.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
-                .Annotation("Npgsql:Enum:post_rating", "none,safe,questionable,explicit")
-                .Annotation("Npgsql:Enum:post_status", "deleted,flagged,pending,active");
+                .Annotation("Npgsql:Enum:post_rating", "safe,questionable,explicit")
+                .Annotation("Npgsql:Enum:post_status", "active,pending,flagged,deleted");
 
             migrationBuilder.CreateTable(
                 name: "Post",
@@ -43,6 +43,26 @@ namespace AshLake.Services.YandeStore.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Post_FileExt",
+                table: "Post",
+                column: "FileExt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Post_FileSize",
+                table: "Post",
+                column: "FileSize");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Post_Height",
+                table: "Post",
+                column: "Height");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Post_ParentId",
+                table: "Post",
+                column: "ParentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Post_Score",
                 table: "Post",
                 column: "Score");
@@ -52,6 +72,11 @@ namespace AshLake.Services.YandeStore.Infrastructure.Migrations
                 table: "Post",
                 column: "Tags")
                 .Annotation("Npgsql:IndexMethod", "gin");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Post_Width",
+                table: "Post",
+                column: "Width");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -14,18 +14,18 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AshLake.Services.YandeStore.Infrastructure.Migrations
 {
     [DbContext(typeof(YandeDbContext))]
-    [Migration("20220526075708_InitialCreate")]
+    [Migration("20220530140758_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.4")
+                .HasAnnotation("ProductVersion", "6.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "post_rating", new[] { "none", "safe", "questionable", "explicit" });
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "post_status", new[] { "deleted", "flagged", "pending", "active" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "post_rating", new[] { "safe", "questionable", "explicit" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "post_status", new[] { "active", "pending", "flagged", "deleted" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("AshLake.Services.YandeStore.Domain.Posts.Post", b =>
@@ -90,11 +90,21 @@ namespace AshLake.Services.YandeStore.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FileExt");
+
+                    b.HasIndex("FileSize");
+
+                    b.HasIndex("Height");
+
+                    b.HasIndex("ParentId");
+
                     b.HasIndex("Score");
 
                     b.HasIndex("Tags");
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Tags"), "gin");
+
+                    b.HasIndex("Width");
 
                     b.ToTable("Post", (string)null);
                 });

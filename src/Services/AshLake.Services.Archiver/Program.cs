@@ -24,7 +24,7 @@ app.MapSubscribeHandler();
 
 app.UseHangfireDashboard("/hangfire", new DashboardOptions
 {
-    Authorization = new[] { new AshLake.Services.Archiver.Infrastructure.MyAuthorizationFilter() }
+    Authorization = new[] { new MyAuthorizationFilter() }
 });
 
 app.Run();

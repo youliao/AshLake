@@ -37,7 +37,7 @@ public static class PostTypeAdapterConfigs
             .Map(dest => dest.Source,
                 src => src[YandePostMetadataKeys.source].AsString)
             .Map(dest => dest.Status,
-                src => Enum.Parse<PostStatus>(src[YandePostMetadataKeys.status].AsString.ToUpper()))
+                src => src[YandePostMetadataKeys.status].AsString)
             .Map(dest => dest.Tags,
                 src => src[YandePostMetadataKeys.tags].AsString.Split().ToList())
             .Map(dest => dest.UpdatedAt,
