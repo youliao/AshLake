@@ -4,13 +4,14 @@ using AshLake.Services.YandeStore.Integration.EventHandling;
 using Dapr.Client;
 using Hellang.Middleware.ProblemDetails;
 using Newtonsoft.Json.Converters;
+using Npgsql;
 using Serilog;
 
 namespace AshLake.Services.YandeStore;
 
 public static class ProgramExtensions
 {
-    private const string AppName = "Yande API";
+    private const string AppName = "YandeStore API";
 
     public static void AddCustomConfiguration(this WebApplicationBuilder builder)
     {
@@ -96,10 +97,14 @@ public static class ProgramExtensions
         // migrations instead.
         using var scope = app.Services.CreateScope();
 
-        var retryPolicy = CreateRetryPolicy(app.Configuration, Log.Logger);
+        //var retryPolicy = CreateRetryPolicy(app.Configuration, Log.Logger);
         var context = scope.ServiceProvider.GetRequiredService<YandeDbContext>();
 
-        retryPolicy.Execute(context.Database.Migrate);
+        //retryPolicy.Execute(context.Database.Migrate);
+        context.Database.Migrate();
+        using var conn = (NpgsqlConnection)context.Database.GetDbConnection();
+        conn.Open();
+        conn.ReloadTypes();
     }
 
     private static Policy CreateRetryPolicy(IConfiguration configuration, Serilog.ILogger logger)

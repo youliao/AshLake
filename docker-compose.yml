@@ -22,6 +22,9 @@ services:
   minio:
     image: minio/minio:latest
 
+  seq:
+    image: datalust/seq:latest
+
   zipkin:
     image: openzipkin/zipkin-slim
 

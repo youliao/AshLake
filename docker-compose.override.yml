@@ -38,6 +38,12 @@ services:
       MINIO_SECRET_KEY: minio123
     command: server /data --console-address ":9001"
 
+  seq:
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - "5340:80"
+
   zipkin:
     ports:
       - "9411:9411"
@@ -94,7 +100,10 @@ services:
   yandestore:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
       - DBConnectionString=Host=postgres;Database=postgres;Username=root;Password=postgres
+      - RetryMigrations=true
+      - SeqServerUrl=http://seq
     ports:
       - "80"
 

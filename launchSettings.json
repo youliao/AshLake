@@ -19,6 +19,7 @@
         "redis-hangfire": "StartWithoutDebugging",
         "redis-easycaching": "StartWithoutDebugging",
         "rabbitmq": "StartWithoutDebugging",
+        "seq": "StartWithoutDebugging",
         "yandestore": "StartDebugging",
         "yandestore-dapr": "StartWithoutDebugging",
         "zipkin": "StartWithoutDebugging"

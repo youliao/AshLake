@@ -4,6 +4,7 @@ const string appName = "Yande API";
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddCustomSerilog();
 builder.AddCustomProblemDetails();
 builder.AddCustomControllers();
 builder.AddCustomApplicationServices();
