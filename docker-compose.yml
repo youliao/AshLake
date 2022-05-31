@@ -28,6 +28,9 @@ services:
   zipkin:
     image: openzipkin/zipkin-slim
 
+  #healthcheck:
+  #  image: xabarilcoding/healthchecksui:5.0.0
+
   dapr-placement:
     image: "daprio/dapr:latest"
 

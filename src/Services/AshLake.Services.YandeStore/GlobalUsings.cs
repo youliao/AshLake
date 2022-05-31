@@ -20,7 +20,6 @@ global using System.IO.Compression;
 global using System.Linq.Expressions;
 global using System.Text.RegularExpressions;
 global using AshLake.Contracts.Seedwork.SourceSites;
-global using HealthChecks.UI.Client;
 global using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 global using AshLake.Services.YandeStore.Domain.Posts;
 global using AshLake.Services.YandeStore.Application.Posts.Commands;

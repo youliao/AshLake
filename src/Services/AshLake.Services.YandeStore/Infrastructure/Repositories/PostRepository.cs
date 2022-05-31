@@ -22,6 +22,18 @@ public class PostRepository : IPostRepository
         await _dbContext.SaveChangesAsync();
     }
 
+    public async Task AddOrUpdateAsync(Post post)
+    {
+        var isExists = await _dbContext.Posts.AnyAsync(x => x.Id == post.Id);
+
+        if (isExists) 
+            _dbContext.Update(post); 
+        else 
+            _dbContext.Add(post);
+
+        await _dbContext.SaveChangesAsync();
+    }
+
     public async Task DeleteAsync(int postId)
     {
         var post = await _dbContext.Posts.SingleOrDefaultAsync(post => post.Id == postId) ?? throw new ArgumentNullException("Post does not exist");
@@ -33,7 +45,7 @@ public class PostRepository : IPostRepository
         await _dbContext.Posts.SingleOrDefaultAsync(post => post.Id == postId);
 
     public async Task<IEnumerable<int>> GetChildIdsAsync(int parentId) =>
-        await _dbContext.Posts.Where(post => post.ParentId == parentId)
+        await _dbContext.Posts.AsNoTracking().Where(post => post.ParentId == parentId)
             .Select(post => post.Id)
             .ToListAsync();
 

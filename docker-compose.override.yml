@@ -48,6 +48,14 @@ services:
     ports:
       - "9411:9411"
 
+  #healthcheck:
+  #  environment:
+  #    - ASPNETCORE_URLS=http://+:80
+  #    - HealthChecksUI__HealthChecks__0__Name=YandeStore API
+  #    - HealthChecksUI__HealthChecks__0__Uri=http://yandestore/hc
+  #  ports:
+  #    - "5107:80"
+
   dapr-placement:
     command: ["./placement", "-port", "50000", "-log-level", "debug"]
     ports:

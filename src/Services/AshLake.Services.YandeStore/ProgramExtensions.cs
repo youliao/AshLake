@@ -84,6 +84,7 @@ public static class ProgramExtensions
     {
         builder.Services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
+            .AddDapr()
             .AddNpgSql(
                 builder.Configuration["DBConnectionString"],
                 name: "YandeDB-check",
