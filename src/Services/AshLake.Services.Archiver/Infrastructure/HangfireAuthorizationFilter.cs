@@ -2,7 +2,7 @@
 
 namespace AshLake.Services.Archiver.Infrastructure;
 
-public class MyAuthorizationFilter : IDashboardAuthorizationFilter
+public class HangfireAuthorizationFilter : IDashboardAuthorizationFilter
 {
     public bool Authorize(DashboardContext context)
     {

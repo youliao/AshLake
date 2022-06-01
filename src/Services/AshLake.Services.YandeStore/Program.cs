@@ -3,16 +3,13 @@ using Hellang.Middleware.ProblemDetails;
 const string appName = "YandeStore API";
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddHealthChecks();
-
 builder.AddCustomSerilog();
 builder.AddCustomSwagger();
 builder.AddCustomProblemDetails();
 builder.AddCustomControllers();
-//builder.AddCustomHealthChecks();
-builder.AddCustomApplicationServices();
 builder.AddCustomTypeAdapterConfigs();
+builder.AddCustomApplicationServices();
+builder.AddCustomHealthChecks();
 
 builder.Services.AddMediatR(typeof(Program));
 
@@ -23,20 +20,10 @@ app.UseProblemDetails();
 app.UseCloudEvents();
 app.MapControllers();
 app.MapSubscribeHandler();
-
-//app.MapHealthChecks("/hc", new HealthCheckOptions()
-//{
-//    Predicate = _ => true,
-//    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-//});
-//app.MapHealthChecks("/liveness", new HealthCheckOptions
-//{
-//    Predicate = r => r.Name.Contains("self")
-//});
+app.UseCustomHealthChecks();
 
 try
 {
-    app.Logger.LogInformation("Applying database migration ({ApplicationName})...", appName);
     app.ApplyDatabaseMigration();
 
     app.Logger.LogInformation("Starting web host ({ApplicationName})...", appName);

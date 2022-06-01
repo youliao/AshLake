@@ -1,6 +1,6 @@
-﻿namespace AshLake.Services.Archiver.Domain.Entities;
+﻿namespace AshLake.Services.Collector.Domain.Entities;
 
-public class PostPreview : IStoragble
+public class PostPreview : IS3Object
 {
     public string PostMD5 { get; private set; } = null!;
 
@@ -8,7 +8,7 @@ public class PostPreview : IStoragble
 
     public const ImageType Type = ImageType.JPG;
 
-    public string ObjectKey { get => ($"{PostMD5}.{Type}").ToLower(); }
+    public string ObjectKey { get => $"{PostMD5}.{Type}".ToLower(); }
 
     public PostPreview(string postMd5, byte[] data)
     {

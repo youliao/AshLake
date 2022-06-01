@@ -1,15 +1,36 @@
+using Hellang.Middleware.ProblemDetails;
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddCustomSwagger();
-builder.AddCustomControllers();
+builder.Services.AddDaprClient();
+
+builder.AddCustomSerilog();
 builder.AddCustomProblemDetails();
-builder.AddCustomDatabase();
-builder.AddCustomRepositories();
+builder.AddCustomControllers();
+builder.AddCustomSwagger();
+builder.AddCustomHealthChecks();
 builder.AddCustomEasyCaching();
+builder.AddCustomApplicationServices();
 
 var app = builder.Build();
 
+app.UseProblemDetails();
 app.UseCustomSwagger();
+app.UseCloudEvents();
 app.MapControllers();
+app.MapSubscribeHandler();
+app.UseCustomHealthChecks();
 
-app.Run();
+try
+{
+    app.Logger.LogInformation("Starting web host ({ApplicationName})...", ProgramExtensions.AppName);
+    app.Run();
+}
+catch (Exception ex)
+{
+    app.Logger.LogCritical(ex, "Host terminated unexpectedly ({ApplicationName})...", ProgramExtensions.AppName);
+}
+finally
+{
+    Serilog.Log.CloseAndFlush();
+}

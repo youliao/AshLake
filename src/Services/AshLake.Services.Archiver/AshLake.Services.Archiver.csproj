@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Ardalis.GuardClauses" Version="4.0.1" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.4" />
     <PackageReference Include="Dapr.AspNetCore" Version="1.7.0" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.29" />
     <PackageReference Include="Hangfire.MaximumConcurrentExecutions" Version="1.1.0" />
@@ -19,12 +20,19 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.15.1" />
     <PackageReference Include="Minio" Version="4.0.3" />
     <PackageReference Include="MongoDB.Driver" Version="2.15.1" />
+    <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
+    <PackageReference Include="Serilog.Sinks.Seq" Version="5.1.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\AshLake.BuildingBlocks.Healthchecks\AshLake.BuildingBlocks.Healthchecks.csproj" />
     <ProjectReference Include="..\..\Contracts\AshLake.Contracts.Archiver\AshLake.Contracts.Archiver.csproj" />
     <ProjectReference Include="..\..\Contracts\AshLake.Contracts.Seedwork\AshLake.Contracts.Seedwork.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Integration\EventHandling\" />
   </ItemGroup>
 
 </Project>

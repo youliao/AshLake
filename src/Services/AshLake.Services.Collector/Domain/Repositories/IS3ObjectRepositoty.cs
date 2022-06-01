@@ -1,8 +1,8 @@
 ﻿using Minio.DataModel;
 
-namespace AshLake.Services.Archiver.Domain.Repositories;
+namespace AshLake.Services.Collector.Domain.Repositories;
 
-public interface IPostImageRepositoty<T> where T : IStoragble
+public interface IS3ObjectRepositoty<T> where T : IS3Object
 {
     Task PutAsync(T post);
 

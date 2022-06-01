@@ -9,6 +9,8 @@
       "serviceActions": {
         "archiver": "StartDebugging",
         "archiver-dapr": "StartWithoutDebugging",
+        "collector": "StartDebugging",
+        "collector-dapr": "StartWithoutDebugging",
         "dapr-placement": "StartWithoutDebugging",
         "grabber": "StartDebugging",
         "grabber-dapr": "StartWithoutDebugging",

@@ -16,6 +16,5 @@ global using AshLake.Services.Archiver.Infrastructure;
 global using AshLake.BuildingBlocks.EventBus;
 global using AshLake.BuildingBlocks.EventBus.Abstractions;
 global using AshLake.Contracts.Archiver.Events;
-global using AshLake.Services.Archiver.Integration.EventHandling;
 global using Dapr;
 global using AshLake.Contracts.Seedwork;

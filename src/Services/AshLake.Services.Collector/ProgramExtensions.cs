@@ -1,31 +1,23 @@
 ﻿using Hellang.Middleware.ProblemDetails;
-using MongoDB.Driver;
-using System.Text.Json.Serialization;
+using AshLake.BuildingBlocks.EventBus.Abstractions;
+using AshLake.Services.Collector.Application.BackgroundJobs;
+using AshLake.Services.Collector.Domain.Repositories;
+using AshLake.Services.Collector.Integration.EventHandling;
+using AshLake.Services.Collector.Integration.GrabberServices;
+using Hangfire;
+using Microsoft.OpenApi.Models;
+using Dapr.Client;
 using Hangfire.Redis;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Serilog;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Serilog;
 using HealthChecks.UI.Client;
 
-namespace AshLake.Services.Archiver;
+namespace AshLake.Services.Collector;
 
 internal static class ProgramExtensions
 {
-    public const string AppName = "Archiver API";
-
-    public static void AddCustomSerilog(this WebApplicationBuilder builder)
-    {
-        var seqServerUrl = builder.Configuration["SeqServerUrl"];
-
-        Log.Logger = new LoggerConfiguration()
-            .ReadFrom.Configuration(builder.Configuration)
-            .WriteTo.Console()
-            .WriteTo.Seq(seqServerUrl)
-            .Enrich.WithProperty("ApplicationName", AppName)
-            .CreateLogger();
-
-        builder.Host.UseSerilog();
-    }
+    public const string AppName = "Collector API";
 
     public static void AddCustomProblemDetails(this WebApplicationBuilder builder)
     {
@@ -44,14 +36,23 @@ internal static class ProgramExtensions
     {
         builder.Services
             .AddControllers()
-            .AddDapr()
-            .AddJsonOptions(options =>
-        {
-            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            options.JsonSerializerOptions.Converters.Add(new BsonDocumentJsonConverter());
-        });
+            .AddDapr();
 
         builder.Services.AddEndpointsApiExplorer();
+    }
+
+    public static void AddCustomSerilog(this WebApplicationBuilder builder)
+    {
+        var seqServerUrl = builder.Configuration["SeqServerUrl"];
+
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(builder.Configuration)
+            .WriteTo.Console()
+            .WriteTo.Seq(seqServerUrl)
+            .Enrich.WithProperty("ApplicationName", AppName)
+            .CreateLogger();
+
+        builder.Host.UseSerilog();
     }
 
     public static void AddCustomSwagger(this WebApplicationBuilder builder)
@@ -67,28 +68,6 @@ internal static class ProgramExtensions
         app.UseSwagger().UseSwaggerUI(c =>
         {
             c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{AppName} V1");
-        });
-    }
-
-    public static void AddCustomHangfire(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddHangfire(c =>
-        {
-            c.UseRedisStorage(builder.Configuration["HangfireConnectionString"], new RedisStorageOptions() { Db = 0 });
-        });
-        builder.Services.AddHangfireServer(opt =>
-        {
-            opt.ShutdownTimeout = TimeSpan.FromMinutes(30);
-            opt.WorkerCount = 10;
-            opt.Queues = new[] { nameof(Yande).ToLower() };
-        });
-    }
-
-    public static void UseCustomHangfireDashboard(this WebApplication app)
-    {
-        app.UseHangfireDashboard("/hangfire", new DashboardOptions
-        {
-            Authorization = new[] { new HangfireAuthorizationFilter() }
         });
     }
 
@@ -112,16 +91,31 @@ internal static class ProgramExtensions
         });
     }
 
+    public static void AddCustomHangfire(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddHangfire(c =>
+        {
+            c.UseRedisStorage(builder.Configuration["HangfireConnectionString"], new RedisStorageOptions() { Db = 1 });
+        });
+        builder.Services.AddHangfireServer(opt =>
+        {
+            opt.ShutdownTimeout = TimeSpan.FromMinutes(30);
+            opt.WorkerCount = 10;
+            opt.Queues = new[] { nameof(Yande).ToLower() };
+        });
+    }
+
+    public static void UseCustomHangfireDashboard(this WebApplication app)
+    {
+        app.UseHangfireDashboard("/hangfire", new DashboardOptions
+        {
+            Authorization = new[] { new HangfireAuthorizationFilter() }
+        });
+    }
+
     public static void AddCustomApplicationServices(this WebApplicationBuilder builder)
     {
         #region Repositories
-
-        builder.Services.AddSingleton(_ =>
-        {
-            return new MongoClient(builder.Configuration["MongoDatabaseConnectionString"]);
-        });
-        builder.Services.AddSingleton(typeof(IMetadataRepository<,>), typeof(MetadataRepository<,>));
-
         builder.Services.AddSingleton(_ =>
         {
             return new Minio.MinioClient()
@@ -130,21 +124,19 @@ internal static class ProgramExtensions
                     builder.Configuration["ImageStorageSecretKey"])
                 .Build();
         });
-
+        builder.Services.AddSingleton(typeof(IS3ObjectRepositoty<>), typeof(S3ObjectRepositoty<>));
         #endregion
 
         #region Integration
-
-        builder.Services.AddScoped<IEventBus, DaprEventBus>();
         builder.Services.AddSingleton<IYandeGrabberService>(_ =>
             new YandeGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
 
+        builder.Services.AddScoped<IEventBus, DaprEventBus>();
+        builder.Services.AddScoped<PostMetadataAddedIntegrationEventHandler>();
         #endregion
 
         #region BackgroundJobs
-
         builder.Services.AddScoped(typeof(YandeJob));
-
         #endregion
     }
 }

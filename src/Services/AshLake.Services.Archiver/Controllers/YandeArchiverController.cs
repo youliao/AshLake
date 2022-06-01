@@ -36,37 +36,4 @@ public class YandeArchiverController : ControllerBase
         var jobIdList = backgroundJobClient.EnqueueSuccessively(calls);
         return Ok(jobIdList);
     }
-
-    [Route("/api/sites/yande/postpreviewjobs")]
-    [HttpPost]
-    [ProducesResponseType(typeof(string), StatusCodes.Status202Accepted)]
-    public ActionResult<string> CreatePostPreviewJobsAsync(int postId)
-    {
-        var jobId = BackgroundJob.Enqueue<YandeJob>(x => x.AddPreview(postId));
-        return Ok(jobId);
-    }
-
-    [Route("/api/sites/yande/postfilejobs")]
-    [HttpPost]
-    [ProducesResponseType(typeof(string), StatusCodes.Status202Accepted)]
-    public ActionResult<string> CreatePostFileJobsAsync(int postId)
-    {
-        var jobId = BackgroundJob.Enqueue<YandeJob>(x => x.AddFile(postId));
-        return Ok(jobId);
-    }
-
-    [Route("/api/sites/yande/postfilejobs/batches")]
-    [HttpPost]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
-    public ActionResult<List<string>> CreatePostFileJobsAsync(int startId, int endId)
-    {
-        var jobIdList = new List<string>();
-        for (int i = startId; i <= endId; i++)
-        {
-            var jobId = BackgroundJob.Enqueue<YandeJob>(x => x.AddFile(i));
-            jobIdList.Add(jobId);
-        }
-
-        return Ok(jobIdList);
-    }
 }

@@ -6,7 +6,7 @@ public interface IMetadataRepository<TSouceSite, TMetadata>
     where TSouceSite : ISouceSite
     where TMetadata : Metadata
 {
-    Task<ArchiveStatus> AddOrUpdateAsync(TMetadata metadata);
+    Task<EntityState> AddOrUpdateAsync(TMetadata metadata);
 
     Task<TMetadata> DeleteAsync(string postId);
 

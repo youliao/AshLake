@@ -1,8 +1,8 @@
 ﻿using System.Security.Cryptography;
 
-namespace AshLake.Services.Archiver.Domain.Entities;
+namespace AshLake.Services.Collector.Domain.Entities;
 
-public class PostFile : IStoragble
+public class PostFile : IS3Object
 {
     public string PostMD5 { get; private set; } = null!;
 
@@ -10,7 +10,7 @@ public class PostFile : IStoragble
 
     public byte[] Data { get; private set; } = null!;
 
-    public string ObjectKey { get => ($"{PostMD5}.{Type}").ToLower(); }
+    public string ObjectKey { get => $"{PostMD5}.{Type}".ToLower(); }
 
     public PostFile(string postMd5, ImageType type, byte[] data)
     {

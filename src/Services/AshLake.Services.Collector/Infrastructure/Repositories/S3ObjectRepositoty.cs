@@ -1,14 +1,15 @@
-﻿using Minio;
+﻿using AshLake.Services.Collector.Domain.Repositories;
+using Minio;
 using Minio.DataModel;
 
-namespace AshLake.Services.Archiver.Infrastructure.Repositories;
+namespace AshLake.Services.Collector.Infrastructure;
 
-public class PostImageRepositoty<T> : IPostImageRepositoty<T> where T : IStoragble
+public class S3ObjectRepositoty<T> : IS3ObjectRepositoty<T> where T : IS3Object
 {
     private readonly MinioClient _minioClient;
     private readonly string _bucketName;
 
-    public PostImageRepositoty(MinioClient minioClient)
+    public S3ObjectRepositoty(MinioClient minioClient)
     {
         _minioClient = minioClient ?? throw new ArgumentNullException(nameof(minioClient));
 

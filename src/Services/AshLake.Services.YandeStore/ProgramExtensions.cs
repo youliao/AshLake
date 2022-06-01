@@ -2,6 +2,7 @@
 using AshLake.Services.YandeStore.Integration.ArchiverServices;
 using AshLake.Services.YandeStore.Integration.EventHandling;
 using Dapr.Client;
+using HealthChecks.UI.Client;
 using Hellang.Middleware.ProblemDetails;
 using Newtonsoft.Json.Converters;
 using Npgsql;
@@ -9,9 +10,9 @@ using Serilog;
 
 namespace AshLake.Services.YandeStore;
 
-public static class ProgramExtensions
+internal static class ProgramExtensions
 {
-    private const string AppName = "YandeStore API";
+    public const string AppName = "YandeStore API";
 
     public static void AddCustomConfiguration(this WebApplicationBuilder builder)
     {
@@ -89,6 +90,19 @@ public static class ProgramExtensions
                 builder.Configuration["DBConnectionString"],
                 name: "YandeDB-check",
                 tags: new string[] { "yandedb" });
+    }
+
+    public static void UseCustomHealthChecks(this WebApplication app)
+    {
+        app.MapHealthChecks("/hc", new HealthCheckOptions()
+        {
+            Predicate = _ => true,
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
+        app.MapHealthChecks("/liveness", new HealthCheckOptions
+        {
+            Predicate = r => r.Name.Contains("self")
+        });
     }
 
     public static void ApplyDatabaseMigration(this WebApplication app)

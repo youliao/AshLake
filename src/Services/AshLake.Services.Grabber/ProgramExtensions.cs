@@ -1,19 +1,29 @@
 ﻿using EasyCaching.Core.Configurations;
+using HealthChecks.UI.Client;
 using Hellang.Middleware.ProblemDetails;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Newtonsoft.Json.Converters;
+using Serilog;
 
 namespace AshLake.Services.Grabber;
 
-public static class ProgramExtensions
+internal static class ProgramExtensions
 {
-    private const string AppName = "Grabber API";
+    public const string AppName = "Grabber API";
 
-    public static void AddCustomConfiguration(this WebApplicationBuilder builder)
+    public static void AddCustomSerilog(this WebApplicationBuilder builder)
     {
-        // Disabled temporarily until https://github.com/dapr/dotnet-sdk/issues/779 is resolved.
-        //builder.Configuration.AddDaprSecretStore(
-        //    "eshop-secretstore",
-        //    new DaprClientBuilder().Build());
+        var seqServerUrl = builder.Configuration["SeqServerUrl"];
+
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(builder.Configuration)
+            .WriteTo.Console()
+            .WriteTo.Seq(seqServerUrl)
+            .Enrich.WithProperty("ApplicationName", AppName)
+            .CreateLogger();
+
+        builder.Host.UseSerilog();
     }
 
     public static void AddCustomControllers(this WebApplicationBuilder builder)
@@ -26,14 +36,9 @@ public static class ProgramExtensions
                 options.SerializerSettings.Converters.Add(new StringEnumConverter());
             });
 
-        //.AddJsonOptions(options =>
-        //{
-        //    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-        //    options.JsonSerializerOptions.Converters.Add(new BsonDocumentJsonConverter());
-        //});
-
         builder.Services.AddEndpointsApiExplorer();
     }
+
     public static void AddCustomProblemDetails(this WebApplicationBuilder builder)
     {
         builder.Services.AddProblemDetails(c =>
@@ -41,18 +46,12 @@ public static class ProgramExtensions
             // You can configure the middleware to re-throw certain types of exceptions, all exceptions or based on a predicate.
             // This is useful if you have upstream middleware that needs to do additional handling of exceptions.
             c.Rethrow<NotSupportedException>();
-
-            // This will map NotImplementedException to the 501 Not Implemented status code.
             c.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
-
-            // This will map HttpRequestException to the 503 Service Unavailable status code.
             c.MapToStatusCode<HttpRequestException>(StatusCodes.Status503ServiceUnavailable);
-
-            // Because exceptions are handled polymorphically, this will act as a "catch all" mapping, which is why it's added last.
-            // If an exception other than NotImplementedException and HttpRequestException is thrown, this will handle it.
             c.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
         });
     }
+
     public static void AddCustomSwagger(this WebApplicationBuilder builder)
     {
         builder.Services.AddSwaggerGen(c =>
@@ -67,11 +66,6 @@ public static class ProgramExtensions
         {
             c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{AppName} V1");
         });
-    }
-
-    public static void AddCustomDatabase(this WebApplicationBuilder builder)
-    {
-
     }
 
     public static void AddCustomEasyCaching(this WebApplicationBuilder builder)
@@ -96,20 +90,43 @@ public static class ProgramExtensions
         });
     }
 
-    public static void AddCustomRepositories(this WebApplicationBuilder builder)
+    public static void AddCustomHealthChecks(this WebApplicationBuilder builder)
     {
+        builder.Services.AddHealthChecks()
+            .AddCheck("self", () => HealthCheckResult.Healthy())
+            .AddDapr();
+    }
+
+    public static void UseCustomHealthChecks(this WebApplication app)
+    {
+        app.MapHealthChecks("/hc", new HealthCheckOptions()
+        {
+            Predicate = _ => true,
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
+        app.MapHealthChecks("/liveness", new HealthCheckOptions
+        {
+            Predicate = r => r.Name.Contains("self")
+        });
+    }
+
+    public static void AddCustomApplicationServices(this WebApplicationBuilder builder)
+    {
+        #region Repositories
+
         builder.Services.AddScoped<YandeSourceSiteRepository>();
         builder.Services.AddHttpClient<IYandeSourceSiteRepository, YandeSourceSiteRepository>(config =>
         {
             config.BaseAddress = new Uri(builder.Configuration["YandeUrl"]);
-            //config.BaseAddress = new Uri("https://yande.re/");
             config.Timeout = TimeSpan.FromSeconds(30);
-            config.DefaultRequestHeaders.AcceptEncoding.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue("gzip"));
+            config.DefaultRequestHeaders.AcceptEncoding.Add(
+                new System.Net.Http.Headers.StringWithQualityHeaderValue("gzip"));
 
         }).ConfigurePrimaryHttpMessageHandler(provider => new HttpClientHandler
         {
             AutomaticDecompression = DecompressionMethods.GZip
         });
-    }
 
+        #endregion
+    }
 }

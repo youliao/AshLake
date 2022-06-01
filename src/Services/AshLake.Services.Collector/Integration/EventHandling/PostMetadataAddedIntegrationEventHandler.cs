@@ -1,4 +1,8 @@
-﻿namespace AshLake.Services.Archiver.Integration.EventHandling;
+﻿using AshLake.BuildingBlocks.EventBus.Abstractions;
+using AshLake.Services.Collector.Application.BackgroundJobs;
+using Hangfire;
+
+namespace AshLake.Services.Collector.Integration.EventHandling;
 
 public class PostMetadataAddedIntegrationEventHandler
     : IIntegrationEventHandler<PostMetadataAddedIntegrationEvent<Yande>>

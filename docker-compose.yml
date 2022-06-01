@@ -28,8 +28,8 @@ services:
   zipkin:
     image: openzipkin/zipkin-slim
 
-  #healthcheck:
-  #  image: xabarilcoding/healthchecksui:5.0.0
+  healthcheck:
+    image: xabarilcoding/healthchecksui:5.0.0
 
   dapr-placement:
     image: "daprio/dapr:latest"
@@ -63,6 +63,23 @@ services:
     network_mode: "service:archiver"
     depends_on:
       - archiver
+
+  collector:
+    image: ${DOCKER_REGISTRY-}ashlakeservicescollector
+    build:
+      context: .
+      dockerfile: src/Services/AshLake.Services.Collector/Dockerfile
+    depends_on:
+      - minio
+      - redis-hangfire
+      - grabber
+      - archiver
+
+  collector-dapr:
+    image: "daprio/daprd:latest"
+    network_mode: "service:collector"
+    depends_on:
+      - collector
 
   yandestore:
     image: ${DOCKER_REGISTRY-}ashlakeservicesyandestore
