@@ -94,7 +94,9 @@ internal static class ProgramExtensions
     {
         builder.Services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
-            .AddDapr();
+            .AddDapr()
+            .AddUrlGroup(new Uri("https://yande.re/post.json?limit=1"),"yande",null,new string[]{"soucesites"})
+            .AddUrlGroup(new Uri("https://danbooru.donmai.us/posts.json?limit=1"), "danbooru", null,new string[]{"soucesites"});
     }
 
     public static void UseCustomHealthChecks(this WebApplication app)

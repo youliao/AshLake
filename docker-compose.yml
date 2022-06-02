@@ -30,6 +30,11 @@ services:
 
   healthcheck:
     image: xabarilcoding/healthchecksui:5.0.0
+    depends_on:
+      - grabber
+      - archiver
+      - collector
+      - yandestore
 
   dapr-placement:
     image: "daprio/dapr:latest"

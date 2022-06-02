@@ -88,8 +88,8 @@ internal static class ProgramExtensions
             .AddDapr()
             .AddNpgSql(
                 builder.Configuration["DBConnectionString"],
-                name: "YandeDB-check",
-                tags: new string[] { "yandedb" });
+                name: "database",
+                tags: new string[] { "postgresql" });
     }
 
     public static void UseCustomHealthChecks(this WebApplication app)
