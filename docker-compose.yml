@@ -7,13 +7,13 @@ services:
   postgres:
     image: postgres:14
 
-  redis:
-    image: redis:7
-
   redis-easycaching:
     image: redis:7
 
   redis-hangfire:
+    image: redis:7
+
+  redis-state:
     image: redis:7
 
   rabbitmq:

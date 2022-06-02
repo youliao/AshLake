@@ -151,8 +151,8 @@ internal static class ProgramExtensions
         builder.Services.AddSingleton<IYandeArchiverService>(_ =>
             new YandeArchiverService(DaprClient.CreateInvokeHttpClient("archiver")));
 
-        builder.Services.AddDbContext<YandeDbContext>(
-            options => options.UseNpgsql(builder.Configuration["DBConnectionString"]));
+        builder.Services.AddDbContextPool<YandeDbContext>(
+            options => options.UseNpgsql(builder.Configuration["DBConnectionString"]),100);
         builder.Services.AddScoped<IPostRepository, PostRepository>();
 
         builder.Services.AddScoped<PostMetadataAddedIntegrationEventHandler>();

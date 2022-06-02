@@ -100,7 +100,7 @@ internal static class ProgramExtensions
         builder.Services.AddHangfireServer(opt =>
         {
             opt.ShutdownTimeout = TimeSpan.FromMinutes(30);
-            opt.WorkerCount = 10;
+            opt.WorkerCount = 3;
             opt.Queues = new[] { nameof(Yande).ToLower() };
         });
     }

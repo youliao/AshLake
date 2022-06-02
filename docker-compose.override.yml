@@ -5,6 +5,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongoadmin
       MONGO_INITDB_ROOT_PASSWORD: mongoadmin
+    volumes:
+      - archiver-nosqldata:/data/db
     ports:
       - "27017:27017"
 
@@ -13,30 +15,32 @@ services:
     environment:
       POSTGRES_USER: root 
       POSTGRES_DB: postgres
-      POSTGRES_PASSWORD: postgres 
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - yandestore-sqldata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-
-  redis:
-    ports:
-      - "6379:6379"
 
   redis-easycaching:
 
   redis-hangfire:
+
+  redis-state:
 
   rabbitmq:
     ports:
       - "5672:5672"
 
   minio:
-    ports:
-      - "9000:9000"
-      - "9001:9001"
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio123
     command: server /data --console-address ":9001"
+    volumes:
+      - collector-objectdata:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
 
   seq:
     environment:
@@ -136,7 +140,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - DBConnectionString=Host=postgres;Database=postgres;Username=root;Password=postgres
+      - DBConnectionString=Host=postgres;Database=postgres;Username=root;Password=postgres;Pooling=true;
       - RetryMigrations=true
       - SeqServerUrl=http://seq
     ports:
@@ -152,3 +156,11 @@ services:
       ]
     volumes:
       - "./dapr/components/:/components"
+
+volumes:
+  archiver-nosqldata:
+    external: false
+  collector-objectdata:
+    external: false
+  yandestore-sqldata:
+    external: false

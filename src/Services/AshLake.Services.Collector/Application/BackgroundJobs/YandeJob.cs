@@ -7,10 +7,9 @@ using Hangfire;
 
 namespace AshLake.Services.Collector.Application.BackgroundJobs;
 
+[Queue("yande")]
 public class YandeJob
 {
-    private const string _qName = "yande";
-
     private readonly IS3ObjectRepositoty<PostFile> _fileRepositoty;
     private readonly IS3ObjectRepositoty<PostPreview> _previewRepositoty;
     private readonly IYandeGrabberService _grabberService;
@@ -23,7 +22,6 @@ public class YandeJob
         _grabberService = grabberService ?? throw new ArgumentNullException(nameof(grabberService));
     }
 
-    [Queue(_qName)]
     public async Task<string> AddOrUpdatePreview(int postId)
     {
         var preview = await _grabberService.GetPostPreview(postId);
@@ -35,7 +33,6 @@ public class YandeJob
         return isExists ? EntityState.Modified.ToString() : EntityState.Added.ToString();
     }
 
-    [Queue(_qName)]
     public async Task<string> AddPreview(int postId)
     {
         var objectKey = await _grabberService.GetPostObjectKey(postId);
@@ -50,7 +47,6 @@ public class YandeJob
         return EntityState.Added.ToString();
     }
 
-    [Queue(_qName)]
     public async Task<string> AddOrUpdateFile(int postId)
     {
         var file = await _grabberService.GetPostFile(postId);
@@ -62,7 +58,6 @@ public class YandeJob
         return isExists ? EntityState.Modified.ToString() : EntityState.Added.ToString();
     }
 
-    [Queue(_qName)]
     public async Task<string> AddFile(int postId)
     {
         var objectKey = await _grabberService.GetPostObjectKey(postId);
