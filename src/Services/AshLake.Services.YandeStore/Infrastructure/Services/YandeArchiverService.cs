@@ -1,4 +1,6 @@
-﻿namespace AshLake.Services.YandeStore.Integration.ArchiverServices;
+﻿using AshLake.Services.YandeStore.Application.Services;
+
+namespace AshLake.Services.YandeStore.Infrastructure.Services;
 
 public class YandeArchiverService : IYandeArchiverService
 {

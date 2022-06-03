@@ -8,3 +8,7 @@ global using AshLake.Services.Collector;
 global using AshLake.Services.Collector.Domain.Entities;
 global using AshLake.Services.Collector.Infrastructure;
 global using Dapr;
+global using AshLake.Services.Collector.Application.Services;
+global using AshLake.Services.Collector.Infrastructure.Services;
+global using AshLake.Services.Collector.Application.BackgroundJobs;
+global using Hangfire;

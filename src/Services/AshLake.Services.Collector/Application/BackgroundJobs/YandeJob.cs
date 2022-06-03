@@ -1,8 +1,8 @@
 ﻿using AshLake.BuildingBlocks.EventBus.Abstractions;
 using AshLake.Contracts.Archiver.Events;
 using AshLake.Contracts.Seedwork;
+using AshLake.Services.Collector.Application.Services;
 using AshLake.Services.Collector.Domain.Repositories;
-using AshLake.Services.Collector.Integration.GrabberServices;
 using Hangfire;
 
 namespace AshLake.Services.Collector.Application.BackgroundJobs;

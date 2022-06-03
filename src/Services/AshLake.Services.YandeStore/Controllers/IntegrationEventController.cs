@@ -1,6 +1,6 @@
 ﻿using AshLake.BuildingBlocks.EventBus;
 using AshLake.Contracts.Archiver.Events;
-using AshLake.Services.YandeStore.Integration.ArchiverServices;
+using AshLake.Services.YandeStore.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AshLake.Services.YandeStore.Controllers;

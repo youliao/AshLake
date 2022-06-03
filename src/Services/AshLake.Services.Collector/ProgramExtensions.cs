@@ -2,8 +2,6 @@
 using AshLake.BuildingBlocks.EventBus.Abstractions;
 using AshLake.Services.Collector.Application.BackgroundJobs;
 using AshLake.Services.Collector.Domain.Repositories;
-using AshLake.Services.Collector.Integration.EventHandling;
-using AshLake.Services.Collector.Integration.GrabberServices;
 using Hangfire;
 using Microsoft.OpenApi.Models;
 using Dapr.Client;
@@ -132,7 +130,6 @@ internal static class ProgramExtensions
             new YandeGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
 
         builder.Services.AddScoped<IEventBus, DaprEventBus>();
-        builder.Services.AddScoped<PostMetadataAddedIntegrationEventHandler>();
         #endregion
 
         #region BackgroundJobs

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace AshLake.Services.YandeStore.Integration.ArchiverServices;
+namespace AshLake.Services.YandeStore.Application.Services;
 
 public interface IYandeArchiverService
 {

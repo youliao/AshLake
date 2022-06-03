@@ -1,5 +1,6 @@
 ﻿using AshLake.Services.YandeStore.Application.Posts;
-using AshLake.Services.YandeStore.Integration.ArchiverServices;
+using AshLake.Services.YandeStore.Application.Services;
+using AshLake.Services.YandeStore.Infrastructure.Services;
 using Dapr.Client;
 using HealthChecks.UI.Client;
 using Hellang.Middleware.ProblemDetails;
