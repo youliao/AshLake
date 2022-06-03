@@ -1,9 +1,10 @@
-﻿namespace AshLake.Services.Archiver.Application.BackgroundJobs;
+﻿using MongoDB.Driver;
 
+namespace AshLake.Services.Archiver.Application.BackgroundJobs;
+
+[Queue("yande")]
 public class YandeJob
 {
-    private const string _qName = "yande";
-
     private readonly IMetadataRepository<Yande,PostMetadata> _postMetadataRepository;
     private readonly IYandeGrabberService _grabberService;
     private readonly IEventBus _eventBus;
@@ -15,33 +16,28 @@ public class YandeJob
         _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
     }
 
-    [Queue(_qName)]
-    public async Task<int> AddOrUpdatePostMetadata(int startId, int endId, int limit)
+
+    public async Task<object> AddOrUpdatePostMetadata(int startId, int endId, int limit)
     {
-        var metadataList = (await _grabberService.GetPostMetadataList(startId, limit)).ToList();
+        var bsons = (await _grabberService.GetPostMetadataList(startId, limit)).ToList();
 
-        if (metadataList is null || metadataList.Count == 0) return 0;
+        if (bsons is null || bsons.Count == 0) return 0;
 
-        metadataList.RemoveAll(x => x["id"].AsInt32 > endId);
+        bsons.RemoveAll(x => x["id"].AsInt32 > endId);
 
-        foreach (var item in metadataList)
-        {
-            var postMetadata = new PostMetadata() { Data = item };
-            var status = await _postMetadataRepository.AddOrUpdateAsync(postMetadata);
+        var postMetadatas = bsons.Select(x => new PostMetadata() { Data = x });
+        var result = await _postMetadataRepository.AddRangeAsync(postMetadatas);
 
-            switch (status)
-            {
-                case EntityState.Added:
-                    await _eventBus.PublishAsync(new PostMetadataAddedIntegrationEvent<Yande>(postMetadata.Id));
-                    break;
-                case EntityState.Modified:
-                    await _eventBus.PublishAsync(new PostMetadataUpdatedIntegrationEvent<Yande>(postMetadata.Id));
-                    break;
-                default:
-                    break;
-            };
-        }
+        var processedIds = result.ProcessedRequests.Select(x => (x as ReplaceOneModel<PostMetadata>)!.Replacement.Id);
 
-        return metadataList.Count;
+        var addedIds = result.Upserts.Select(x => x.Id.AsString);
+        if (addedIds.Count() > 0)
+            await _eventBus.PublishAsync(new PostMetadataAddedIntegrationEvent<Yande>(addedIds.ToList()));
+
+        var modifiedIds = processedIds.Except(addedIds);
+        if(modifiedIds.Count()>0)
+            await _eventBus.PublishAsync(new PostMetadataModifiedIntegrationEvent<Yande>(addedIds.ToList()));
+
+        return new { Added = addedIds.Count(), Modified = modifiedIds.Count() };
     }
 }

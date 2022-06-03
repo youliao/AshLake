@@ -1,6 +1,6 @@
 ﻿using AshLake.BuildingBlocks.EventBus;
 using AshLake.Contracts.Archiver.Events;
-using AshLake.Services.YandeStore.Application.Services;
+using AshLake.Services.YandeStore.Application.BackgroundJobs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AshLake.Services.YandeStore.Controllers;
@@ -10,14 +10,14 @@ public class IntegrationEventController : ApiControllerBase
 {
     [HttpPost("YandePostMetadataAdded")]
     [Topic(DaprEventBus.DaprPubsubName, $"{nameof(PostMetadataAddedIntegrationEvent<ISouceSite>)}<{nameof(Yande)}>")]
-    public async Task HandleAsync(
-        PostMetadataAddedIntegrationEvent<Yande> e,
-        [FromServices] IYandeArchiverService archiverService)
+    public Task HandleAsync(
+        PostMetadataAddedIntegrationEvent<Yande> e)
     {
-        var metadata = await archiverService.GetPostMetadata(int.Parse(e.PostId));
+        foreach(var postId in e.PostIds)
+        {
+            BackgroundJob.Enqueue<PostJob>(x => x.AddPosts(postId));
+        }
 
-        var command = metadata.Adapt<AddPostCommand>();
-
-        await Mediator.Send(command);
+        return Task.CompletedTask;
     }
 }

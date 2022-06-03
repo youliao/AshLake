@@ -2,10 +2,11 @@
 
 public interface IPostRepository
 {
-    Task AddAsync(Post post);
-    Task UpdateAsync(Post post);
-    Task AddOrUpdateAsync(Post post);
-    Task DeleteAsync(int postId);
+    Task<int> AddAsync(Post post);
+    Task<int> AddRangeAsync(IEnumerable<Post> post);
+    Task<int> UpdateAsync(Post post);
+    Task<int> AddOrUpdateAsync(Post post);
+    Task<int> DeleteAsync(int postId);
     Task<Post?> GetAsync(int postId);
     Task<IEnumerable<int>> GetChildIdsAsync(int parentId);
     Task<IEnumerable<object>> FindAsync(List<string> tags, List<PostRating> rating, List<PostStatus> status);

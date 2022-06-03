@@ -2,6 +2,7 @@
 using AshLake.Services.YandeStore.Application.Services;
 using AshLake.Services.YandeStore.Infrastructure.Services;
 using Dapr.Client;
+using Hangfire.Redis;
 using HealthChecks.UI.Client;
 using Hellang.Middleware.ProblemDetails;
 using Newtonsoft.Json.Converters;
@@ -13,14 +14,6 @@ namespace AshLake.Services.YandeStore;
 internal static class ProgramExtensions
 {
     public const string AppName = "YandeStore API";
-
-    public static void AddCustomConfiguration(this WebApplicationBuilder builder)
-    {
-        // Disabled temporarily until https://github.com/dapr/dotnet-sdk/issues/779 is resolved.
-        //builder.Configuration.AddDaprSecretStore(
-        //    "eshop-secretstore",
-        //    new DaprClientBuilder().Build());
-    }
 
     public static void AddCustomControllers(this WebApplicationBuilder builder)
     {
@@ -39,15 +32,8 @@ internal static class ProgramExtensions
             // You can configure the middleware to re-throw certain types of exceptions, all exceptions or based on a predicate.
             // This is useful if you have upstream middleware that needs to do additional handling of exceptions.
             c.Rethrow<NotSupportedException>();
-
-            // This will map NotImplementedException to the 501 Not Implemented status code.
             c.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
-
-            // This will map HttpRequestException to the 503 Service Unavailable status code.
             c.MapToStatusCode<HttpRequestException>(StatusCodes.Status503ServiceUnavailable);
-
-            // Because exceptions are handled polymorphically, this will act as a "catch all" mapping, which is why it's added last.
-            // If an exception other than NotImplementedException and HttpRequestException is thrown, this will handle it.
             c.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
         });
     }
@@ -113,8 +99,7 @@ internal static class ProgramExtensions
         using var scope = app.Services.CreateScope();
 
         //var retryPolicy = CreateRetryPolicy(app.Configuration, Log.Logger);
-        var dbContextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<YandeDbContext>>();
-        var context = dbContextFactory.CreateDbContext();
+        var context = scope.ServiceProvider.GetRequiredService<YandeDbContext>();
         //retryPolicy.Execute(context.Database.Migrate);
         context.Database.Migrate();
         using var conn = (NpgsqlConnection)context.Database.GetDbConnection();
@@ -146,6 +131,29 @@ internal static class ProgramExtensions
         return Policy.NoOp();
     }
 
+    public static void AddCustomHangfire(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddHangfire(c =>
+        {
+            c.UseRedisStorage(builder.Configuration["HangfireConnectionString"],
+                              new RedisStorageOptions() { Db = (int)AshLakeApp.YandeStore });
+        });
+        builder.Services.AddHangfireServer(opt =>
+        {
+            opt.ShutdownTimeout = TimeSpan.FromMinutes(30);
+            opt.WorkerCount = 20;
+            opt.Queues = new[] { nameof(Post).ToLower() };
+        });
+    }
+
+    public static void UseCustomHangfireDashboard(this WebApplication app)
+    {
+        app.UseHangfireDashboard("/hangfire", new DashboardOptions
+        {
+            Authorization = new[] { new HangfireAuthorizationFilter() }
+        });
+    }
+
     public static void AddCustomApplicationServices(this WebApplicationBuilder builder)
     {
         builder.Services.AddSingleton<IYandeArchiverService>(_ =>
@@ -153,9 +161,8 @@ internal static class ProgramExtensions
 
         builder.Services.AddScoped<IPostRepository, PostRepository>();
 
-        builder.Services.AddPooledDbContextFactory<YandeDbContext>(
-            options => options.UseNpgsql(builder.Configuration["DBConnectionString"])
-                              .EnableServiceProviderCaching(false), 100);
+        builder.Services.AddDbContext<YandeDbContext>(
+            options => options.UseNpgsql(builder.Configuration["DBConnectionString"]));
     }
 
     public static void AddCustomTypeAdapterConfigs(this WebApplicationBuilder builder)

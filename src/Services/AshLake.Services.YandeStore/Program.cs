@@ -3,10 +3,13 @@ using Hellang.Middleware.ProblemDetails;
 const string appName = "YandeStore API";
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDaprClient();
+
 builder.AddCustomSerilog();
-builder.AddCustomSwagger();
 builder.AddCustomProblemDetails();
 builder.AddCustomControllers();
+builder.AddCustomSwagger();
+builder.AddCustomHangfire();
 builder.AddCustomTypeAdapterConfigs();
 builder.AddCustomApplicationServices();
 builder.AddCustomHealthChecks();
@@ -21,6 +24,7 @@ app.UseCloudEvents();
 app.MapControllers();
 app.MapSubscribeHandler();
 app.UseCustomHealthChecks();
+app.UseCustomHangfireDashboard();
 
 try
 {

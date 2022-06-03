@@ -2,63 +2,58 @@
 
 public class PostRepository : IPostRepository
 {
-    private readonly IDbContextFactory<YandeDbContext> _dbContextFactory;
+    private readonly YandeDbContext _dbContext;
 
-    public PostRepository(IDbContextFactory<YandeDbContext> dbContextFactory)
+    public PostRepository(YandeDbContext dbContext)
     {
-        _dbContextFactory = dbContextFactory ?? throw new ArgumentNullException(nameof(dbContextFactory));
+        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
 
-    public async Task AddAsync(Post post)
+    public Task<int> AddAsync(Post post)
     {
-        using var dbContext = _dbContextFactory.CreateDbContext();
-
-        await dbContext.AddAsync(post);
-        await dbContext.SaveChangesAsync();
+        _dbContext.Add(post);
+        return _dbContext.SaveChangesAsync();
     }
 
-    public Task UpdateAsync(Post post)
+    public Task<int> AddRangeAsync(IEnumerable<Post> post)
     {
-        using var dbContext = _dbContextFactory.CreateDbContext();
-
-        dbContext.Update(post);
-        return dbContext.SaveChangesAsync();
+        _dbContext.AddRange(post);
+        return _dbContext.SaveChangesAsync();
     }
 
-    public async Task AddOrUpdateAsync(Post post)
+    public Task<int> UpdateAsync(Post post)
     {
-        using var dbContext = _dbContextFactory.CreateDbContext();
+        _dbContext.Update(post);
+        return _dbContext.SaveChangesAsync();
+    }
 
-        var isExists = await dbContext.Posts.AnyAsync(x => x.Id == post.Id);
+    public async Task<int> AddOrUpdateAsync(Post post)
+    {
+        var isExists = await _dbContext.Posts.AnyAsync(x => x.Id == post.Id);
 
         if (isExists)
-            dbContext.Update(post); 
-        else 
-            await dbContext.AddAsync(post);
+            _dbContext.Update(post); 
+        else
+            _dbContext.Add(post);
 
-        await dbContext.SaveChangesAsync();
+        return await _dbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(int postId)
+    public async Task<int> DeleteAsync(int postId)
     {
-        using var dbContext = _dbContextFactory.CreateDbContext();
-
-        var post = await dbContext.Posts.SingleOrDefaultAsync(post => post.Id == postId) ?? throw new ArgumentNullException("Post does not exist");
-        dbContext.Remove(post);
-        await dbContext.SaveChangesAsync();
+        var post = await _dbContext.Posts.SingleOrDefaultAsync(post => post.Id == postId) ?? throw new ArgumentNullException("Post does not exist");
+        _dbContext.Remove(post);
+        return await _dbContext.SaveChangesAsync();
     }
 
     public async Task<Post?> GetAsync(int postId)
     {
-        using var dbContext = _dbContextFactory.CreateDbContext();
-        return await dbContext.Posts.SingleOrDefaultAsync(post => post.Id == postId);
+        return await _dbContext.Posts.SingleOrDefaultAsync(post => post.Id == postId);
     }
 
     public async Task<IEnumerable<int>> GetChildIdsAsync(int parentId)
     {
-        using var dbContext = _dbContextFactory.CreateDbContext();
-
-        return await dbContext.Posts.Where(post => post.ParentId == parentId)
+        return await _dbContext.Posts.Where(post => post.ParentId == parentId)
             .Select(post => post.Id)
             .ToListAsync();
     }
@@ -66,9 +61,7 @@ public class PostRepository : IPostRepository
     public async Task<IEnumerable<object>> FindAsync(List<string> tags, List<PostRating> ratings,
         List<PostStatus> statuses)
     {
-        using var dbContext = _dbContextFactory.CreateDbContext();
-
-        var queryable = dbContext.Posts.AsQueryable();
+        var queryable = _dbContext.Posts.AsQueryable();
 
         if (tags.Count > 0) 
             queryable = queryable.Where(post => tags.All(t => post.Tags.Contains(t)));

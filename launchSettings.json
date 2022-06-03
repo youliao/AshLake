@@ -9,10 +9,10 @@
       "serviceActions": {
         "archiver": "StartDebugging",
         "archiver-dapr": "StartWithoutDebugging",
-        "collector": "StartDebugging",
+        "collector": "StartWithoutDebugging",
         "collector-dapr": "StartWithoutDebugging",
         "dapr-placement": "StartWithoutDebugging",
-        "grabber": "StartDebugging",
+        "grabber": "StartWithoutDebugging",
         "grabber-dapr": "StartWithoutDebugging",
         "minio": "StartWithoutDebugging",
         "mongo": "StartWithoutDebugging",
@@ -26,6 +26,31 @@
         "yandestore-dapr": "StartWithoutDebugging",
         "zipkin": "StartWithoutDebugging",
         "healthcheck": "StartWithoutDebugging"
+      }
+    },
+    "OnlyStart": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "archiver": "StartWithoutDebugging",
+        "archiver-dapr": "StartWithoutDebugging",
+        "collector": "StartWithoutDebugging",
+        "collector-dapr": "StartWithoutDebugging",
+        "dapr-placement": "StartWithoutDebugging",
+        "grabber": "StartWithoutDebugging",
+        "grabber-dapr": "StartWithoutDebugging",
+        "healthcheck": "StartWithoutDebugging",
+        "minio": "StartWithoutDebugging",
+        "mongo": "StartWithoutDebugging",
+        "postgres": "StartWithoutDebugging",
+        "rabbitmq": "StartWithoutDebugging",
+        "redis-easycaching": "StartWithoutDebugging",
+        "redis-hangfire": "StartWithoutDebugging",
+        "redis-state": "StartWithoutDebugging",
+        "seq": "StartWithoutDebugging",
+        "yandestore": "StartWithoutDebugging",
+        "yandestore-dapr": "StartWithoutDebugging",
+        "zipkin": "StartWithoutDebugging"
       }
     }
   }

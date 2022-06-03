@@ -93,7 +93,8 @@ internal static class ProgramExtensions
     {
         builder.Services.AddHangfire(c =>
         {
-            c.UseRedisStorage(builder.Configuration["HangfireConnectionString"], new RedisStorageOptions() { Db = 1 });
+            c.UseRedisStorage(builder.Configuration["HangfireConnectionString"],
+                              new RedisStorageOptions() { Db = (int)AshLakeApp.Collector });
         });
         builder.Services.AddHangfireServer(opt =>
         {

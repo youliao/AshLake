@@ -1,2 +1,2 @@
 ﻿namespace AshLake.Contracts.Archiver.Events;
-public record PostMetadataAddedIntegrationEvent<T>(string PostId) : IntegrationEvent where T : ISouceSite;
+public record PostMetadataAddedIntegrationEvent<T>(IReadOnlyList<string> PostIds) : IntegrationEvent where T : ISouceSite;

@@ -16,10 +16,10 @@ public record AddPostCommand(string? Author,
                              PostStatus Status,
                              List<string> Tags,
                              DateTimeOffset UpdatedAt,
-                             int Width) : IRequest<Unit>;
+                             int Width) : IRequest<int>;
 
 
-public class CreateTodoListCommandHandler : IRequestHandler<AddPostCommand, Unit>
+public class CreateTodoListCommandHandler : IRequestHandler<AddPostCommand, int>
 {
     private readonly IPostRepository _repository;
 
@@ -28,7 +28,7 @@ public class CreateTodoListCommandHandler : IRequestHandler<AddPostCommand, Unit
         _repository = repository;
     }
 
-    public async Task<Unit> Handle(AddPostCommand command, CancellationToken cancellationToken)
+    public async Task<int> Handle(AddPostCommand command, CancellationToken cancellationToken)
     {
         var post = new Post(command.Author,
                             command.CreatedAt,
@@ -48,8 +48,7 @@ public class CreateTodoListCommandHandler : IRequestHandler<AddPostCommand, Unit
                             command.UpdatedAt,
                             command.Width);
 
-        await _repository.AddAsync(post);
-        return Unit.Value; 
+        return await _repository.AddAsync(post);
     }
 }
 

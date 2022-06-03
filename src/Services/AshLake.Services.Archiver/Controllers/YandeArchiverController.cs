@@ -30,7 +30,9 @@ public class YandeArchiverController : ControllerBase
         for (int i = command.StartId; i <= command.EndId; i += command.Step)
         {
             int startId = i;
-            calls.Add(x => x.AddOrUpdatePostMetadata(startId, command.EndId, command.Step));
+            int endId = i + command.Step - 1;
+            endId = Math.Min(endId, command.EndId);
+            calls.Add(x => x.AddOrUpdatePostMetadata(startId, endId, command.Step));
         }
 
         var jobIdList = backgroundJobClient.EnqueueSuccessively(calls);

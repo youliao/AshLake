@@ -16,6 +16,7 @@ services:
       POSTGRES_USER: root 
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: postgres
+    command: postgres -c 'max_connections=500'
     volumes:
       - yandestore-sqldata:/var/lib/postgresql/data
     ports:
@@ -95,7 +96,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - MongoDatabaseConnectionString=mongodb://mongoadmin:mongoadmin@mongo:27017
+      - MongoDatabaseConnectionString=mongodb://mongoadmin:mongoadmin@mongo:27017?maxPoolSize=500
       - HangfireConnectionString=redis-hangfire:6379
       - SeqServerUrl=http://seq
     ports:
@@ -140,7 +141,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - DBConnectionString=Host=postgres;Database=postgres;Username=root;Password=postgres;
+      - DBConnectionString=Host=postgres;Database=postgres;Username=root;Password=postgres;MaxPoolSize=500;
+      - HangfireConnectionString=redis-hangfire:6379
       - RetryMigrations=true
       - SeqServerUrl=http://seq
     ports:

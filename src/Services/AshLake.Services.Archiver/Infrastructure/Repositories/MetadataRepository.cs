@@ -15,30 +15,47 @@ public class MetadataRepository<TSouceSite, TMetadata> : IMetadataRepository<TSo
         _database = mongoClient.GetDatabase(databaseName);
     }
 
-    public async Task<EntityState> AddOrUpdateAsync(TMetadata post)
+    public async Task<EntityState> AddOrUpdateAsync(TMetadata metadata)
     {
         var before = await _database.GetEntityCollection<TMetadata>()
-            .FindOneAndReplaceAsync(x => x.Id == post.Data["id"],
-                                   post,
+            .FindOneAndReplaceAsync(x => x.Id == metadata.Data["id"],
+                                   metadata,
                                    new() { IsUpsert = true, ReturnDocument = ReturnDocument.Before });
 
         if (before is null) return EntityState.Added;
 
-        if (post.Equals(before)) return EntityState.Unchanged;
+        if (metadata.Equals(before)) return EntityState.Unchanged;
 
         return EntityState.Modified;
     }
 
-    public async Task<TMetadata> DeleteAsync(string postId)
+    public Task<BulkWriteResult<TMetadata>> AddRangeAsync(IEnumerable<TMetadata> metadatas)
     {
-        return await _database.GetEntityCollection<TMetadata>()
-            .FindOneAndDeleteAsync(x => x.Id == postId);
+        var bulkModels = new List<WriteModel<TMetadata>>();
+
+        foreach (var item in metadatas)
+        {
+            var upsertOne = new ReplaceOneModel<TMetadata>(
+                Builders<TMetadata>.Filter.Eq(x => x.Id, item.Id),
+                item)
+            { IsUpsert = true };
+
+            bulkModels.Add(upsertOne);
+        }
+
+        return _database.GetEntityCollection<TMetadata>().BulkWriteAsync(bulkModels);
     }
 
-    public async Task<TMetadata> SingleAsync(string postId)
+    public async Task<TMetadata> DeleteAsync(string id)
     {
         return await _database.GetEntityCollection<TMetadata>()
-            .Find(x => x.Id == postId)
+            .FindOneAndDeleteAsync(x => x.Id == id);
+    }
+
+    public async Task<TMetadata> SingleAsync(string id)
+    {
+        return await _database.GetEntityCollection<TMetadata>()
+            .Find(x => x.Id == id)
             .Limit(1)
             .SingleOrDefaultAsync();
     }

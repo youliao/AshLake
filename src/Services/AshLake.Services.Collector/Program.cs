@@ -1,7 +1,6 @@
 using Hellang.Middleware.ProblemDetails;
 
 var builder = WebApplication.CreateBuilder(args);
-
 builder.Services.AddDaprClient();
 
 builder.AddCustomSerilog();

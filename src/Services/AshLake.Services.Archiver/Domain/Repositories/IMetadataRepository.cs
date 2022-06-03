@@ -1,4 +1,4 @@
-﻿using AshLake.Services.Archiver.Infrastructure;
+﻿using MongoDB.Driver;
 
 namespace AshLake.Services.Archiver.Domain.Repositories;
 
@@ -8,7 +8,9 @@ public interface IMetadataRepository<TSouceSite, TMetadata>
 {
     Task<EntityState> AddOrUpdateAsync(TMetadata metadata);
 
-    Task<TMetadata> DeleteAsync(string postId);
+    Task<BulkWriteResult<TMetadata>> AddRangeAsync(IEnumerable<TMetadata> metadatas);
 
-    Task<TMetadata> SingleAsync(string postId);
+    Task<TMetadata> DeleteAsync(string id);
+
+    Task<TMetadata> SingleAsync(string id);
 }
