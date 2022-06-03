@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace AshLake.Services.Grabber.Domain.Repositories;
+namespace AshLake.Services.Grabber.Domain.Services;
 
-public interface IYandeSourceSiteRepository
+public interface IYandeSourceSiteService
 {
     Task<ImageFile> GetFileAsync(int id);
     Task<JToken> GetLatestPostAsync();

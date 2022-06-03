@@ -1,15 +1,15 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace AshLake.Services.Grabber.Infrastructure.Repositories;
+namespace AshLake.Services.Grabber.Infrastructure.Services;
 
-public class YandeSourceSiteRepository : IYandeSourceSiteRepository
+public class YandeSourceSiteService : IYandeSourceSiteService
 {
     private readonly IEasyCachingProvider _cachingProvider;
     private readonly HttpClient _httpClient;
 
     private readonly TimeSpan _cacheExpiration = TimeSpan.FromDays(1);
 
-    public YandeSourceSiteRepository(IEasyCachingProviderFactory factory, HttpClient httpClient)
+    public YandeSourceSiteService(IEasyCachingProviderFactory factory, HttpClient httpClient)
     {
         _cachingProvider = factory.GetCachingProvider(nameof(Yande));
         _httpClient = httpClient;
@@ -26,7 +26,7 @@ public class YandeSourceSiteRepository : IYandeSourceSiteRepository
     public async Task<JToken?> GetMetadataAsync(int id, bool cachedEnable = true)
     {
         string tags = $"id:{id}";
-        var cache = await _cachingProvider.GetAsync($"{id}",async () => (await GetMetadataListAsync(tags, 1, 1,false)).FirstOrDefault(), _cacheExpiration);
+        var cache = await _cachingProvider.GetAsync($"{id}", async () => (await GetMetadataListAsync(tags, 1, 1, false)).FirstOrDefault(), _cacheExpiration);
 
         return cache.Value;
     }

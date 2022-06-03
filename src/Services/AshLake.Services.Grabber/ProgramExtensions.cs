@@ -1,4 +1,5 @@
-﻿using EasyCaching.Core.Configurations;
+﻿using AshLake.Services.Grabber.Infrastructure.Services;
+using EasyCaching.Core.Configurations;
 using HealthChecks.UI.Client;
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -117,8 +118,8 @@ internal static class ProgramExtensions
     {
         #region Repositories
 
-        builder.Services.AddScoped<YandeSourceSiteRepository>();
-        builder.Services.AddHttpClient<IYandeSourceSiteRepository, YandeSourceSiteRepository>(config =>
+        builder.Services.AddScoped<YandeSourceSiteService>();
+        builder.Services.AddHttpClient<IYandeSourceSiteService, YandeSourceSiteService>(config =>
         {
             config.BaseAddress = new Uri(builder.Configuration["YandeUrl"]);
             config.Timeout = TimeSpan.FromSeconds(30);

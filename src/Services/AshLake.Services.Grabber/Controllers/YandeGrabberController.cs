@@ -2,9 +2,9 @@
 
 public class YandeGrabberController : ControllerBase
 {
-    private readonly IYandeSourceSiteRepository _sourceSiteRepository;
+    private readonly IYandeSourceSiteService _sourceSiteRepository;
 
-    public YandeGrabberController(IYandeSourceSiteRepository sourceSiteRepository)
+    public YandeGrabberController(IYandeSourceSiteService sourceSiteRepository)
     {
         _sourceSiteRepository = sourceSiteRepository ?? throw new ArgumentNullException(nameof(sourceSiteRepository));
     }
