@@ -24,7 +24,8 @@
         "seq": "StartWithoutDebugging",
         "yandestore": "StartDebugging",
         "yandestore-dapr": "StartWithoutDebugging",
-        "zipkin": "StartWithoutDebugging"
+        "zipkin": "StartWithoutDebugging",
+        "healthcheck": "StartWithoutDebugging"
       }
     }
   }

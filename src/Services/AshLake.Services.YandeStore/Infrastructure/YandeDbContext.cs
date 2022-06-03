@@ -9,7 +9,7 @@ public class YandeDbContext : DbContext
 
     public YandeDbContext(DbContextOptions<YandeDbContext> options) : base(options)
     {
-        //ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+        ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
     }
 
     static YandeDbContext()

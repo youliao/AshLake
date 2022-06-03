@@ -140,7 +140,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - DBConnectionString=Host=postgres;Database=postgres;Username=root;Password=postgres;Pooling=true;
+      - DBConnectionString=Host=postgres;Database=postgres;Username=root;Password=postgres;
       - RetryMigrations=true
       - SeqServerUrl=http://seq
     ports:

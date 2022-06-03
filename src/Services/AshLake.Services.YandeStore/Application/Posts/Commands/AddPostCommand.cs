@@ -48,7 +48,7 @@ public class CreateTodoListCommandHandler : IRequestHandler<AddPostCommand, Unit
                             command.UpdatedAt,
                             command.Width);
 
-        await _repository.AddOrUpdateAsync(post);
+        await _repository.AddAsync(post);
         return Unit.Value; 
     }
 }

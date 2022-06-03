@@ -1,6 +1,5 @@
 ﻿using AshLake.Services.YandeStore.Application.Posts;
 using AshLake.Services.YandeStore.Integration.ArchiverServices;
-using AshLake.Services.YandeStore.Integration.EventHandling;
 using Dapr.Client;
 using HealthChecks.UI.Client;
 using Hellang.Middleware.ProblemDetails;
@@ -113,8 +112,8 @@ internal static class ProgramExtensions
         using var scope = app.Services.CreateScope();
 
         //var retryPolicy = CreateRetryPolicy(app.Configuration, Log.Logger);
-        var context = scope.ServiceProvider.GetRequiredService<YandeDbContext>();
-
+        var dbContextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<YandeDbContext>>();
+        var context = dbContextFactory.CreateDbContext();
         //retryPolicy.Execute(context.Database.Migrate);
         context.Database.Migrate();
         using var conn = (NpgsqlConnection)context.Database.GetDbConnection();
@@ -151,11 +150,11 @@ internal static class ProgramExtensions
         builder.Services.AddSingleton<IYandeArchiverService>(_ =>
             new YandeArchiverService(DaprClient.CreateInvokeHttpClient("archiver")));
 
-        builder.Services.AddDbContextPool<YandeDbContext>(
-            options => options.UseNpgsql(builder.Configuration["DBConnectionString"]),100);
         builder.Services.AddScoped<IPostRepository, PostRepository>();
 
-        builder.Services.AddScoped<PostMetadataAddedIntegrationEventHandler>();
+        builder.Services.AddPooledDbContextFactory<YandeDbContext>(
+            options => options.UseNpgsql(builder.Configuration["DBConnectionString"])
+                              .EnableServiceProviderCaching(false), 100);
     }
 
     public static void AddCustomTypeAdapterConfigs(this WebApplicationBuilder builder)
