@@ -7,5 +7,6 @@ public enum ImageType
     PNG = 2,
     GIF = 3,
     BMP = 4,
-    TIF = 5
+    TIF = 5,
+    SWF = 6
 }

@@ -7,7 +7,7 @@ public class YandeSourceSiteService : IYandeSourceSiteService
     private readonly IEasyCachingProvider _cachingProvider;
     private readonly HttpClient _httpClient;
 
-    private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(20);
+    private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(30);
 
     public YandeSourceSiteService(IEasyCachingProviderFactory factory, HttpClient httpClient)
     {
@@ -23,15 +23,26 @@ public class YandeSourceSiteService : IYandeSourceSiteService
         return JArray.Parse(json).First!;
     }
 
-    public async Task<JToken?> GetMetadataAsync(int id, bool cachedEnable = true)
+    public async Task<JToken?> GetMetadataAsync(int id)
     {
-        string tags = $"id:{id}";
-        var cache = await _cachingProvider.GetAsync($"{id}", async () => (await GetMetadataListAsync(tags, 1, 1, false)).FirstOrDefault(), _cacheExpiration);
+        var idStr = id.ToString();
+        var cache = await _cachingProvider.GetAsync<JToken>(idStr);
+        if (cache.HasValue) return cache.Value;
 
-        return cache.Value;
+        var list = await GetMetadataListAsync(id, 100, 1);
+        if (list.Count() == 0) return null;
+
+        var dic = list!.ToDictionary(x => x[YandePostMetadataKeys.id]!.ToString(),
+                             x => x);
+        await _cachingProvider.SetAllAsync(dic, _cacheExpiration);
+
+        var first = list.First();
+        if (first[YandePostMetadataKeys.id]!.ToString() != idStr) return null;
+
+        return first;
     }
 
-    public async Task<IEnumerable<JToken>> GetMetadataListAsync(string tags, int limit, int page, bool cachedEnable = true)
+    public async Task<IEnumerable<JToken>> GetMetadataListAsync(string tags, int limit, int page)
     {
         string urlEncoded = WebUtility.UrlEncode(tags ?? "order:id");
 
@@ -39,7 +50,7 @@ public class YandeSourceSiteService : IYandeSourceSiteService
         Guard.Against.NullOrEmpty(json);
 
         var list = JArray.Parse(json).ToList();
-        if (list.Count == 0 || !cachedEnable) return list;
+        if (list.Count == 0) return list;
 
         var dic = list!.ToDictionary(x => x[YandePostMetadataKeys.id]!.ToString(),
                                      x => x);
@@ -48,11 +59,11 @@ public class YandeSourceSiteService : IYandeSourceSiteService
         return list;
     }
 
-    public async Task<IEnumerable<JToken>> GetMetadataListAsync(int startId, int limit, int page, bool cachedEnable = true)
+    public async Task<IEnumerable<JToken>> GetMetadataListAsync(int startId, int limit, int page)
     {
         string tags = $"id:>={startId} order:id";
 
-        return await GetMetadataListAsync(tags, limit, page, cachedEnable);
+        return await GetMetadataListAsync(tags, limit, page);
     }
 
     public async Task<ImageFile> GetPreviewAsync(int id)

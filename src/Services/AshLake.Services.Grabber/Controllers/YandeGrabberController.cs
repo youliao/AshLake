@@ -2,11 +2,11 @@
 
 public class YandeGrabberController : ControllerBase
 {
-    private readonly IYandeSourceSiteService _sourceSiteRepository;
+    private readonly IYandeSourceSiteService _sourceSiteService;
 
-    public YandeGrabberController(IYandeSourceSiteService sourceSiteRepository)
+    public YandeGrabberController(IYandeSourceSiteService sourceSiteService)
     {
-        _sourceSiteRepository = sourceSiteRepository ?? throw new ArgumentNullException(nameof(sourceSiteRepository));
+        _sourceSiteService = sourceSiteService ?? throw new ArgumentNullException(nameof(sourceSiteService));
     }
 
     [Route("/api/sites/yande/postmetadata")]
@@ -14,7 +14,7 @@ public class YandeGrabberController : ControllerBase
     [HttpGet]
     public async Task<ActionResult> GetPostsMetadataList(int startId, int limit, int page)
     {
-        var list = await _sourceSiteRepository.GetMetadataListAsync(startId, limit, page);
+        var list = await _sourceSiteService.GetMetadataListAsync(startId, limit, page);
         return Ok(list);
     }
 
@@ -24,7 +24,7 @@ public class YandeGrabberController : ControllerBase
     [HttpGet]
     public async Task<ActionResult> GetPostMetadata(int id)
     {
-        var metadata = await _sourceSiteRepository.GetMetadataAsync(id);
+        var metadata = await _sourceSiteService.GetMetadataAsync(id);
 
         if (metadata is null) return NotFound();
 
@@ -36,7 +36,7 @@ public class YandeGrabberController : ControllerBase
     [HttpGet]
     public async Task<ActionResult> GetLatestPost()
     {
-        var post = await _sourceSiteRepository.GetLatestPostAsync();
+        var post = await _sourceSiteService.GetLatestPostAsync();
         return Ok(post);
     }
 
@@ -48,7 +48,7 @@ public class YandeGrabberController : ControllerBase
     {
         try
         {
-            var image = await _sourceSiteRepository.GetPreviewAsync(id);
+            var image = await _sourceSiteService.GetPreviewAsync(id);
             Response.Headers.Add("postmd5", image.PostMD5);
             return File(image.Data, MimeMapping.MimeUtility.GetMimeMapping(image.Type.ToString()));
         }
@@ -70,7 +70,7 @@ public class YandeGrabberController : ControllerBase
     {
         try
         {
-            var image = await _sourceSiteRepository.GetFileAsync(id);
+            var image = await _sourceSiteService.GetFileAsync(id);
             Response.Headers.Add("postmd5", image.PostMD5);
             return File(image.Data, MimeMapping.MimeUtility.GetMimeMapping(image.Type.ToString()));
         }

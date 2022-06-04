@@ -138,9 +138,7 @@ internal static class ProgramExtensions
             c.UseRedisStorage(builder.Configuration["HangfireConnectionString"],
                               new RedisStorageOptions()
                               {
-                                  Db = (int)AshLakeApp.YandeStore,
-                                  SucceededListSize = 10000,
-                                  DeletedListSize= 1000
+                                  Db = (int)AshLakeApp.YandeStore
                               });
         });
         builder.Services.AddHangfireServer(opt =>
