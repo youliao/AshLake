@@ -36,7 +36,7 @@ public class YandeJob
 
         var modifiedIds = processedIds.Except(addedIds);
         if(modifiedIds.Count()>0)
-            await _eventBus.PublishAsync(new PostMetadataModifiedIntegrationEvent<Yande>(addedIds.ToList()));
+            await _eventBus.PublishAsync(new PostMetadataModifiedIntegrationEvent<Yande>(modifiedIds.ToList()));
 
         return new { Added = addedIds.Count(), Modified = modifiedIds.Count() };
     }

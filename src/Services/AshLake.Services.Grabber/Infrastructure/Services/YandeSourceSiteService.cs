@@ -7,7 +7,7 @@ public class YandeSourceSiteService : IYandeSourceSiteService
     private readonly IEasyCachingProvider _cachingProvider;
     private readonly HttpClient _httpClient;
 
-    private readonly TimeSpan _cacheExpiration = TimeSpan.FromDays(1);
+    private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(20);
 
     public YandeSourceSiteService(IEasyCachingProviderFactory factory, HttpClient httpClient)
     {

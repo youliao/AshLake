@@ -25,6 +25,8 @@ services:
   redis-easycaching:
 
   redis-hangfire:
+    volumes:
+      - hangfire-data:/data
 
   redis-state:
 
@@ -46,6 +48,9 @@ services:
   seq:
     environment:
       - ACCEPT_EULA=Y
+      - SEQ_CACHE_SYSTEMRAMTARGET=0.2
+    volumes:
+      - seq-data:/data
     ports:
       - "5340:80"
 
@@ -160,6 +165,8 @@ services:
       - "./dapr/components/:/components"
 
 volumes:
+  seq-data:
+  hangfire-data:
   archiver-nosqldata:
     external: false
   collector-objectdata:

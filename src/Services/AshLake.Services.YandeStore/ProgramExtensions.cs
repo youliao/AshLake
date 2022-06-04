@@ -44,8 +44,8 @@ internal static class ProgramExtensions
 
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(builder.Configuration)
-            .WriteTo.Console()
-            .WriteTo.Seq(seqServerUrl)
+            .WriteTo.Console( Serilog.Events.LogEventLevel.Warning)
+            .WriteTo.Seq(seqServerUrl,  Serilog.Events.LogEventLevel.Information)
             .Enrich.WithProperty("ApplicationName", AppName)
             .CreateLogger();
 
@@ -136,7 +136,12 @@ internal static class ProgramExtensions
         builder.Services.AddHangfire(c =>
         {
             c.UseRedisStorage(builder.Configuration["HangfireConnectionString"],
-                              new RedisStorageOptions() { Db = (int)AshLakeApp.YandeStore });
+                              new RedisStorageOptions()
+                              {
+                                  Db = (int)AshLakeApp.YandeStore,
+                                  SucceededListSize = 10000,
+                                  DeletedListSize= 1000
+                              });
         });
         builder.Services.AddHangfireServer(opt =>
         {
@@ -167,7 +172,6 @@ internal static class ProgramExtensions
 
     public static void AddCustomTypeAdapterConfigs(this WebApplicationBuilder builder)
     {
-        PostTypeAdapterConfigs.AddPostCommandTypeAdapterConfig();
-        PostTypeAdapterConfigs.PostMetadataDtoTypeAdapterConfig();
+        PostTypeAdapterConfigs.Load();
     }
 }

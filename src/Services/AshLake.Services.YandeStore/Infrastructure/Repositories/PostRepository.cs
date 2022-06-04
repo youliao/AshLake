@@ -59,18 +59,20 @@ public class PostRepository : IPostRepository
     }
 
     public async Task<IEnumerable<object>> FindAsync(List<string> tags, List<PostRating> ratings,
-        List<PostStatus> statuses)
+        List<PostStatus> statuses, int limit)
     {
         var queryable = _dbContext.Posts.AsQueryable();
 
-        if (tags.Count > 0) 
+        if (tags.Count > 0)
             queryable = queryable.Where(post => tags.All(t => post.Tags.Contains(t)));
 
-        if (ratings.Count > 0) 
+        if (ratings.Count > 0)
             queryable = queryable.Where(post => ratings.Contains(post.Rating));
 
-        if (statuses.Count > 0) 
+        if (statuses.Count > 0)
             queryable = queryable.Where(post => statuses.Contains(post.Status));
+
+        queryable.Take(limit);
 
         return await queryable.Select(post => new { post.Id, post.Md5 }).ToListAsync();
     }

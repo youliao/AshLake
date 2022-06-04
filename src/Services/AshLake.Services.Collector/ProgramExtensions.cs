@@ -45,8 +45,8 @@ internal static class ProgramExtensions
 
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(builder.Configuration)
-            .WriteTo.Console()
-            .WriteTo.Seq(seqServerUrl)
+            .WriteTo.Console(Serilog.Events.LogEventLevel.Warning)
+            .WriteTo.Seq(seqServerUrl, Serilog.Events.LogEventLevel.Information)
             .Enrich.WithProperty("ApplicationName", AppName)
             .CreateLogger();
 

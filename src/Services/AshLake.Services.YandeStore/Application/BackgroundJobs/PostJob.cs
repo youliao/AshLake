@@ -14,10 +14,18 @@ public class PostJob
         _archiverService = archiverService ?? throw new ArgumentNullException(nameof(archiverService));
     }
 
-    public async Task<int> AddPosts(string postId)
+    public async Task<int> AddPost(string postId)
     {
         var metadata = await _archiverService.GetPostMetadata(int.Parse(postId));
         var command = metadata.Adapt<AddPostCommand>();
+
+        return await _mediator.Send(command);
+    }
+
+    public async Task<int> UpdatePost(string postId)
+    {
+        var metadata = await _archiverService.GetPostMetadata(int.Parse(postId));
+        var command = metadata.Adapt<UpdatePostCommand>();
 
         return await _mediator.Send(command);
     }
