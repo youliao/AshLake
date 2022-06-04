@@ -28,16 +28,15 @@ public class YandeJob
         var postMetadatas = bsons.Select(x => new PostMetadata() { Data = x });
         var result = await _postMetadataRepository.AddRangeAsync(postMetadatas);
 
-        var processedIds = result.ProcessedRequests.Select(x => (x as ReplaceOneModel<PostMetadata>)!.Replacement.Id);
+        if (result.AddedIds.Count > 0)
+            await _eventBus.PublishAsync(new PostMetadataAddedIntegrationEvent<Yande>(result.AddedIds));
 
-        var addedIds = result.Upserts.Select(x => x.Id.AsString);
-        if (addedIds.Count() > 0)
-            await _eventBus.PublishAsync(new PostMetadataAddedIntegrationEvent<Yande>(addedIds.ToList()));
+        if (result.ModifiedIds.Count > 0)
+            await _eventBus.PublishAsync(new PostMetadataModifiedIntegrationEvent<Yande>(result.ModifiedIds));
 
-        var modifiedIds = processedIds.Except(addedIds);
-        if(modifiedIds.Count()>0)
-            await _eventBus.PublishAsync(new PostMetadataModifiedIntegrationEvent<Yande>(modifiedIds.ToList()));
+        if (result.UnchangedIds.Count > 0)
+            await _eventBus.PublishAsync(new PostMetadataUnchangedIntegrationEvent<Yande>(result.UnchangedIds));
 
-        return new { Added = addedIds.Count(), Modified = modifiedIds.Count() };
+        return new { Added = result.AddedIds.Count, Modified = result.ModifiedIds.Count, Unchanged = result.UnchangedIds.Count };
     }
 }

@@ -19,6 +19,20 @@ public class YandeArchiverController : ControllerBase
         return Ok(metadata.Data);
     }
 
+    [Route("/api/sites/yande/postmetadata")]
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> GetPostMetadataByIdsAsync(string ids,
+    [FromServices] IMetadataRepository<Yande, PostMetadata> repository)
+    {
+        if (string.IsNullOrWhiteSpace(ids)) return Ok(new List<PostMetadata>());
+
+        var idArr = ids.Split(',');
+        var list = await repository.FindAsync(x => idArr.Contains(x.Id)) ?? new List<PostMetadata>();
+
+        return Ok(list.Select(x => x.Data));
+    }
+
     [Route("/api/sites/yande/postmetadatajobs/batches")]
     [HttpPost]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]

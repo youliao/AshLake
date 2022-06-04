@@ -1,4 +1,5 @@
 ﻿using AshLake.Services.YandeStore.Application.Services;
+using MongoDB.Bson.Serialization;
 
 namespace AshLake.Services.YandeStore.Infrastructure.Services;
 
@@ -15,5 +16,12 @@ public class YandeArchiverService : IYandeArchiverService
     {
         var json = await _httpClient.GetStringAsync($"/api/sites/yande/postmetadata/{id}");
         return BsonDocument.Parse(json);
+    }
+
+    public async Task<IEnumerable<BsonDocument>> GetPostMetadataByIds(IEnumerable<int> ids)
+    {
+        var json = await _httpClient.GetStringAsync($"/api/sites/yande/postmetadata?ids={string.Join(',', ids)}");
+        var list = BsonSerializer.Deserialize<BsonArray>(json).Select(x => x.AsBsonDocument);
+        return list;
     }
 }

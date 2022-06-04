@@ -1,4 +1,5 @@
 ﻿using MongoDB.Driver;
+using System.Linq.Expressions;
 
 namespace AshLake.Services.Archiver.Domain.Repositories;
 
@@ -8,9 +9,11 @@ public interface IMetadataRepository<TSouceSite, TMetadata>
 {
     Task<EntityState> AddOrUpdateAsync(TMetadata metadata);
 
-    Task<BulkWriteResult<TMetadata>> AddRangeAsync(IEnumerable<TMetadata> metadatas);
+    Task<AddRangeResult> AddRangeAsync(IEnumerable<TMetadata> metadatas);
 
     Task<TMetadata> DeleteAsync(string id);
 
     Task<TMetadata> SingleAsync(string id);
+
+    Task<IEnumerable<TMetadata>> FindAsync(Expression<Func<TMetadata, bool>> filter);
 }

@@ -1,6 +1,6 @@
 ﻿namespace AshLake.Services.YandeStore.Application.Posts.Commands;
 
-public record AddPostCommand(string? Author,
+public record AddOrUpdatePostCommand(string? Author,
                              DateTimeOffset CreatedAt,
                              string FileExt,
                              long FileSize,
@@ -19,16 +19,16 @@ public record AddPostCommand(string? Author,
                              int Width) : IRequest<int>;
 
 
-public class CreateTodoListCommandHandler : IRequestHandler<AddPostCommand, int>
+public class AddPostCommandHandler : IRequestHandler<AddOrUpdatePostCommand, int>
 {
     private readonly IPostRepository _repository;
 
-    public CreateTodoListCommandHandler(IPostRepository repository)
+    public AddPostCommandHandler(IPostRepository repository)
     {
         _repository = repository;
     }
 
-    public async Task<int> Handle(AddPostCommand command, CancellationToken cancellationToken)
+    public async Task<int> Handle(AddOrUpdatePostCommand command, CancellationToken cancellationToken)
     {
         var post = new Post(command.Author,
                             command.CreatedAt,
@@ -48,7 +48,7 @@ public class CreateTodoListCommandHandler : IRequestHandler<AddPostCommand, int>
                             command.UpdatedAt,
                             command.Width);
 
-        return await _repository.AddAsync(post);
+        return await _repository.AddOrUpdateAsync(post);
     }
 }
 

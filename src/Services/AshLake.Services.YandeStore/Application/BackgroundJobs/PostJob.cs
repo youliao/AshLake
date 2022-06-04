@@ -14,19 +14,39 @@ public class PostJob
         _archiverService = archiverService ?? throw new ArgumentNullException(nameof(archiverService));
     }
 
-    public async Task<int> AddPost(string postId)
+    public async Task<int> AddOrUpdatePost(string postId)
     {
         var metadata = await _archiverService.GetPostMetadata(int.Parse(postId));
-        var command = metadata.Adapt<AddPostCommand>();
+        var command = metadata.Adapt<AddOrUpdatePostCommand>();
 
         return await _mediator.Send(command);
     }
 
-    public async Task<int> UpdatePost(string postId)
+    public async Task<int> BulkAddPosts(IEnumerable<string> postIds)
     {
-        var metadata = await _archiverService.GetPostMetadata(int.Parse(postId));
-        var command = metadata.Adapt<UpdatePostCommand>();
+        var bsons = await _archiverService.GetPostMetadataByIds(postIds.Select(x=>int.Parse(x)));
+        var commands = new List<AddOrUpdatePostCommand>();
+        foreach(var item in bsons)
+        {
+            var command = item.Adapt<AddOrUpdatePostCommand>();
+            commands.Add(command);
+        }
 
-        return await _mediator.Send(command);
+        return await _mediator.Send(new BulkAddPostsCommand(commands));
     }
+
+    public async Task<int> BulkUpdatePosts(IEnumerable<string> postIds)
+    {
+        var bsons = await _archiverService.GetPostMetadataByIds(postIds.Select(x => int.Parse(x)));
+        var commands = new List<AddOrUpdatePostCommand>();
+        foreach (var item in bsons)
+        {
+            var command = item.Adapt<AddOrUpdatePostCommand>();
+            commands.Add(command);
+        }
+
+        return await _mediator.Send(new BulkUpdatePostsCommand(commands));
+    }
+
+
 }

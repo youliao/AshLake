@@ -21,6 +21,8 @@ app.MapSubscribeHandler();
 app.UseCustomHealthChecks();
 app.UseCustomHangfireDashboard();
 
+app.MapGet("/", () => Results.Redirect("/swagger"));
+
 try
 {
     app.Logger.LogInformation("Starting web host ({ApplicationName})...", ProgramExtensions.AppName);

@@ -74,7 +74,14 @@ internal static class ProgramExtensions
         builder.Services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddDapr()
-            .AddRedis(builder.Configuration["HangfireConnectionString"], "hangfire", null, new string[] { "redis" });
+            .AddRedis(builder.Configuration["HangfireConnectionString"],
+                      "hangfire",
+                      null,
+                      new string[] { "redis" })
+            .AddUrlGroup(new Uri($"http://{builder.Configuration["ImageStorageEndpoint"]}/minio/health/live"),
+                         "imagestorage",
+                         null,
+                         new string[] { "minio" });
     }
 
     public static void UseCustomHealthChecks(this WebApplication app)

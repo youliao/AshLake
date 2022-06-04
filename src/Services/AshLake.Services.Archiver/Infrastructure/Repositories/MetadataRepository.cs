@@ -1,5 +1,6 @@
 ﻿using AshLake.Services.Archiver.Infrastructure.Extensions;
 using MongoDB.Driver;
+using System.Linq.Expressions;
 
 namespace AshLake.Services.Archiver.Infrastructure.Repositories;
 
@@ -29,27 +30,59 @@ public class MetadataRepository<TSouceSite, TMetadata> : IMetadataRepository<TSo
         return EntityState.Modified;
     }
 
-    public Task<BulkWriteResult<TMetadata>> AddRangeAsync(IEnumerable<TMetadata> metadatas)
+    public async Task<AddRangeResult> AddRangeAsync(IEnumerable<TMetadata> metadatas)
     {
-        var bulkModels = new List<WriteModel<TMetadata>>();
+        var ids = metadatas.Select(x => x.Id);
+        var exists = await _database.GetEntityCollection<TMetadata>().Find(x => ids.Contains(x.Id)).ToListAsync() ?? new List<TMetadata>();
 
+        var addedIds = new List<string>();
+        var modifiedIds = new List<string>();
+        var unchangedIds = new List<string>();
+
+        var bulkModels = new List<WriteModel<TMetadata>>();
         foreach (var item in metadatas)
         {
-            var upsertOne = new ReplaceOneModel<TMetadata>(
-                Builders<TMetadata>.Filter.Eq(x => x.Id, item.Id),
-                item)
-            { IsUpsert = true };
+            var one = exists.SingleOrDefault(x => x.Id == item.Id);
+            if (one is null)
+            {
+                var insertOne = new InsertOneModel<TMetadata>(item);
+                bulkModels.Add(insertOne);
+                addedIds.Add(item.Id);
+                continue;
+            }
 
-            bulkModels.Add(upsertOne);
+            if (one.Data == item.Data)
+            {
+                unchangedIds.Add(item.Id);
+                continue;
+            }
+
+            var replaceOne = new ReplaceOneModel<TMetadata>(
+                Builders<TMetadata>.Filter.Eq(x => x.Id, item.Id),
+                item);
+
+            bulkModels.Add(replaceOne);
+            modifiedIds.Add(item.Id);
         }
 
-        return _database.GetEntityCollection<TMetadata>().BulkWriteAsync(bulkModels);
+        var addRangeResult = new AddRangeResult(addedIds, modifiedIds, unchangedIds);
+
+        if (bulkModels.Count == 0) return addRangeResult;
+
+        var bulkWriteResult = await _database.GetEntityCollection<TMetadata>().BulkWriteAsync(bulkModels);
+
+        return addRangeResult;
     }
 
     public async Task<TMetadata> DeleteAsync(string id)
     {
         return await _database.GetEntityCollection<TMetadata>()
             .FindOneAndDeleteAsync(x => x.Id == id);
+    }
+
+    public async Task<IEnumerable<TMetadata>> FindAsync(Expression<Func<TMetadata,bool>> filter)
+    {
+        return await _database.GetEntityCollection<TMetadata>().Find(filter).ToListAsync();
     }
 
     public async Task<TMetadata> SingleAsync(string id)

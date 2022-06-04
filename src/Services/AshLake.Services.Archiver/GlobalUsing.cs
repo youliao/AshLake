@@ -9,7 +9,7 @@ global using Hangfire;
 global using AshLake.Services.Archiver.Application.BackgroundJobs;
 global using AshLake.Contracts.Seedwork.SourceSites;
 global using AshLake.Services.Archiver.Domain.Entities;
-global using AshLake.Services.Archiver.Integration.GrabberServices;
+global using AshLake.Services.Archiver.Infrastructure.Services;
 global using Dapr.Client;
 global using Ardalis.GuardClauses;
 global using AshLake.Services.Archiver.Infrastructure;

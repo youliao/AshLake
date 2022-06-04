@@ -21,6 +21,8 @@ app.MapControllers();
 app.MapSubscribeHandler();
 app.UseCustomHealthChecks();
 
+app.MapGet("/", () => Results.Redirect("/swagger"));
+
 try
 {
     app.Logger.LogInformation("Starting web host ({ApplicationName})...", ProgramExtensions.AppName);

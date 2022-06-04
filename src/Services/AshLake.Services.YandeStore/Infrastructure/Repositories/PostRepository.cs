@@ -17,7 +17,13 @@ public class PostRepository : IPostRepository
 
     public Task<int> AddRangeAsync(IEnumerable<Post> post)
     {
-        _dbContext.AddRange(post);
+        _dbContext.AddRangeAsync(post.ToList());
+        return _dbContext.SaveChangesAsync();
+    }
+
+    public Task<int> UpdateRangeAsync(IEnumerable<Post> post)
+    {
+        _dbContext.UpdateRange(post.ToList());
         return _dbContext.SaveChangesAsync();
     }
 
@@ -72,8 +78,9 @@ public class PostRepository : IPostRepository
         if (statuses.Count > 0)
             queryable = queryable.Where(post => statuses.Contains(post.Status));
 
-        queryable.Take(limit);
+        queryable = queryable.Take(limit);
 
+        queryable = queryable.OrderBy(post => post.Id);
         return await queryable.Select(post => new { post.Id, post.Md5 }).ToListAsync();
     }
 }

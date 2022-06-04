@@ -10,26 +10,18 @@ public class IntegrationEventController : ApiControllerBase
 {
     [HttpPost("YandePostMetadataAdded")]
     [Topic(DaprEventBus.DaprPubsubName, $"{nameof(PostMetadataAddedIntegrationEvent<ISouceSite>)}<{nameof(Yande)}>")]
-    public Task HandleAsync(
-        PostMetadataAddedIntegrationEvent<Yande> e)
+    public Task HandleAsync(PostMetadataAddedIntegrationEvent<Yande> e)
     {
-        foreach(var postId in e.PostIds)
-        {
-            BackgroundJob.Enqueue<PostJob>(x => x.AddPost(postId));
-        }
+        BackgroundJob.Enqueue<PostJob>(x => x.BulkAddPosts(e.PostIds));
 
         return Task.CompletedTask;
     }
 
     [HttpPost("YandePostMetadataModified")]
     [Topic(DaprEventBus.DaprPubsubName, $"{nameof(PostMetadataModifiedIntegrationEvent<ISouceSite>)}<{nameof(Yande)}>")]
-    public Task HandleAsync(
-    PostMetadataModifiedIntegrationEvent<Yande> e)
+    public Task HandleAsync(PostMetadataModifiedIntegrationEvent<Yande> e)
     {
-        foreach (var postId in e.PostIds)
-        {
-            BackgroundJob.Enqueue<PostJob>(x => x.UpdatePost(postId));
-        }
+        BackgroundJob.Enqueue<PostJob>(x => x.BulkUpdatePosts(e.PostIds));
 
         return Task.CompletedTask;
     }

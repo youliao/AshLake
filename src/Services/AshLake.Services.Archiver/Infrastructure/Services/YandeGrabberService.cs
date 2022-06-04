@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson.Serialization;
 
-namespace AshLake.Services.Archiver.Integration.GrabberServices;
+namespace AshLake.Services.Archiver.Infrastructure.Services;
 
 public class YandeGrabberService : IYandeGrabberService
 {
