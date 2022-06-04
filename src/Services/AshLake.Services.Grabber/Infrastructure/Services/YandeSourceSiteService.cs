@@ -50,11 +50,6 @@ public class YandeSourceSiteService : IYandeSourceSiteService
         Guard.Against.NullOrEmpty(json);
 
         var list = JArray.Parse(json).ToList();
-        if (list.Count == 0) return list;
-
-        var dic = list!.ToDictionary(x => x[YandePostMetadataKeys.id]!.ToString(),
-                                     x => x);
-        await _cachingProvider.SetAllAsync(dic, _cacheExpiration);
 
         return list;
     }

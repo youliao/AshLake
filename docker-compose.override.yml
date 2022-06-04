@@ -81,6 +81,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
       - YandeUrl=https://yande.re/
+      - DanbooruUrl=https://danbooru.donmai.us/
+      - KonachanUrl=https://konachan.com/
       - EasycachingRedisHost=redis-easycaching
       - SeqServerUrl=http://seq
     ports:

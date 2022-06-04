@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="6.0.2" />
+    <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="6.0.4" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.4" />
     <PackageReference Include="Dapr.AspNetCore" Version="1.7.0" />
     <PackageReference Include="Dapr.Extensions.Configuration" Version="1.7.0" />

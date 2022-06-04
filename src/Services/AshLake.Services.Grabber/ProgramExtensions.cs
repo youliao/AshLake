@@ -20,7 +20,7 @@ internal static class ProgramExtensions
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(builder.Configuration)
             .WriteTo.Console(Serilog.Events.LogEventLevel.Warning)
-            .WriteTo.Seq(seqServerUrl, Serilog.Events.LogEventLevel.Information)
+            .WriteTo.Seq(seqServerUrl, Serilog.Events.LogEventLevel.Warning)
             .Enrich.WithProperty("ApplicationName", AppName)
             .CreateLogger();
 
@@ -96,9 +96,22 @@ internal static class ProgramExtensions
         builder.Services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddDapr()
-            .AddRedis(builder.Configuration["EasycachingRedisHost"], "easycaching", null, new string[] { "redis" })
-            .AddUrlGroup(new Uri("https://yande.re/post.json?limit=1"), "yande", null, new string[] { "soucesites" })
-            .AddUrlGroup(new Uri("https://danbooru.donmai.us/posts.json?limit=1"), "danbooru", null, new string[] { "soucesites" });
+            .AddRedis(builder.Configuration["EasycachingRedisHost"],
+                      "easycaching",
+                      null,
+                      new string[] { "redis" })
+            .AddUrlGroup(new Uri(builder.Configuration["YandeUrl"]),
+                         "yande",
+                         null,
+                         new string[] { "soucesites" })
+            .AddUrlGroup(new Uri(builder.Configuration["DanbooruUrl"]),
+                         "danbooru",
+                         null,
+                         new string[] { "soucesites" })
+            .AddUrlGroup(new Uri(builder.Configuration["KonachanUrl"]),
+                         "konachan",
+                         null,
+                         new string[] { "soucesites" });
     }
 
     public static void UseCustomHealthChecks(this WebApplication app)
@@ -116,7 +129,7 @@ internal static class ProgramExtensions
 
     public static void AddCustomApplicationServices(this WebApplicationBuilder builder)
     {
-        #region Repositories
+        #region Services
 
         builder.Services.AddScoped<YandeSourceSiteService>();
         builder.Services.AddHttpClient<IYandeSourceSiteService, YandeSourceSiteService>(config =>

@@ -45,7 +45,7 @@ internal static class ProgramExtensions
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(builder.Configuration)
             .WriteTo.Console( Serilog.Events.LogEventLevel.Warning)
-            .WriteTo.Seq(seqServerUrl,  Serilog.Events.LogEventLevel.Information)
+            .WriteTo.Seq(seqServerUrl,  Serilog.Events.LogEventLevel.Warning)
             .Enrich.WithProperty("ApplicationName", AppName)
             .CreateLogger();
 
@@ -72,6 +72,7 @@ internal static class ProgramExtensions
         builder.Services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddDapr()
+            .AddRedis(builder.Configuration["HangfireConnectionString"], "hangfire", null, new string[] { "redis" })
             .AddNpgSql(
                 builder.Configuration["DBConnectionString"],
                 name: "database",
