@@ -10,5 +10,6 @@ public interface IPostRepository
     Task<int> DeleteAsync(int postId);
     Task<Post?> GetAsync(int postId);
     Task<IEnumerable<int>> GetChildIdsAsync(int parentId);
-    Task<IEnumerable<object>> FindAsync(List<string> tags, List<PostRating> ratings, List<PostStatus> statuses, PostOrderColumn orderColumn, int limit, int? referenceId);
+    Task<IEnumerable<object>> KeysetPaginateAsync(List<string> tags, List<PostRating> ratings,
+        List<PostStatus> statuses, PostOrderColumn orderColumn, KeysetPaginationDirection direction, int pageSize, int? referenceId);
 }

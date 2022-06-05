@@ -1,6 +1,4 @@
-﻿using MR.EntityFrameworkCore.KeysetPagination;
-
-namespace AshLake.Services.YandeStore.Infrastructure.Repositories;
+﻿namespace AshLake.Services.YandeStore.Infrastructure.Repositories;
 
 public class PostRepository : IPostRepository
 {
@@ -66,8 +64,8 @@ public class PostRepository : IPostRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<object>> FindAsync(List<string> tags, List<PostRating> ratings,
-        List<PostStatus> statuses, PostOrderColumn orderColumn, int limit, int? referenceId)
+    public async Task<IEnumerable<object>> KeysetPaginateAsync(List<string> tags, List<PostRating> ratings,
+        List<PostStatus> statuses, PostOrderColumn orderColumn, KeysetPaginationDirection direction, int pageSize, int? referenceId)
     {
         var queryable = _dbContext.Posts.AsQueryable();
 
@@ -84,20 +82,15 @@ public class PostRepository : IPostRepository
 
         queryable = orderColumn switch
         {
-            PostOrderColumn.ID => queryable.KeysetPaginateQuery(b => b.Ascending(entity => entity.Id), KeysetPaginationDirection.Forward, reference),
-            PostOrderColumn.FILESIZE => queryable.KeysetPaginateQuery(b => b.Ascending(entity => entity.FileSize).Ascending(entity => entity.Id), KeysetPaginationDirection.Forward, reference),
-            PostOrderColumn.SCORE => queryable.KeysetPaginateQuery(b => b.Ascending(entity => entity.Score).Ascending(entity => entity.Id), KeysetPaginationDirection.Forward, reference),
-            PostOrderColumn.HEIGHT => queryable.KeysetPaginateQuery(b => b.Ascending(entity => entity.Height).Ascending(entity => entity.Id), KeysetPaginationDirection.Forward, reference),
-            PostOrderColumn.WIDTH => queryable.KeysetPaginateQuery(b => b.Ascending(entity => entity.Width).Ascending(entity => entity.Id), KeysetPaginationDirection.Forward, reference),
-            PostOrderColumn.ID_DESC => queryable.KeysetPaginateQuery(b => b.Descending(entity => entity.Id), KeysetPaginationDirection.Forward, reference),
-            PostOrderColumn.FILESIZE_DESC => queryable.KeysetPaginateQuery(b => b.Descending(entity => entity.FileSize).Ascending(entity => entity.Id), KeysetPaginationDirection.Forward, reference),
-            PostOrderColumn.SCORE_DESC => queryable.KeysetPaginateQuery(b => b.Descending(entity => entity.Score).Ascending(entity => entity.Id), KeysetPaginationDirection.Forward, reference),
-            PostOrderColumn.HEIGHT_DESC => queryable.KeysetPaginateQuery(b => b.Descending(entity => entity.Height).Ascending(entity => entity.Id), KeysetPaginationDirection.Forward, reference),
-            PostOrderColumn.WIDTH_DESC => queryable.KeysetPaginateQuery(b => b.Descending(entity => entity.Width).Ascending(entity => entity.Id), KeysetPaginationDirection.Forward, reference),
+            PostOrderColumn.ID => queryable.KeysetPaginateQuery(b => b.Ascending(entity => entity.Id), direction, reference),
+            PostOrderColumn.FILESIZE => queryable.KeysetPaginateQuery(b => b.Ascending(entity => entity.FileSize).Ascending(entity => entity.Id), direction, reference),
+            PostOrderColumn.SCORE => queryable.KeysetPaginateQuery(b => b.Ascending(entity => entity.Score).Ascending(entity => entity.Id), direction, reference),
+            PostOrderColumn.HEIGHT => queryable.KeysetPaginateQuery(b => b.Ascending(entity => entity.Height).Ascending(entity => entity.Id), direction, reference),
+            PostOrderColumn.WIDTH => queryable.KeysetPaginateQuery(b => b.Ascending(entity => entity.Width).Ascending(entity => entity.Id), direction, reference),
             _ => throw new NotSupportedException(orderColumn.ToString())
         };
 
-        queryable = queryable.Take(limit);
+        queryable = queryable.Take(pageSize);
         return await queryable.Select(entity => new { entity.Id, entity.Md5 }).ToListAsync();
     }
 }

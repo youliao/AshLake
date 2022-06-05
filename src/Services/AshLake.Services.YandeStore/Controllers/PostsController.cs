@@ -30,7 +30,7 @@ public class PostsController : ApiControllerBase
     [Route("/api/posts")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<PostListItemDto>> GetPostsAsync([FromQuery]GetPostsQuery query)
+    public async Task<ActionResult<PostListItemDto>> GetPostsByKeysetPaginationAsync([FromQuery]GetPostsByKeysetPaginationQuery query)
     {
         var list = await Mediator.Send(query);
 

@@ -30,3 +30,4 @@ global using AshLake.Services.YandeStore.Infrastructure.Repositories;
 global using MongoDB.Bson;
 global using Hangfire;
 global using AshLake.Contracts.Seedwork;
+global using MR.EntityFrameworkCore.KeysetPagination;
