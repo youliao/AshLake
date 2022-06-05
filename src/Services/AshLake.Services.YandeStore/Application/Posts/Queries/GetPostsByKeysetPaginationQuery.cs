@@ -3,7 +3,7 @@
 public record GetPostsByKeysetPaginationQuery(List<string>? Tags,
                             List<PostRating>? Ratings,
                             List<PostStatus>? Statuses,
-                            PostOrderColumn? OrderColumn,
+                            PostSortColumn? OrderColumn,
                             int? Limit,
                             int? referenceId,
                             KeysetPaginationDirection? Direction) : IRequest<IEnumerable<PostListItemDto>>;
@@ -22,7 +22,7 @@ public class GetPostsByKeysetPaginationQueryHandler : IRequestHandler<GetPostsBy
         var objectList = await _repository.KeysetPaginateAsync(query.Tags ?? new List<string>(),
             query.Ratings ?? new List<PostRating>(),
             query.Statuses ?? new List<PostStatus>(),
-            query.OrderColumn ?? PostOrderColumn.ID,
+            query.OrderColumn ?? PostSortColumn.ID,
             query.Direction ?? KeysetPaginationDirection.Forward,
             query.Limit ?? 100,
             query.referenceId);

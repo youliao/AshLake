@@ -65,7 +65,7 @@ public class PostRepository : IPostRepository
     }
 
     public async Task<IEnumerable<object>> KeysetPaginateAsync(List<string> tags, List<PostRating> ratings,
-        List<PostStatus> statuses, PostOrderColumn orderColumn, KeysetPaginationDirection direction, int pageSize, int? referenceId)
+        List<PostStatus> statuses, PostSortColumn orderColumn, KeysetPaginationDirection direction, int pageSize, int? referenceId)
     {
         var queryable = _dbContext.Posts.AsQueryable();
 
@@ -82,15 +82,24 @@ public class PostRepository : IPostRepository
 
         queryable = orderColumn switch
         {
-            PostOrderColumn.ID => queryable.KeysetPaginateQuery(b => b.Ascending(entity => entity.Id), direction, reference),
-            PostOrderColumn.FILESIZE => queryable.KeysetPaginateQuery(b => b.Ascending(entity => entity.FileSize).Ascending(entity => entity.Id), direction, reference),
-            PostOrderColumn.SCORE => queryable.KeysetPaginateQuery(b => b.Ascending(entity => entity.Score).Ascending(entity => entity.Id), direction, reference),
-            PostOrderColumn.HEIGHT => queryable.KeysetPaginateQuery(b => b.Ascending(entity => entity.Height).Ascending(entity => entity.Id), direction, reference),
-            PostOrderColumn.WIDTH => queryable.KeysetPaginateQuery(b => b.Ascending(entity => entity.Width).Ascending(entity => entity.Id), direction, reference),
+            PostSortColumn.ID => queryable.KeysetPaginateQuery(b => b.Ascending(entity => entity.Id), direction, reference),
+            PostSortColumn.FILESIZE => queryable.KeysetPaginateQuery(b => b.Ascending(entity => entity.FileSize).Ascending(entity => entity.Id), direction, reference),
+            PostSortColumn.SCORE => queryable.KeysetPaginateQuery(b => b.Ascending(entity => entity.Score).Ascending(entity => entity.Id), direction, reference),
+            PostSortColumn.HEIGHT => queryable.KeysetPaginateQuery(b => b.Ascending(entity => entity.Height).Ascending(entity => entity.Id), direction, reference),
+            PostSortColumn.WIDTH => queryable.KeysetPaginateQuery(b => b.Ascending(entity => entity.Width).Ascending(entity => entity.Id), direction, reference),
+            PostSortColumn.ID_DESC => queryable.KeysetPaginateQuery(b => b.Descending(entity => entity.Id), direction, reference),
+            PostSortColumn.FILESIZE_DESC => queryable.KeysetPaginateQuery(b => b.Descending(entity => entity.FileSize).Descending(entity => entity.Id), direction, reference),
+            PostSortColumn.SCORE_DESC => queryable.KeysetPaginateQuery(b => b.Descending(entity => entity.Score).Descending(entity => entity.Id), direction, reference),
+            PostSortColumn.HEIGHT_DESC => queryable.KeysetPaginateQuery(b => b.Descending(entity => entity.Height).Descending(entity => entity.Id), direction, reference),
+            PostSortColumn.WIDTH_DESC => queryable.KeysetPaginateQuery(b => b.Descending(entity => entity.Width).Descending(entity => entity.Id), direction, reference),
             _ => throw new NotSupportedException(orderColumn.ToString())
         };
 
         queryable = queryable.Take(pageSize);
-        return await queryable.Select(entity => new { entity.Id, entity.Md5 }).ToListAsync();
+        var data = await queryable.Select(entity => new { entity.Id, entity.Md5 }).ToListAsync();
+        //EnsureCorrectOrder
+        if (direction == KeysetPaginationDirection.Backward) data.Reverse();
+
+        return data;
     }
 }
