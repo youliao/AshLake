@@ -49,7 +49,7 @@ public class YandeGrabberController : ControllerBase
         try
         {
             var image = await _sourceSiteService.GetPreviewAsync(id);
-            Response.Headers.Add("postmd5", image.PostMD5);
+            Response.Headers.Add("X-MD5", image.PostMD5);
             return File(image.Data, MimeMapping.MimeUtility.GetMimeMapping(image.Type.ToString()));
         }
         catch (ArgumentException)
@@ -71,7 +71,7 @@ public class YandeGrabberController : ControllerBase
         try
         {
             var image = await _sourceSiteService.GetFileAsync(id);
-            Response.Headers.Add("postmd5", image.PostMD5);
+            Response.Headers.Add("X-MD5", image.PostMD5);
             return File(image.Data, MimeMapping.MimeUtility.GetMimeMapping(image.Type.ToString()));
         }
         catch(ArgumentException)

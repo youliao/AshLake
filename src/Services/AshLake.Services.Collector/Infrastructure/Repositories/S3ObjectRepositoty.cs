@@ -7,18 +7,11 @@ namespace AshLake.Services.Collector.Infrastructure;
 public class S3ObjectRepositoty<T> : IS3ObjectRepositoty<T> where T : IS3Object
 {
     private readonly MinioClient _minioClient;
-    private readonly string _bucketName;
+    private readonly string _bucketName = typeof(T).Name;
 
     public S3ObjectRepositoty(MinioClient minioClient)
     {
         _minioClient = minioClient ?? throw new ArgumentNullException(nameof(minioClient));
-
-        _bucketName = typeof(T).Name switch
-        {
-            nameof(PostFile) => "post-file",
-            nameof(PostPreview) => "post-preview",
-            _ => throw new NotSupportedException(typeof(T).Name)
-        };
 
         CreateBucketAsync(_bucketName).Wait();
     }

@@ -12,7 +12,6 @@ namespace AshLake.Services.Collector.Controllers;
 //        PostMetadataAddedIntegrationEvent<Yande> e)
 //    {
 //        BackgroundJob.Enqueue<YandeJob>(x => x.AddFile(int.Parse(e.PostId)));
-//        BackgroundJob.Enqueue<YandeJob>(x => x.AddPreview(int.Parse(e.PostId)));
 //        return Task.CompletedTask;
 //    }
 //}
