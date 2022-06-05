@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AshLake.Services.YandeStore.Infrastructure.Repositories.Posts;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AshLake.Services.YandeStore.Controllers;
 
@@ -30,10 +31,12 @@ public class PostsController : ApiControllerBase
     [Route("/api/posts")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<PostListItemDto>> GetPostsByKeysetPaginationAsync([FromQuery]GetPostsByKeysetPaginationQuery query)
+    public async Task<ActionResult<IEnumerable<PostListItemDto>>> GetPostsByKeysetPaginationAsync([FromQuery]GetPostsByKeysetPaginationQuery query)
     {
-        var list = await Mediator.Send(query);
+        var paginationResult = await Mediator.Send(query);
 
-        return Ok(list);
+        Response.Headers.Add("X-Pagination", paginationResult.GetMetadata().GetJson());
+
+        return Ok(paginationResult.Data);
     }
 }

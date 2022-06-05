@@ -1,4 +1,5 @@
 ﻿using AshLake.Services.YandeStore.Infrastructure.Extensions;
+using AshLake.Services.YandeStore.Infrastructure.Repositories.Posts;
 
 namespace AshLake.Services.YandeStore.Application.Posts;
 

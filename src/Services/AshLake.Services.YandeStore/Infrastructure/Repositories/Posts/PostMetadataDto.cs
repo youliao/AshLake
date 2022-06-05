@@ -1,4 +1,4 @@
-﻿namespace AshLake.Services.YandeStore.Application.Posts.Queries;
+﻿namespace AshLake.Services.YandeStore.Infrastructure.Repositories.Posts;
 
 public record PostMetadataDto(string? Author,
     IEnumerable<int>? ChildIds,

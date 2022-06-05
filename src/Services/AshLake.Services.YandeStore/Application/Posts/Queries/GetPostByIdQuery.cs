@@ -1,4 +1,6 @@
-﻿namespace AshLake.Services.YandeStore.Application.Posts.Queries;
+﻿using AshLake.Services.YandeStore.Infrastructure.Repositories.Posts;
+
+namespace AshLake.Services.YandeStore.Application.Posts.Queries;
 
 public record GetPostByIdQuery(int PostId) : IRequest<PostMetadataDto?>;
 

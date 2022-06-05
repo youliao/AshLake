@@ -1,4 +1,6 @@
-﻿namespace AshLake.Services.YandeStore.Application.Posts.Queries;
+﻿using AshLake.Services.YandeStore.Infrastructure.Repositories.Posts;
+
+namespace AshLake.Services.YandeStore.Application.Posts.Queries;
 
 public record GetPostsByKeysetPaginationQuery(List<string>? Tags,
                             List<PostRating>? Ratings,
@@ -6,9 +8,9 @@ public record GetPostsByKeysetPaginationQuery(List<string>? Tags,
                             PostSortColumn? OrderColumn,
                             int? Limit,
                             int? referenceId,
-                            KeysetPaginationDirection? Direction) : IRequest<IEnumerable<PostListItemDto>>;
+                            KeysetPaginationDirection? Direction) : IRequest<KeysetPaginationResult<PostListItemDto>>;
 
-public class GetPostsByKeysetPaginationQueryHandler : IRequestHandler<GetPostsByKeysetPaginationQuery, IEnumerable<PostListItemDto>>
+public class GetPostsByKeysetPaginationQueryHandler : IRequestHandler<GetPostsByKeysetPaginationQuery, KeysetPaginationResult<PostListItemDto>>
 {
     private readonly IPostRepository _repository;
 
@@ -17,9 +19,9 @@ public class GetPostsByKeysetPaginationQueryHandler : IRequestHandler<GetPostsBy
         _repository = repository;
     }
 
-    public async Task<IEnumerable<PostListItemDto>> Handle(GetPostsByKeysetPaginationQuery query, CancellationToken cancellationToken)
+    public async Task<KeysetPaginationResult<PostListItemDto>> Handle(GetPostsByKeysetPaginationQuery query, CancellationToken cancellationToken)
     {
-        var objectList = await _repository.KeysetPaginateAsync(query.Tags ?? new List<string>(),
+        var paginationResult = await _repository.KeysetPaginateAsync(query.Tags ?? new List<string>(),
             query.Ratings ?? new List<PostRating>(),
             query.Statuses ?? new List<PostStatus>(),
             query.OrderColumn ?? PostSortColumn.ID,
@@ -27,7 +29,6 @@ public class GetPostsByKeysetPaginationQueryHandler : IRequestHandler<GetPostsBy
             query.Limit ?? 100,
             query.referenceId);
 
-        var dtoList = objectList.Adapt<IEnumerable<PostListItemDto>>();
-        return dtoList;
+        return paginationResult;
     }
 }

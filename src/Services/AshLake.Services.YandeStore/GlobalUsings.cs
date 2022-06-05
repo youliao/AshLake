@@ -31,3 +31,4 @@ global using MongoDB.Bson;
 global using Hangfire;
 global using AshLake.Contracts.Seedwork;
 global using MR.EntityFrameworkCore.KeysetPagination;
+global using AshLake.BuildingBlocks.Pagination;

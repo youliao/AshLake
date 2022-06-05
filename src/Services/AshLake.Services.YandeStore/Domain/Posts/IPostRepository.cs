@@ -1,4 +1,6 @@
-﻿namespace AshLake.Services.YandeStore.Domain.Posts;
+﻿using AshLake.Services.YandeStore.Infrastructure.Repositories.Posts;
+
+namespace AshLake.Services.YandeStore.Domain.Posts;
 
 public interface IPostRepository
 {
@@ -10,6 +12,6 @@ public interface IPostRepository
     Task<int> DeleteAsync(int postId);
     Task<Post?> GetAsync(int postId);
     Task<IEnumerable<int>> GetChildIdsAsync(int parentId);
-    Task<IEnumerable<object>> KeysetPaginateAsync(List<string> tags, List<PostRating> ratings,
+    Task<KeysetPaginationResult<PostListItemDto>> KeysetPaginateAsync(List<string> tags, List<PostRating> ratings,
         List<PostStatus> statuses, PostSortColumn orderColumn, KeysetPaginationDirection direction, int pageSize, int? referenceId);
 }

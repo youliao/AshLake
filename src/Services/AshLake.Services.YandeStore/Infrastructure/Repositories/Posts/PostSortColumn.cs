@@ -1,4 +1,4 @@
-﻿namespace AshLake.Services.YandeStore.Infrastructure.Repositories;
+﻿namespace AshLake.Services.YandeStore.Infrastructure.Repositories.Posts;
 
 public enum PostSortColumn
 {
