@@ -88,7 +88,7 @@ internal static class ProgramExtensions
     {
         app.UseHangfireDashboard("/hangfire", new DashboardOptions
         {
-            Authorization = new[] { new HangfireAuthorizationFilter() }
+            Authorization = new[] { new HangfireExtensions() }
         });
     }
 

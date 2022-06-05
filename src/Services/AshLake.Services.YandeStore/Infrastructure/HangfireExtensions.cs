@@ -1,6 +1,9 @@
-﻿using Hangfire.Dashboard;
+﻿using Hangfire.Common;
+using Hangfire.Dashboard;
+using Hangfire.States;
+using Hangfire.Storage;
 
-namespace AshLake.Services.Archiver.Infrastructure;
+namespace AshLake.Services.YandeStore.Infrastructure;
 
 public class HangfireAuthorizationFilter : IDashboardAuthorizationFilter
 {
