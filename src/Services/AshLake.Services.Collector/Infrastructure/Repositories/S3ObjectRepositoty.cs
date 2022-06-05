@@ -1,13 +1,12 @@
 ﻿using AshLake.Services.Collector.Domain.Repositories;
 using Minio;
-using Minio.DataModel;
 
 namespace AshLake.Services.Collector.Infrastructure;
 
 public class S3ObjectRepositoty<T> : IS3ObjectRepositoty<T> where T : IS3Object
 {
     private readonly MinioClient _minioClient;
-    private readonly string _bucketName = typeof(T).Name;
+    private readonly string _bucketName = typeof(T).Name.ToLower();
 
     public S3ObjectRepositoty(MinioClient minioClient)
     {

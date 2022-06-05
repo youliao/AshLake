@@ -3,13 +3,13 @@
     "Docker Compose": {
       "commandName": "DockerCompose",
       "composeLaunchAction": "LaunchBrowser",
-      "composeLaunchServiceName": "archiver",
+      "composeLaunchServiceName": "collector",
       "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger",
       "commandVersion": "1.0",
       "serviceActions": {
         "archiver": "StartDebugging",
         "archiver-dapr": "StartWithoutDebugging",
-        "collector": "StartWithoutDebugging",
+        "collector": "StartDebugging",
         "collector-dapr": "StartWithoutDebugging",
         "dapr-placement": "StartWithoutDebugging",
         "grabber": "StartDebugging",
@@ -22,7 +22,7 @@
         "redis-state": "StartWithoutDebugging",
         "rabbitmq": "StartWithoutDebugging",
         "seq": "StartWithoutDebugging",
-        "yandestore": "StartWithoutDebugging",
+        "yandestore": "StartDebugging",
         "yandestore-dapr": "StartWithoutDebugging",
         "zipkin": "StartWithoutDebugging",
         "healthcheck": "StartWithoutDebugging"

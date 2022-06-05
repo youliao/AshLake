@@ -1,13 +1,7 @@
-﻿using AshLake.BuildingBlocks.EventBus.Abstractions;
-using AshLake.Contracts.Archiver.Events;
-using AshLake.Contracts.Seedwork;
-using AshLake.Services.Collector.Application.Services;
-using AshLake.Services.Collector.Domain.Repositories;
-using Hangfire;
+﻿using AshLake.Services.Collector.Domain.Repositories;
 
 namespace AshLake.Services.Collector.Application.BackgroundJobs;
 
-[Queue("yande")]
 public class YandeJob
 {
     private readonly IS3ObjectRepositoty<PostFile> _fileRepositoty;

@@ -29,7 +29,7 @@ public class YandeSourceSiteService : IYandeSourceSiteService
         var cache = await _cachingProvider.GetAsync<JToken>(idStr);
         if (cache.HasValue) return cache.Value;
 
-        var list = await GetMetadataListAsync(id, 100, 1);
+        var list = await GetMetadataListAsync(id - 100, 200, 1);
         if (list.Count() == 0) return null;
 
         var dic = list!.ToDictionary(x => x[YandePostMetadataKeys.id]!.ToString(),
