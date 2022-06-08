@@ -36,9 +36,6 @@ services:
       - collector
       - yandestore
 
-  dapr-placement:
-    image: "daprio/dapr:latest"
-
   grabber:
     image: ${DOCKER_REGISTRY-}ashlakeservicesgrabber
     build:

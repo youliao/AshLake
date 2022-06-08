@@ -1,7 +1,7 @@
-﻿using AshLake.Services.Collector.Domain.Repositories;
+﻿using AshLake.Services.Compressor.Domain.Repositories;
 using Minio;
 
-namespace AshLake.Services.Collector.Infrastructure;
+namespace AshLake.Services.Compressor.Infrastructure.Repositories;
 
 public class S3ObjectRepositoty<T> : IS3ObjectRepositoty<T> where T : IS3Object
 {
