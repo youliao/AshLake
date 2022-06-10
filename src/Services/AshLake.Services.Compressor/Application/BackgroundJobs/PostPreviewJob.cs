@@ -37,8 +37,6 @@ public class PostPreviewJob
 
     public async Task<string> AddPreview(string objectKey)
     {
-        var postMd5 = Path.GetFileNameWithoutExtension(objectKey);
-
         if (objectKey is null) return EntityState.None.ToString();
 
         var isExists = await _previewRepositoty.ExistsAsync(objectKey);
@@ -53,7 +51,9 @@ public class PostPreviewJob
         ResizeTo(ref image, 300);
         image.SaveAsJpeg(resizedData);
 
-        var preview = new PostPreview(Path.GetFileNameWithoutExtension(objectKey), resizedData);
+        var postMd5 = Path.GetFileNameWithoutExtension(objectKey);
+
+        var preview = new PostPreview(postMd5, resizedData);
         await _previewRepositoty.PutAsync(preview);
         return isExists ? EntityState.Modified.ToString() : EntityState.Added.ToString();
     }

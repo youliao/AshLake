@@ -15,7 +15,7 @@ public class YandeSourceSiteService : IYandeSourceSiteService
         _httpClient = httpClient;
     }
 
-    public async Task<JToken> GetLatestPostAsync()
+    public async Task<JToken> GetLatestPostMetadataAsync()
     {
         var json = await _httpClient.GetStringAsync("/post.json?limit=1");
         Guard.Against.NullOrEmpty(json);
@@ -23,13 +23,13 @@ public class YandeSourceSiteService : IYandeSourceSiteService
         return JArray.Parse(json).First!;
     }
 
-    public async Task<JToken?> GetMetadataAsync(int id)
+    public async Task<JToken?> GetPostMetadataAsync(int id)
     {
         var idStr = id.ToString();
         var cache = await _cachingProvider.GetAsync<JToken>(idStr);
         if (cache.HasValue) return cache.Value;
 
-        var list = await GetMetadataListAsync(id - 100, 200, 1);
+        var list = await GetPostMetadataListAsync(id - 100, 200, 1);
         if (list.Count() == 0) return null;
 
         var dic = list!.ToDictionary(x => x[YandePostMetadataKeys.id]!.ToString(),
@@ -42,28 +42,26 @@ public class YandeSourceSiteService : IYandeSourceSiteService
         return first;
     }
 
-    public async Task<IEnumerable<JToken>> GetMetadataListAsync(string tags, int limit, int page)
+    public async Task<IEnumerable<JToken>> GetPostMetadataListAsync(string tags, int limit, int page)
     {
         string urlEncoded = WebUtility.UrlEncode(tags ?? "order:id");
 
         var json = await _httpClient.GetStringAsync($"/post.json?tags={urlEncoded}&limit={limit}&page={page}");
         Guard.Against.NullOrEmpty(json);
 
-        var list = JArray.Parse(json).ToList();
-
-        return list;
+        return JArray.Parse(json).ToList();
     }
 
-    public async Task<IEnumerable<JToken>> GetMetadataListAsync(int startId, int limit, int page)
+    public async Task<IEnumerable<JToken>> GetPostMetadataListAsync(int startId, int limit, int page)
     {
         string tags = $"id:>={startId} order:id";
 
-        return await GetMetadataListAsync(tags, limit, page);
+        return await GetPostMetadataListAsync(tags, limit, page);
     }
 
     public async Task<ImageFile> GetPreviewAsync(int id)
     {
-        var metadata = await GetMetadataAsync(id);
+        var metadata = await GetPostMetadataAsync(id);
         Guard.Against.Null(metadata, nameof(metadata));
 
         var status = metadata[YandePostMetadataKeys.status]?.ToString();
@@ -87,7 +85,7 @@ public class YandeSourceSiteService : IYandeSourceSiteService
 
     public async Task<ImageFile> GetFileAsync(int id)
     {
-        var metadata = await GetMetadataAsync(id);
+        var metadata = await GetPostMetadataAsync(id);
         Guard.Against.Null(metadata, nameof(metadata));
 
         var status = metadata[YandePostMetadataKeys.status]?.ToString();
@@ -111,5 +109,13 @@ public class YandeSourceSiteService : IYandeSourceSiteService
         Guard.Against.Null(data, nameof(data));
 
         return new ImageFile(md5, imagetType, data);
+    }
+
+    public async Task<IEnumerable<JToken>> GetTagMetadataListAsync(int? type,int limit, int page)
+    {
+        var json = await _httpClient.GetStringAsync($"/tag.json?limit={limit}&page={page}&type={type}");
+        Guard.Against.NullOrEmpty(json);
+
+        return JArray.Parse(json).ToList();
     }
 }

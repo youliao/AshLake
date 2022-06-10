@@ -12,9 +12,9 @@ public class YandeGrabberController : ControllerBase
     [Route("/api/sites/yande/postmetadata")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpGet]
-    public async Task<ActionResult> GetPostsMetadataList(int startId, int limit, int page)
+    public async Task<ActionResult> GetPostMetadataList(int startId, int limit, int page)
     {
-        var list = await _sourceSiteService.GetMetadataListAsync(startId, limit, page);
+        var list = await _sourceSiteService.GetPostMetadataListAsync(startId, limit, page);
         return Ok(list);
     }
 
@@ -24,7 +24,7 @@ public class YandeGrabberController : ControllerBase
     [HttpGet]
     public async Task<ActionResult> GetPostMetadata(int id)
     {
-        var metadata = await _sourceSiteService.GetMetadataAsync(id);
+        var metadata = await _sourceSiteService.GetPostMetadataAsync(id);
 
         if (metadata is null) return NotFound();
 
@@ -36,7 +36,7 @@ public class YandeGrabberController : ControllerBase
     [HttpGet]
     public async Task<ActionResult> GetLatestPost()
     {
-        var post = await _sourceSiteService.GetLatestPostAsync();
+        var post = await _sourceSiteService.GetLatestPostMetadataAsync();
         return Ok(post);
     }
 
@@ -82,5 +82,14 @@ public class YandeGrabberController : ControllerBase
         {
             throw;
         }
+    }
+
+    [Route("/api/sites/yande/tags")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [HttpGet]
+    public async Task<ActionResult> GetTags(int? type, int limit, int page)
+    {
+        var list = await _sourceSiteService.GetTagMetadataListAsync(type,limit, page);
+        return Ok(list);
     }
 }

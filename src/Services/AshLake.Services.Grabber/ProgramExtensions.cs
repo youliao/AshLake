@@ -135,7 +135,7 @@ internal static class ProgramExtensions
         builder.Services.AddHttpClient<IYandeSourceSiteService, YandeSourceSiteService>(config =>
         {
             config.BaseAddress = new Uri(builder.Configuration["YandeUrl"]);
-            config.Timeout = TimeSpan.FromSeconds(30);
+            config.Timeout = TimeSpan.FromSeconds(60);
             config.DefaultRequestHeaders.AcceptEncoding.Add(
                 new System.Net.Http.Headers.StringWithQualityHeaderValue("gzip"));
 
