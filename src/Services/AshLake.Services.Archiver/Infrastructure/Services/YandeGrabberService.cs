@@ -42,4 +42,13 @@ public class YandeGrabberService : IYandeGrabberService
 
         return $"{postmd5}.{fileExt}";
     }
+
+    public async Task<IEnumerable<BsonDocument>> GetTagMetadataList(int type)
+    {
+        var json = await _httpClient.GetStringAsync($"/api/sites/yande/tagmetadata?Type={type}&Page=1&Limit=0");
+        var list = BsonSerializer.Deserialize<BsonArray>(json)
+            .Select(x => x.AsBsonDocument);
+
+        return list ?? new List<BsonDocument>();
+    }
 }

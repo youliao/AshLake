@@ -85,6 +85,11 @@ public class MetadataRepository<TSouceSite, TMetadata> : IMetadataRepository<TSo
         return await _database.GetEntityCollection<TMetadata>().Find(filter).ToListAsync();
     }
 
+    public async Task<IEnumerable<TMetadata>> FindAsync(FilterDefinition<TMetadata> filter)
+    {
+        return await _database.GetEntityCollection<TMetadata>().Find(filter).ToListAsync();
+    }
+
     public async Task<TMetadata> SingleAsync(string id)
     {
         return await _database.GetEntityCollection<TMetadata>()

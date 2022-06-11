@@ -1,6 +1,6 @@
-﻿using AshLake.Services.Archiver.Application.Commands.CreateJobsForAddOrUpdateMetadata;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using AshLake.Services.Archiver.Infrastructure.Extensions;
+using AshLake.Services.Archiver.Application.Commands;
 
 namespace AshLake.Services.Archiver.Controllers;
 
@@ -33,6 +33,18 @@ public class YandeArchiverController : ControllerBase
         return Ok(list.Select(x => x.Data));
     }
 
+    [Route("/api/sites/yande/tagmetadata")]
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> GetTagMetadataByTypeAsync(int type,
+    [FromServices] IMetadataRepository<Yande, TagMetadata> repository)
+    {
+        var filter = new MongoDB.Driver.FilterDefinitionBuilder<TagMetadata>().Eq(YandeTagMetadataKeys.type, type);
+        var list = await repository.FindAsync(filter);
+
+        return Ok(list.Select(x => x.Data));
+    }
+
     [Route("/api/sites/yande/postmetadatajobs/batches")]
     [HttpPost]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
@@ -48,6 +60,30 @@ public class YandeArchiverController : ControllerBase
             endId = Math.Min(endId, command.EndId);
             calls.Add(x => x.AddOrUpdatePostMetadata(startId, endId, command.Step));
         }
+
+        if (calls.Count == 0) return Ok();
+
+        var jobIdList = backgroundJobClient.EnqueueSuccessively(calls);
+        return Ok(jobIdList);
+    }
+
+    [Route("/api/sites/yande/tagmetadatajobs/batches")]
+    [HttpPost]
+    [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
+    public ActionResult<List<string>> CreateTagMetadataJobsAsync(CreateTagMetadataJobsCommand command,
+            [FromServices] IBackgroundJobClient backgroundJobClient)
+    {
+        var calls = new List<Expression<Func<YandeJob, Task>>>();
+
+        IEnumerable<int> tagTypes = command.TagTypes ?? new List<int>() { 0, 1, 3, 4, 5, 6 };
+
+        foreach(var item in tagTypes)
+        {
+            var type = item;
+            calls.Add(x => x.AddOrUpdateTagMetadata(type));
+        }
+
+        if (calls.Count == 0) return Ok();
 
         var jobIdList = backgroundJobClient.EnqueueSuccessively(calls);
         return Ok(jobIdList);

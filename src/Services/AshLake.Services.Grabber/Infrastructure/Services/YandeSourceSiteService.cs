@@ -113,7 +113,7 @@ public class YandeSourceSiteService : IYandeSourceSiteService
 
     public async Task<IEnumerable<JToken>> GetTagMetadataListAsync(int? type,int limit, int page)
     {
-        var json = await _httpClient.GetStringAsync($"/tag.json?limit={limit}&page={page}&type={type}");
+        var json = await _httpClient.GetStringAsync($"/tag.json?order=date&limit={limit}&page={page}&type={type}");
         Guard.Against.NullOrEmpty(json);
 
         return JArray.Parse(json).ToList();
