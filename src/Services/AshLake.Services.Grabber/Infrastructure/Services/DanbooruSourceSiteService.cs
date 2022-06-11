@@ -1,15 +1,13 @@
-﻿using Newtonsoft.Json.Linq;
+﻿namespace AshLake.Services.Grabber.Infrastructure.Services;
 
-namespace AshLake.Services.Grabber.Infrastructure.Services;
-
-public class YandeSourceSiteService : IYandeSourceSiteService
+public class DanbooruSourceSiteService : IDanbooruSourceSiteService
 {
     private readonly IEasyCachingProvider _cachingProvider;
     private readonly HttpClient _httpClient;
 
     private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(30);
 
-    public YandeSourceSiteService(IEasyCachingProviderFactory factory, HttpClient httpClient)
+    public DanbooruSourceSiteService(IEasyCachingProviderFactory factory, HttpClient httpClient)
     {
         _cachingProvider = factory.GetCachingProvider(nameof(Yande));
         _httpClient = httpClient;
@@ -17,7 +15,7 @@ public class YandeSourceSiteService : IYandeSourceSiteService
 
     public async Task<JToken> GetLatestPostMetadataAsync()
     {
-        var json = await _httpClient.GetStringAsync("/post.json?limit=1");
+        var json = await _httpClient.GetStringAsync("/posts.json?limit=1");
         Guard.Against.NullOrEmpty(json);
 
         return JArray.Parse(json).First!;
@@ -32,25 +30,25 @@ public class YandeSourceSiteService : IYandeSourceSiteService
         var list = await GetPostMetadataListAsync(id - 50, 100, 1);
         if (list.Count() == 0) return null;
 
-        var dic = list.ToDictionary(x => x.Value<string>(YandePostMetadataKeys.id)!, x => x);
+        var dic = list.ToDictionary(x => x.Value<string>(DanbooruPostMetadataKeys.id)!,x => x);
 
-        await _cachingProvider.SetAllAsync(dic, _cacheExpiration);
+        if(dic != null) await _cachingProvider.SetAllAsync(dic, _cacheExpiration);
 
-        var first = list.First();
-        if (first[YandePostMetadataKeys.id]!.ToString() != idStr) return null;
+        var first = list!.First();
+        if (first.Value<string>(DanbooruPostMetadataKeys.id) != idStr) return null;
 
         return first;
     }
 
     public async Task<IEnumerable<JToken>> GetPostMetadataListAsync(string tags, int limit, int page)
     {
-        Guard.Against.OutOfRange(limit, nameof(limit), 1, 1000);
+        Guard.Against.OutOfRange(limit, nameof(limit), 1, 200);
         string urlEncoded = WebUtility.UrlEncode(tags ?? "order:id");
 
-        var json = await _httpClient.GetStringAsync($"/post.json?tags={urlEncoded}&limit={limit}&page={page}");
+        var json = await _httpClient.GetStringAsync($"/posts.json?tags={urlEncoded}&limit={limit}&page={page}");
         Guard.Against.NullOrEmpty(json);
 
-        var list = JArray.Parse(json).Where(x => x.Value<string>(YandePostMetadataKeys.id) != null);
+        var list = JArray.Parse(json).Where(x => x.Value<string>(DanbooruPostMetadataKeys.id) != null);
 
         return list;
     }
@@ -91,21 +89,19 @@ public class YandeSourceSiteService : IYandeSourceSiteService
         var metadata = await GetPostMetadataAsync(id);
         Guard.Against.Null(metadata, nameof(metadata));
 
-        var status = metadata[YandePostMetadataKeys.status]?.ToString();
-        Guard.Against.NullOrEmpty(status);
-        var postStatus = Enum.Parse<PostStatus>(status.ToUpper());
-        Guard.Against.InvalidInput(postStatus,
-                                   YandePostMetadataKeys.status,
-                                   x => x != PostStatus.DELETED);
+        var isDeleted = metadata[DanbooruPostMetadataKeys.is_deleted]?.ToObject<bool>();
+        Guard.Against.InvalidInput(isDeleted,
+                                   DanbooruPostMetadataKeys.is_deleted,
+                                   x => x is true);
 
-        var fileUrl = metadata[YandePostMetadataKeys.file_url]?.ToString();
+        var fileUrl = metadata[DanbooruPostMetadataKeys.file_url]?.ToString();
         Guard.Against.NullOrEmpty(fileUrl);
 
-        var fileExt = metadata[YandePostMetadataKeys.file_ext]?.ToString();
+        var fileExt = metadata[DanbooruPostMetadataKeys.file_ext]?.ToString();
         Guard.Against.NullOrEmpty(fileExt);
         var imagetType = Enum.Parse<ImageType>(fileExt.ToUpper());
 
-        var md5 = metadata[YandePostMetadataKeys.md5]?.ToString();
+        var md5 = metadata[DanbooruPostMetadataKeys.md5]?.ToString();
         Guard.Against.NullOrEmpty(md5);
 
         var data = await _httpClient.GetStreamAsync(fileUrl);
@@ -114,9 +110,9 @@ public class YandeSourceSiteService : IYandeSourceSiteService
         return new ImageFile(md5, imagetType, data);
     }
 
-    public async Task<IEnumerable<JToken>> GetTagMetadataListAsync(int? type,int limit, int page)
+    public async Task<IEnumerable<JToken>> GetTagMetadataListAsync(int? type, int limit, int page)
     {
-        var json = await _httpClient.GetStringAsync($"/tag.json?order=date&limit={limit}&page={page}&type={type}");
+        var json = await _httpClient.GetStringAsync($"/tags.json?order=date&limit={limit}&page={page}&type={type}");
         Guard.Against.NullOrEmpty(json);
 
         return JArray.Parse(json).ToList();

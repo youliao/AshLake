@@ -47,6 +47,7 @@ internal static class ProgramExtensions
             // You can configure the middleware to re-throw certain types of exceptions, all exceptions or based on a predicate.
             // This is useful if you have upstream middleware that needs to do additional handling of exceptions.
             c.Rethrow<NotSupportedException>();
+            c.MapToStatusCode<ArgumentOutOfRangeException>(StatusCodes.Status416RangeNotSatisfiable);
             c.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
             c.MapToStatusCode<HttpRequestException>(StatusCodes.Status503ServiceUnavailable);
             c.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
@@ -131,10 +132,23 @@ internal static class ProgramExtensions
     {
         #region Services
 
-        builder.Services.AddScoped<YandeSourceSiteService>();
+        builder.Services.AddSingleton<YandeSourceSiteService>();
         builder.Services.AddHttpClient<IYandeSourceSiteService, YandeSourceSiteService>(config =>
         {
             config.BaseAddress = new Uri(builder.Configuration["YandeUrl"]);
+            config.Timeout = TimeSpan.FromSeconds(60);
+            config.DefaultRequestHeaders.AcceptEncoding.Add(
+                new System.Net.Http.Headers.StringWithQualityHeaderValue("gzip"));
+
+        }).ConfigurePrimaryHttpMessageHandler(provider => new HttpClientHandler
+        {
+            AutomaticDecompression = DecompressionMethods.GZip
+        });
+
+        builder.Services.AddSingleton<DanbooruSourceSiteService>();
+        builder.Services.AddHttpClient<IDanbooruSourceSiteService, DanbooruSourceSiteService>(config =>
+        {
+            config.BaseAddress = new Uri(builder.Configuration["DanbooruUrl"]);
             config.Timeout = TimeSpan.FromSeconds(60);
             config.DefaultRequestHeaders.AcceptEncoding.Add(
                 new System.Net.Http.Headers.StringWithQualityHeaderValue("gzip"));

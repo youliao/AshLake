@@ -1,4 +1,4 @@
-﻿namespace AshLake.Services.Archiver.Infrastructure.Services;
+﻿namespace AshLake.Services.Archiver.Domain.Services;
 
 public interface IYandeGrabberService
 {

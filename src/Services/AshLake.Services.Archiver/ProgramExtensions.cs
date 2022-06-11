@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
+using AshLake.Services.Archiver.Domain.Services;
 
 namespace AshLake.Services.Archiver;
 
@@ -80,7 +81,7 @@ internal static class ProgramExtensions
         {
             opt.ShutdownTimeout = TimeSpan.FromMinutes(30);
             opt.WorkerCount = 3;
-            opt.Queues = new[] { nameof(Yande).ToLower() };
+            opt.Queues = new[] { "postmetadata", "tagmetadata" };
         });
     }
 
@@ -146,6 +147,8 @@ internal static class ProgramExtensions
         builder.Services.AddScoped<IEventBus, DaprEventBus>();
         builder.Services.AddSingleton<IYandeGrabberService>(_ =>
             new YandeGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
+        builder.Services.AddSingleton<IDanbooruGrabberService>(_ =>
+            new DanbooruGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
 
         #endregion
 

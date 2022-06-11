@@ -4,14 +4,14 @@ using MongoDB.Driver;
 namespace AshLake.Services.Archiver.Application.BackgroundJobs;
 
 [Queue("postmetadata")]
-public class YandeJob
+public class DanbooruJob
 {
-    private readonly IMetadataRepository<Yande, PostMetadata> _postMetadataRepository;
-    private readonly IMetadataRepository<Yande, TagMetadata> _tagMetadataRepository;
-    private readonly IYandeGrabberService _grabberService;
+    private readonly IMetadataRepository<Danbooru, PostMetadata> _postMetadataRepository;
+    private readonly IMetadataRepository<Danbooru, TagMetadata> _tagMetadataRepository;
+    private readonly IDanbooruGrabberService _grabberService;
     private readonly IEventBus _eventBus;
 
-    public YandeJob(IMetadataRepository<Yande, PostMetadata> postMetadataRepository, IMetadataRepository<Yande, TagMetadata> tagMetadataRepository, IYandeGrabberService grabberService, IEventBus eventBus)
+    public DanbooruJob(IMetadataRepository<Danbooru, PostMetadata> postMetadataRepository, IMetadataRepository<Danbooru, TagMetadata> tagMetadataRepository, IDanbooruGrabberService grabberService, IEventBus eventBus)
     {
         _postMetadataRepository = postMetadataRepository ?? throw new ArgumentNullException(nameof(postMetadataRepository));
         _tagMetadataRepository = tagMetadataRepository ?? throw new ArgumentNullException(nameof(tagMetadataRepository));
@@ -31,13 +31,13 @@ public class YandeJob
         var result = await _postMetadataRepository.AddRangeAsync(dataList);
 
         if (result.AddedIds.Count > 0)
-            await _eventBus.PublishAsync(new PostMetadataAddedIntegrationEvent<Yande>(result.AddedIds));
+            await _eventBus.PublishAsync(new PostMetadataAddedIntegrationEvent<Danbooru>(result.AddedIds));
 
         if (result.ModifiedIds.Count > 0)
-            await _eventBus.PublishAsync(new PostMetadataModifiedIntegrationEvent<Yande>(result.ModifiedIds));
+            await _eventBus.PublishAsync(new PostMetadataModifiedIntegrationEvent<Danbooru>(result.ModifiedIds));
 
         if (result.UnchangedIds.Count > 0)
-            await _eventBus.PublishAsync(new PostMetadataUnchangedIntegrationEvent<Yande>(result.UnchangedIds));
+            await _eventBus.PublishAsync(new PostMetadataUnchangedIntegrationEvent<Danbooru>(result.UnchangedIds));
 
         return new { Added = result.AddedIds.Count, Modified = result.ModifiedIds.Count, Unchanged = result.UnchangedIds.Count };
     }
@@ -50,7 +50,7 @@ public class YandeJob
         var result = await _tagMetadataRepository.AddRangeAsync(dataList);
 
         if (result.AddedIds.Count > 0 || result.ModifiedIds.Count > 0)
-            await _eventBus.PublishAsync(new TagMetadataChangedIntegrationEvent<Yande>(type));
+            await _eventBus.PublishAsync(new TagMetadataChangedIntegrationEvent<Danbooru>(type));
 
         return new { Added = result.AddedIds.Count, Modified = result.ModifiedIds.Count, Unchanged = result.UnchangedIds.Count };
     }
