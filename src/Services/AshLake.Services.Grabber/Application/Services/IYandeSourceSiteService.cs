@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-
-namespace AshLake.Services.Grabber.Domain.Services;
+﻿namespace AshLake.Services.Grabber.Domain.Services;
 
 public interface IYandeSourceSiteService
 {
