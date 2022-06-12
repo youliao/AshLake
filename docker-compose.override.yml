@@ -10,7 +10,7 @@ services:
     ports:
       - "27017:27017"
 
-  postgres:
+  postgres-yandestore:
     image: postgres:14
     environment:
       POSTGRES_USER: root 

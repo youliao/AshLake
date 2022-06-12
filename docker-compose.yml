@@ -4,7 +4,7 @@ services:
   mongo:
     image: mongo:4
 
-  postgres:
+  postgres-yandestore:
     image: postgres:14
 
   redis-easycaching:
@@ -104,7 +104,7 @@ services:
       dockerfile: src/Services/AshLake.Services.YandeStore/Dockerfile
     depends_on:
       - archiver
-      - postgres
+      - postgres-yandestore
 
   yandestore-dapr:
     image: "daprio/daprd:latest"

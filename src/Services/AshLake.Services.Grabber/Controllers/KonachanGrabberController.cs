@@ -2,16 +2,16 @@
 
 namespace AshLake.Services.Grabber.Controllers;
 
-public class YandeGrabberController : ControllerBase
+public class KonachanGrabberController : ControllerBase
 {
-    private readonly IYandeSourceSiteService _sourceSiteService;
+    private readonly IKonachanSourceSiteService _sourceSiteService;
 
-    public YandeGrabberController(IYandeSourceSiteService sourceSiteService)
+    public KonachanGrabberController(IKonachanSourceSiteService sourceSiteService)
     {
         _sourceSiteService = sourceSiteService ?? throw new ArgumentNullException(nameof(sourceSiteService));
     }
 
-    [Route("/api/sites/yande/postmetadata")]
+    [Route("/api/sites/konachan/postmetadata")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpGet]
     public async Task<ActionResult> GetPostMetadataList(int startId, int limit, int page)
@@ -20,7 +20,7 @@ public class YandeGrabberController : ControllerBase
         return Ok(list);
     }
 
-    [Route("/api/sites/yande/postmetadata/{id:int}")]
+    [Route("/api/sites/konachan/postmetadata/{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpGet]
@@ -33,7 +33,7 @@ public class YandeGrabberController : ControllerBase
         return Ok(metadata);
     }
 
-    [Route("/api/sites/yande/postmetadata/lastest")]
+    [Route("/api/sites/konachan/postmetadata/lastest")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpGet]
     public async Task<ActionResult> GetLatestPostMetadata()
@@ -42,7 +42,7 @@ public class YandeGrabberController : ControllerBase
         return Ok(post);
     }
 
-    [Route("/api/sites/yande/postpreviews/{id:int}")]
+    [Route("/api/sites/konachan/postpreviews/{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpGet]
@@ -64,7 +64,7 @@ public class YandeGrabberController : ControllerBase
         }
     }
 
-    [Route("/api/sites/yande/postfiles/{id:int}")]
+    [Route("/api/sites/konachan/postfiles/{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpGet]
@@ -86,7 +86,7 @@ public class YandeGrabberController : ControllerBase
         }
     }
 
-    [Route("/api/sites/yande/tagmetadata")]
+    [Route("/api/sites/konachan/tagmetadata")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpGet]
     public async Task<ActionResult> GetTagMetadataList(int? type, int limit, int page)

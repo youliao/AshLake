@@ -1,4 +1,6 @@
-﻿namespace AshLake.Services.Grabber.Controllers;
+﻿using AshLake.Services.Grabber.Infrastructure.Services;
+
+namespace AshLake.Services.Grabber.Controllers;
 
 public class DanbooruGrabberController : ControllerBase
 {

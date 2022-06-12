@@ -132,7 +132,7 @@ internal static class ProgramExtensions
     {
         #region Services
 
-        builder.Services.AddSingleton<YandeSourceSiteService>();
+        builder.Services.AddSingleton<IYandeSourceSiteService,YandeSourceSiteService>();
         builder.Services.AddHttpClient<IYandeSourceSiteService, YandeSourceSiteService>(config =>
         {
             config.BaseAddress = new Uri(builder.Configuration["YandeUrl"]);
@@ -145,10 +145,23 @@ internal static class ProgramExtensions
             AutomaticDecompression = DecompressionMethods.GZip
         });
 
-        builder.Services.AddSingleton<DanbooruSourceSiteService>();
+        builder.Services.AddSingleton<IDanbooruSourceSiteService,DanbooruSourceSiteService>();
         builder.Services.AddHttpClient<IDanbooruSourceSiteService, DanbooruSourceSiteService>(config =>
         {
             config.BaseAddress = new Uri(builder.Configuration["DanbooruUrl"]);
+            config.Timeout = TimeSpan.FromSeconds(60);
+            config.DefaultRequestHeaders.AcceptEncoding.Add(
+                new System.Net.Http.Headers.StringWithQualityHeaderValue("gzip"));
+
+        }).ConfigurePrimaryHttpMessageHandler(provider => new HttpClientHandler
+        {
+            AutomaticDecompression = DecompressionMethods.GZip
+        });
+
+        builder.Services.AddSingleton<IKonachanSourceSiteService,KonachanSourceSiteService>();
+        builder.Services.AddHttpClient<IKonachanSourceSiteService, KonachanSourceSiteService>(config =>
+        {
+            config.BaseAddress = new Uri(builder.Configuration["KonachanUrl"]);
             config.Timeout = TimeSpan.FromSeconds(60);
             config.DefaultRequestHeaders.AcceptEncoding.Add(
                 new System.Net.Http.Headers.StringWithQualityHeaderValue("gzip"));

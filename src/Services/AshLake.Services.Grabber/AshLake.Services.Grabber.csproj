@@ -30,4 +30,8 @@
     <ProjectReference Include="..\..\Contracts\AshLake.Contracts.Seedwork\AshLake.Contracts.Seedwork.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Application\" />
+  </ItemGroup>
+
 </Project>

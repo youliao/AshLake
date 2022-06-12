@@ -7,6 +7,5 @@ global using System.Net;
 global using System.Net.Mime;
 global using Ardalis.GuardClauses;
 global using EasyCaching.Core;
-global using AshLake.Services.Grabber.Domain.Services;
 global using AshLake.Services.Grabber.Domain.Entities;
 global using Newtonsoft.Json.Linq; 
