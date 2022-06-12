@@ -49,6 +49,32 @@ public class S3ObjectRepositoty<T> : IS3ObjectRepositoty<T> where T : IS3Object
         }
     }
 
+    public async Task<Stream?> GetStreamAsync(string objectKey)
+    {
+        var stream = new MemoryStream();
+        var args = new GetObjectArgs()
+            .WithBucket(_bucketName)
+            .WithObject(objectKey)
+            .WithCallbackStream(x=> x.CopyTo(stream));
+
+        try
+        {
+            await _minioClient.GetObjectAsync(args);
+        }
+        catch (Minio.Exceptions.ObjectNotFoundException)
+        {
+            return null;
+        }
+        catch
+        {
+            throw;
+        }
+
+        stream.Position = 0;
+
+        return stream;
+    }
+
     public async Task RemoveAsync(string objectKey)
     {
         var args = new RemoveObjectArgs()

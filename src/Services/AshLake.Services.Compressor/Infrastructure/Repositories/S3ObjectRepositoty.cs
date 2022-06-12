@@ -15,15 +15,15 @@ public class S3ObjectRepositoty<T> : IS3ObjectRepositoty<T> where T : IS3Object
         CreateBucketAsync(_bucketName).Wait();
     }
 
-    public async Task PutAsync(T post)
+    public async Task PutAsync(T s3Object)
     {
-        using var stream = new MemoryStream(post.Data);
+        using var stream = new MemoryStream(s3Object.Data);
 
         var args = new PutObjectArgs()
             .WithBucket(_bucketName)
-            .WithObject(post.ObjectKey)
+            .WithObject(s3Object.ObjectKey)
             .WithStreamData(stream)
-            .WithObjectSize(stream.Length);
+            .WithObjectSize(s3Object.Data.Length);
 
         await _minioClient.PutObjectAsync(args);
     }

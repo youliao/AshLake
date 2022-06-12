@@ -6,20 +6,20 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["src/Services/AshLake.Services.Collector/AshLake.Services.Collector.csproj", "src/Services/AshLake.Services.Collector/"]
-COPY ["src/Contracts/AshLake.Contracts.Archiver/AshLake.Contracts.Archiver.csproj", "src/Contracts/AshLake.Contracts.Archiver/"]
+COPY ["src/Services/AshLake.Services.Compressor/AshLake.Services.Compressor.csproj", "src/Services/AshLake.Services.Compressor/"]
 COPY ["src/Contracts/AshLake.Contracts.Seedwork/AshLake.Contracts.Seedwork.csproj", "src/Contracts/AshLake.Contracts.Seedwork/"]
 COPY ["src/BuildingBlocks/AshLake.BuildingBlocks.EventBus/AshLake.BuildingBlocks.EventBus.csproj", "src/BuildingBlocks/AshLake.BuildingBlocks.EventBus/"]
 COPY ["src/BuildingBlocks/AshLake.BuildingBlocks.Healthchecks/AshLake.BuildingBlocks.Healthchecks.csproj", "src/BuildingBlocks/AshLake.BuildingBlocks.Healthchecks/"]
-RUN dotnet restore "src/Services/AshLake.Services.Collector/AshLake.Services.Collector.csproj"
+COPY ["src/Contracts/AshLake.Contracts.Collector/AshLake.Contracts.Collector.csproj", "src/Contracts/AshLake.Contracts.Collector/"]
+RUN dotnet restore "src/Services/AshLake.Services.Compressor/AshLake.Services.Compressor.csproj"
 COPY . .
-WORKDIR "/src/src/Services/AshLake.Services.Collector"
-RUN dotnet build "AshLake.Services.Collector.csproj" -c Release -o /app/build
+WORKDIR "/src/src/Services/AshLake.Services.Compressor"
+RUN dotnet build "AshLake.Services.Compressor.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "AshLake.Services.Collector.csproj" -c Release -o /app/publish
+RUN dotnet publish "AshLake.Services.Compressor.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "AshLake.Services.Collector.dll"]
+ENTRYPOINT ["dotnet", "AshLake.Services.Compressor.dll"]

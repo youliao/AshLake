@@ -1,24 +1,39 @@
+using AshLake.Services.Compressor;
+using Hellang.Middleware.ProblemDetails;
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDaprClient();
 
-// Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.AddCustomSerilog();
+builder.AddCustomProblemDetails();
+builder.AddCustomControllers();
+builder.AddCustomSwagger();
+builder.AddCustomHangfire();
+builder.AddCustomHealthChecks();
+builder.AddCustomApplicationServices();
 
 var app = builder.Build();
 
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseAuthorization();
-
+app.UseProblemDetails();
+app.UseCustomSwagger();
+app.UseCloudEvents();
 app.MapControllers();
+app.MapSubscribeHandler();
+app.UseCustomHealthChecks();
+app.UseCustomHangfireDashboard();
 
-app.Run();
+app.MapGet("/", () => Results.Redirect("/swagger"));
+
+try
+{
+    app.Logger.LogInformation("Starting web host ({ApplicationName})...", ProgramExtensions.AppName);
+    app.Run();
+}
+catch (Exception ex)
+{
+    app.Logger.LogCritical(ex, "Host terminated unexpectedly ({ApplicationName})...", ProgramExtensions.AppName);
+}
+finally
+{
+    Serilog.Log.CloseAndFlush();
+}

@@ -1,4 +1,5 @@
-﻿using AshLake.Services.Collector.Domain.Repositories;
+﻿using AshLake.Contracts.Collector.Events;
+using AshLake.Services.Collector.Domain.Repositories;
 
 namespace AshLake.Services.Collector.Application.BackgroundJobs;
 
@@ -6,11 +7,13 @@ public class YandeJob
 {
     private readonly IS3ObjectRepositoty<PostFile> _fileRepositoty;
     private readonly IYandeGrabberService _grabberService;
+    private readonly IEventBus _eventBus;
 
-    public YandeJob(IS3ObjectRepositoty<PostFile> fileRepositoty, IYandeGrabberService grabberService)
+    public YandeJob(IS3ObjectRepositoty<PostFile> fileRepositoty, IYandeGrabberService grabberService, IEventBus eventBus)
     {
         _fileRepositoty = fileRepositoty ?? throw new ArgumentNullException(nameof(fileRepositoty));
         _grabberService = grabberService ?? throw new ArgumentNullException(nameof(grabberService));
+        _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
     }
 
     public async Task<string> AddOrUpdateFile(int postId)
@@ -21,6 +24,8 @@ public class YandeJob
         var isExists = await _fileRepositoty.ExistsAsync(file.ObjectKey);
 
         await _fileRepositoty.PutAsync(file);
+        await _eventBus.PublishAsync(new PostFileChangedIntegrationEvent(file.ObjectKey));
+
         return isExists ? EntityState.Modified.ToString() : EntityState.Added.ToString();
     }
 
@@ -36,6 +41,7 @@ public class YandeJob
         if (file is null) return EntityState.None.ToString();
 
         await _fileRepositoty.PutAsync(file);
+        await _eventBus.PublishAsync(new PostFileChangedIntegrationEvent(file.ObjectKey));
         return EntityState.Added.ToString();
     }
 }

@@ -4,6 +4,9 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..\..</DockerfileContext>
+    <DockerComposeProjectPath>..\..\..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
 	<ItemGroup>
@@ -25,11 +28,12 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\BuildingBlocks\AshLake.BuildingBlocks.EventBus\AshLake.BuildingBlocks.EventBus.csproj" />
 		<ProjectReference Include="..\..\BuildingBlocks\AshLake.BuildingBlocks.Healthchecks\AshLake.BuildingBlocks.Healthchecks.csproj" />
+		<ProjectReference Include="..\..\Contracts\AshLake.Contracts.Collector\AshLake.Contracts.Collector.csproj" />
 		<ProjectReference Include="..\..\Contracts\AshLake.Contracts.Seedwork\AshLake.Contracts.Seedwork.csproj" />
 	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Application\Services\" />
+	</ItemGroup>
 
 </Project>

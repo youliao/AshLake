@@ -12,7 +12,6 @@ using AshLake.Contracts.Seedwork;
 using AshLake.Services.Compressor.Infrastructure;
 using AshLake.Services.Compressor.Domain.Repositories;
 using AshLake.Services.Compressor.Infrastructure.Repositories;
-using AshLake.Services.Compressor.Application.Services;
 using AshLake.Services.Compressor.Infrastructure.Services;
 
 namespace AshLake.Services.Compressor;

@@ -83,6 +83,20 @@ services:
     depends_on:
       - collector
 
+  compressor:
+    image: ${DOCKER_REGISTRY-}ashlakeservicescompressor
+    build:
+      context: .
+      dockerfile: src/Services/AshLake.Services.Compressor/Dockerfile
+    depends_on:
+      - collector
+
+  compressor-dapr:
+    image: "daprio/daprd:latest"
+    network_mode: "service:compressor"
+    depends_on:
+      - compressor
+
   yandestore:
     image: ${DOCKER_REGISTRY-}ashlakeservicesyandestore
     build:
@@ -97,3 +111,4 @@ services:
     network_mode: "service:yandestore"
     depends_on:
       - yandestore
+

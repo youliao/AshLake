@@ -68,8 +68,10 @@ services:
       - HealthChecksUI__HealthChecks__1__Uri=http://archiver/hc
       - HealthChecksUI__HealthChecks__2__Name=Collector API
       - HealthChecksUI__HealthChecks__2__Uri=http://collector/hc
-      - HealthChecksUI__HealthChecks__3__Name=YandeStore API
-      - HealthChecksUI__HealthChecks__3__Uri=http://yandestore/hc
+      - HealthChecksUI__HealthChecks__3__Name=Compressor API
+      - HealthChecksUI__HealthChecks__3__Uri=http://compressor/hc
+      - HealthChecksUI__HealthChecks__4__Name=YandeStore API
+      - HealthChecksUI__HealthChecks__4__Uri=http://yandestore/hc
     ports:
       - "5107:80"
 
@@ -131,6 +133,29 @@ services:
   collector-dapr:
     command: ["./daprd",
       "-app-id", "collector",
+      "-app-port", "80",
+      "-components-path", "/components",
+      "-dapr-http-max-request-size","200",
+      "-log-level", "info"
+      ]
+    volumes:
+      - "./dapr/components/:/components"
+
+  compressor:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ImageStorageEndpoint=minio:9000
+      - ImageStorageAccessKey=minio
+      - ImageStorageSecretKey=minio123
+      - HangfireConnectionString=redis-hangfire:6379
+      - SeqServerUrl=http://seq
+    ports:
+      - "80"
+
+  compressor-dapr:
+    command: ["./daprd",
+      "-app-id", "compressor",
       "-app-port", "80",
       "-components-path", "/components",
       "-dapr-http-max-request-size","200",

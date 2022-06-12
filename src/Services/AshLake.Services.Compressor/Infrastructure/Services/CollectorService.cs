@@ -1,6 +1,9 @@
-﻿using AshLake.Services.Compressor.Application.Services;
+﻿namespace AshLake.Services.Compressor.Infrastructure.Services;
 
-namespace AshLake.Services.Compressor.Infrastructure.Services;
+public interface ICollectorService
+{
+    Task<Stream?> GetPostFile(string objectKey);
+}
 
 public class CollectorService: ICollectorService
 {
@@ -11,8 +14,18 @@ public class CollectorService: ICollectorService
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     }
 
-    public async Task<Stream> GetPostFile(string objectKey)
+    public async Task<Stream?> GetPostFile(string objectKey)
     {
-        return await _httpClient.GetStreamAsync($"/postfile/{objectKey}");
+        var response = await _httpClient.GetAsync($"/api/postfiles/{objectKey}");
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new HttpRequestException(await response.Content.ReadAsStringAsync());
+        }
+
+        return await response.Content.ReadAsStreamAsync();
     }
 }

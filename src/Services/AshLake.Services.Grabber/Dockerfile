@@ -8,6 +8,7 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["src/Services/AshLake.Services.Grabber/AshLake.Services.Grabber.csproj", "src/Services/AshLake.Services.Grabber/"]
 COPY ["src/Contracts/AshLake.Contracts.Seedwork/AshLake.Contracts.Seedwork.csproj", "src/Contracts/AshLake.Contracts.Seedwork/"]
+COPY ["src/BuildingBlocks/AshLake.BuildingBlocks.Healthchecks/AshLake.BuildingBlocks.Healthchecks.csproj", "src/BuildingBlocks/AshLake.BuildingBlocks.Healthchecks/"]
 RUN dotnet restore "src/Services/AshLake.Services.Grabber/AshLake.Services.Grabber.csproj"
 COPY . .
 WORKDIR "/src/src/Services/AshLake.Services.Grabber"

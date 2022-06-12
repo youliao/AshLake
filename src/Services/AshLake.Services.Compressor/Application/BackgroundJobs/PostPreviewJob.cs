@@ -1,6 +1,6 @@
 ﻿using AshLake.Contracts.Seedwork;
-using AshLake.Services.Compressor.Application.Services;
 using AshLake.Services.Compressor.Domain.Repositories;
+using AshLake.Services.Compressor.Infrastructure.Services;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 
@@ -26,11 +26,11 @@ public class PostPreviewJob
 
         var image = await Image.LoadAsync(fileData);
 
-        var resizedData = default(Stream)!;
+        using var resizedData = new MemoryStream();
         ResizeTo(ref image, 300);
         image.SaveAsJpeg(resizedData);
 
-        var preview = new PostPreview(Path.GetFileNameWithoutExtension(objectKey), resizedData);
+        var preview = new PostPreview(Path.GetFileNameWithoutExtension(objectKey), resizedData.ToArray());
         await _previewRepositoty.PutAsync(preview);
         return isExists ? EntityState.Modified.ToString() : EntityState.Added.ToString();
     }
@@ -47,13 +47,13 @@ public class PostPreviewJob
 
         var image = await Image.LoadAsync(fileData);
 
-        var resizedData = default(Stream)!;
+        using var resizedData = new MemoryStream();
         ResizeTo(ref image, 300);
         image.SaveAsJpeg(resizedData);
 
         var postMd5 = Path.GetFileNameWithoutExtension(objectKey);
 
-        var preview = new PostPreview(postMd5, resizedData);
+        var preview = new PostPreview(postMd5, resizedData.ToArray());
         await _previewRepositoty.PutAsync(preview);
         return isExists ? EntityState.Modified.ToString() : EntityState.Added.ToString();
     }
