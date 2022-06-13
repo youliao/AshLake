@@ -15,7 +15,6 @@ services:
       POSTGRES_USER: root 
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: postgres
-    command: postgres -c 'max_connections=500'
     ports:
       - "5432:5432"
     volumes:
@@ -113,6 +112,7 @@ services:
       "-app-id", "archiver",
       "-app-port", "80",
       "-components-path", "/components",
+      "-dapr-http-max-request-size","100",
       "-config", "/configuration/ashlake-config.yaml"
       ]
     volumes:
@@ -171,7 +171,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - DBConnectionString=Host=postgres;Database=postgres;Username=root;Password=postgres;MaxPoolSize=500;
+      - DBConnectionString=Host=postgres-yandestore;Database=postgres;Username=root;Password=postgres;MaxPoolSize=500;
       - HangfireConnectionString=redis-hangfire:6379
       - RetryMigrations=true
       - SeqServerUrl=http://seq
@@ -183,6 +183,7 @@ services:
       "-app-id", "yandestore",
       "-app-port", "80",
       "-components-path", "/components",
+      "-dapr-http-max-request-size","100",
       "-config", "/configuration/ashlake-config.yaml"
       ]
     volumes:

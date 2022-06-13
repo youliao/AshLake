@@ -24,7 +24,12 @@ public class PostJob
 
     public async Task<int> BulkAddPosts(IEnumerable<string> postIds)
     {
-        var bsons = await _archiverService.GetPostMetadataByIds(postIds.Select(x=>int.Parse(x)));
+        var bsons = new List<BsonDocument>();
+        foreach (var item in postIds)
+        {
+            bsons.Add(await _archiverService.GetPostMetadata(int.Parse(item)));
+        }
+
         var commands = new List<AddOrUpdatePostCommand>();
         foreach(var item in bsons)
         {
@@ -37,7 +42,12 @@ public class PostJob
 
     public async Task<int> BulkUpdatePosts(IEnumerable<string> postIds)
     {
-        var bsons = await _archiverService.GetPostMetadataByIds(postIds.Select(x => int.Parse(x)));
+        var bsons = new List<BsonDocument>();
+        foreach (var item in postIds)
+        {
+            bsons.Add(await _archiverService.GetPostMetadata(int.Parse(item)));
+        }
+
         var commands = new List<AddOrUpdatePostCommand>();
         foreach (var item in bsons)
         {

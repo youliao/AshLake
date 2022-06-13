@@ -45,7 +45,7 @@ services:
       - redis-easycaching
 
   grabber-dapr:
-    image: "daprio/daprd:latest"
+    image: "daprio/daprd:1.7.2"
     network_mode: "service:grabber"
     depends_on:
       - grabber
@@ -61,7 +61,7 @@ services:
       - grabber
 
   archiver-dapr:
-    image: "daprio/daprd:latest"
+    image: "daprio/daprd:1.7.2"
     network_mode: "service:archiver"
     depends_on:
       - archiver
@@ -78,7 +78,7 @@ services:
       - archiver
 
   collector-dapr:
-    image: "daprio/daprd:latest"
+    image: "daprio/daprd:1.7.2"
     network_mode: "service:collector"
     depends_on:
       - collector
@@ -92,7 +92,7 @@ services:
       - collector
 
   compressor-dapr:
-    image: "daprio/daprd:latest"
+    image: "daprio/daprd:1.7.2"
     network_mode: "service:compressor"
     depends_on:
       - compressor
@@ -107,7 +107,7 @@ services:
       - postgres-yandestore
 
   yandestore-dapr:
-    image: "daprio/daprd:latest"
+    image: "daprio/daprd:1.7.2"
     network_mode: "service:yandestore"
     depends_on:
       - yandestore
