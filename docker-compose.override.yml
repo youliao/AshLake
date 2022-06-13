@@ -11,7 +11,6 @@ services:
       - "27017:27017"
 
   postgres-yandestore:
-    image: postgres:14
     environment:
       POSTGRES_USER: root 
       POSTGRES_DB: postgres
@@ -92,11 +91,12 @@ services:
       "-app-id", "grabber",
       "-app-port", "80",
       "-components-path", "/components",
-      "-dapr-http-max-request-size","50",
-      "-log-level", "info"
+      "-dapr-http-max-request-size","100",
+      "-config", "/configuration/ashlake-config.yaml"
       ]
     volumes:
       - "./dapr/components/:/components"
+      - "./dapr/configuration/:/configuration"
 
   archiver:
     environment:
@@ -113,10 +113,11 @@ services:
       "-app-id", "archiver",
       "-app-port", "80",
       "-components-path", "/components",
-      "-log-level", "info",
+      "-config", "/configuration/ashlake-config.yaml"
       ]
     volumes:
       - "./dapr/components/:/components"
+      - "./dapr/configuration/:/configuration"
      
   collector:
     environment:
@@ -135,11 +136,12 @@ services:
       "-app-id", "collector",
       "-app-port", "80",
       "-components-path", "/components",
-      "-dapr-http-max-request-size","200",
-      "-log-level", "info"
+      "-dapr-http-max-request-size","100",
+      "-config", "/configuration/ashlake-config.yaml"
       ]
     volumes:
       - "./dapr/components/:/components"
+      - "./dapr/configuration/:/configuration"
 
   compressor:
     environment:
@@ -158,11 +160,12 @@ services:
       "-app-id", "compressor",
       "-app-port", "80",
       "-components-path", "/components",
-      "-dapr-http-max-request-size","200",
-      "-log-level", "info"
+      "-dapr-http-max-request-size","100",
+      "-config", "/configuration/ashlake-config.yaml"
       ]
     volumes:
       - "./dapr/components/:/components"
+      - "./dapr/configuration/:/configuration"
 
   yandestore:
     environment:
@@ -180,10 +183,11 @@ services:
       "-app-id", "yandestore",
       "-app-port", "80",
       "-components-path", "/components",
-      "-log-level", "info"
+      "-config", "/configuration/ashlake-config.yaml"
       ]
     volumes:
       - "./dapr/components/:/components"
+      - "./dapr/configuration/:/configuration"
 
 volumes:
   seq-data:

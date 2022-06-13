@@ -111,4 +111,3 @@ services:
     network_mode: "service:yandestore"
     depends_on:
       - yandestore
-

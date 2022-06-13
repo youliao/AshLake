@@ -132,7 +132,6 @@ internal static class ProgramExtensions
     {
         #region Services
 
-        builder.Services.AddSingleton<IYandeSourceSiteService,YandeSourceSiteService>();
         builder.Services.AddHttpClient<IYandeSourceSiteService, YandeSourceSiteService>(config =>
         {
             config.BaseAddress = new Uri(builder.Configuration["YandeUrl"]);
@@ -145,7 +144,6 @@ internal static class ProgramExtensions
             AutomaticDecompression = DecompressionMethods.GZip
         });
 
-        builder.Services.AddSingleton<IDanbooruSourceSiteService,DanbooruSourceSiteService>();
         builder.Services.AddHttpClient<IDanbooruSourceSiteService, DanbooruSourceSiteService>(config =>
         {
             config.BaseAddress = new Uri(builder.Configuration["DanbooruUrl"]);
@@ -158,7 +156,6 @@ internal static class ProgramExtensions
             AutomaticDecompression = DecompressionMethods.GZip
         });
 
-        builder.Services.AddSingleton<IKonachanSourceSiteService,KonachanSourceSiteService>();
         builder.Services.AddHttpClient<IKonachanSourceSiteService, KonachanSourceSiteService>(config =>
         {
             config.BaseAddress = new Uri(builder.Configuration["KonachanUrl"]);
