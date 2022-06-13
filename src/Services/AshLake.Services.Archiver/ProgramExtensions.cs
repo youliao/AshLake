@@ -1,12 +1,12 @@
 ﻿using Hellang.Middleware.ProblemDetails;
 using MongoDB.Driver;
 using System.Text.Json.Serialization;
-using Hangfire.Redis;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
 using AshLake.Services.Archiver.Domain.Services;
+using Hangfire.PostgreSql;
 
 namespace AshLake.Services.Archiver;
 
@@ -75,8 +75,10 @@ internal static class ProgramExtensions
     {
         builder.Services.AddHangfire(c =>
         {
-            c.UseRedisStorage(builder.Configuration["HangfireConnectionString"], new RedisStorageOptions() { Db = (int)AshLakeApp.Archiver });
+            c.UsePostgreSqlStorage(builder.Configuration["HangfireConnectionString"],
+                                   new PostgreSqlStorageOptions() { SchemaName = AshLakeApp.Archiver.ToString() });
         });
+
         builder.Services.AddHangfireServer(opt =>
         {
             opt.ShutdownTimeout = TimeSpan.FromMinutes(30);
@@ -101,11 +103,7 @@ internal static class ProgramExtensions
             .AddMongoDb(builder.Configuration["MongoDatabaseConnectionString"],
                         "database",
                         null,
-                        new string[] { "mongodb" })
-            .AddRedis(builder.Configuration["HangfireConnectionString"],
-                      "hangfire",
-                      null,
-                      new string[] { "redis" });
+                        new string[] { "mongodb" });
     }
 
     public static void UseCustomHealthChecks(this WebApplication app)

@@ -3,7 +3,7 @@ using AshLake.Services.YandeStore.Application.Services;
 using AshLake.Services.YandeStore.Infrastructure.Repositories.Posts;
 using AshLake.Services.YandeStore.Infrastructure.Services;
 using Dapr.Client;
-using Hangfire.Redis;
+using Hangfire.PostgreSql;
 using HealthChecks.UI.Client;
 using Hellang.Middleware.ProblemDetails;
 using Newtonsoft.Json.Converters;
@@ -73,7 +73,6 @@ internal static class ProgramExtensions
         builder.Services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddDapr()
-            .AddRedis(builder.Configuration["HangfireConnectionString"], "hangfire", null, new string[] { "redis" })
             .AddNpgSql(
                 builder.Configuration["DBConnectionString"],
                 name: "database",
@@ -137,12 +136,10 @@ internal static class ProgramExtensions
     {
         builder.Services.AddHangfire(c =>
         {
-            c.UseRedisStorage(builder.Configuration["HangfireConnectionString"],
-                              new RedisStorageOptions()
-                              {
-                                  Db = (int)AshLakeApp.YandeStore
-                              });
+            c.UsePostgreSqlStorage(builder.Configuration["HangfireConnectionString"],
+                                   new PostgreSqlStorageOptions() { SchemaName = AshLakeApp.YandeStore.ToString() });
         });
+
         builder.Services.AddHangfireServer(opt =>
         {
             opt.ShutdownTimeout = TimeSpan.FromMinutes(30);

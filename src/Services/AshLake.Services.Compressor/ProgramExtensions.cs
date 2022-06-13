@@ -3,7 +3,6 @@ using AshLake.BuildingBlocks.EventBus.Abstractions;
 using Hangfire;
 using Microsoft.OpenApi.Models;
 using Dapr.Client;
-using Hangfire.Redis;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
@@ -13,6 +12,7 @@ using AshLake.Services.Compressor.Infrastructure;
 using AshLake.Services.Compressor.Domain.Repositories;
 using AshLake.Services.Compressor.Infrastructure.Repositories;
 using AshLake.Services.Compressor.Infrastructure.Services;
+using Hangfire.PostgreSql;
 
 namespace AshLake.Services.Compressor;
 
@@ -77,10 +77,6 @@ internal static class ProgramExtensions
         builder.Services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddDapr()
-            .AddRedis(builder.Configuration["HangfireConnectionString"],
-                      "hangfire",
-                      null,
-                      new string[] { "redis" })
             .AddUrlGroup(new Uri($"http://{builder.Configuration["ImageStorageEndpoint"]}/minio/health/live"),
                          "imagestorage",
                          null,
@@ -104,9 +100,10 @@ internal static class ProgramExtensions
     {
         builder.Services.AddHangfire(c =>
         {
-            c.UseRedisStorage(builder.Configuration["HangfireConnectionString"],
-                              new RedisStorageOptions() { Db = (int)AshLakeApp.Compressor });
+            c.UsePostgreSqlStorage(builder.Configuration["HangfireConnectionString"],
+                                   new PostgreSqlStorageOptions() { SchemaName = AshLakeApp.Compressor.ToString() });
         });
+
         builder.Services.AddHangfireServer(opt =>
         {
             opt.ShutdownTimeout = TimeSpan.FromMinutes(30);

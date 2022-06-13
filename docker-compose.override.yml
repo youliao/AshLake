@@ -20,13 +20,15 @@ services:
     volumes:
       - yandestore-sqldata:/var/lib/postgresql/data
 
-  redis-easycaching:
-
-  redis-hangfire:
-    ports:
-      - "6379:6379"
+  postgres-hangfire:
+    environment:
+      POSTGRES_USER: root 
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
     volumes:
-      - hangfire-data:/data
+      - hangfire-data:/var/lib/postgresql/data
+
+  redis-easycaching:
 
   redis-state:
 
@@ -102,7 +104,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
       - MongoDatabaseConnectionString=mongodb://mongoadmin:mongoadmin@mongo:27017?maxPoolSize=500
-      - HangfireConnectionString=redis-hangfire:6379
+      - HangfireConnectionString=Host=postgres-hangfire;Database=postgres;Username=root;Password=postgres;MaxPoolSize=500;
       - SeqServerUrl=http://seq
     ports:
       - "80"
@@ -126,7 +128,7 @@ services:
       - ImageStorageEndpoint=minio:9000
       - ImageStorageAccessKey=minio
       - ImageStorageSecretKey=minio123
-      - HangfireConnectionString=redis-hangfire:6379
+      - HangfireConnectionString=Host=postgres-hangfire;Database=postgres;Username=root;Password=postgres;MaxPoolSize=500;
       - SeqServerUrl=http://seq
     ports:
       - "80"
@@ -150,7 +152,7 @@ services:
       - ImageStorageEndpoint=minio:9000
       - ImageStorageAccessKey=minio
       - ImageStorageSecretKey=minio123
-      - HangfireConnectionString=redis-hangfire:6379
+      - HangfireConnectionString=Host=postgres-hangfire;Database=postgres;Username=root;Password=postgres;MaxPoolSize=500;
       - SeqServerUrl=http://seq
     ports:
       - "80"
@@ -172,7 +174,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
       - DBConnectionString=Host=postgres-yandestore;Database=postgres;Username=root;Password=postgres;MaxPoolSize=500;
-      - HangfireConnectionString=redis-hangfire:6379
+      - HangfireConnectionString=Host=postgres-hangfire;Database=postgres;Username=root;Password=postgres;MaxPoolSize=500;
       - RetryMigrations=true
       - SeqServerUrl=http://seq
     ports:

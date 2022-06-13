@@ -7,10 +7,10 @@ services:
   postgres-yandestore:
     image: postgres:14
 
-  redis-easycaching:
-    image: redis:7
+  postgres-hangfire:
+    image: postgres:14
 
-  redis-hangfire:
+  redis-easycaching:
     image: redis:7
 
   redis-state:
@@ -56,7 +56,7 @@ services:
       context: .
       dockerfile: src/Services/AshLake.Services.Archiver/Dockerfile
     depends_on:
-      - redis-hangfire
+      - postgres-hangfire
       - mongo
       - grabber
 
@@ -73,7 +73,7 @@ services:
       dockerfile: src/Services/AshLake.Services.Collector/Dockerfile
     depends_on:
       - minio
-      - redis-hangfire
+      - postgres-hangfire
       - grabber
       - archiver
 
