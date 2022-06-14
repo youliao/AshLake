@@ -1,4 +1,4 @@
-﻿using AshLake.Services.YandeStore.Application.Services;
+﻿using AshLake.Services.YandeStore.Infrastructure.Services;
 
 namespace AshLake.Services.YandeStore.Application.BackgroundJobs;
 
@@ -24,14 +24,9 @@ public class PostJob
 
     public async Task<int> BulkAddPosts(IEnumerable<string> postIds)
     {
-        var bsons = new List<BsonDocument>();
-        foreach (var item in postIds)
-        {
-            bsons.Add(await _archiverService.GetPostMetadata(int.Parse(item)));
-        }
-
+        var bsons = await _archiverService.GetPostMetadataByIds(postIds.Select(x => int.Parse(x)));
         var commands = new List<AddOrUpdatePostCommand>();
-        foreach(var item in bsons)
+        foreach (var item in bsons)
         {
             var command = item.Adapt<AddOrUpdatePostCommand>();
             commands.Add(command);
@@ -42,12 +37,7 @@ public class PostJob
 
     public async Task<int> BulkUpdatePosts(IEnumerable<string> postIds)
     {
-        var bsons = new List<BsonDocument>();
-        foreach (var item in postIds)
-        {
-            bsons.Add(await _archiverService.GetPostMetadata(int.Parse(item)));
-        }
-
+        var bsons = await _archiverService.GetPostMetadataByIds(postIds.Select(x => int.Parse(x)));
         var commands = new List<AddOrUpdatePostCommand>();
         foreach (var item in bsons)
         {
@@ -57,6 +47,4 @@ public class PostJob
 
         return await _mediator.Send(new BulkUpdatePostsCommand(commands));
     }
-
-
 }

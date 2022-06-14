@@ -86,13 +86,16 @@ services:
       - SeqServerUrl=http://seq
     ports:
       - "80"
+      - "7777"
 
   grabber-dapr:
     command: ["./daprd",
       "-app-id", "grabber",
       "-app-port", "80",
       "-components-path", "/components",
-      "-dapr-http-max-request-size","100",
+      "-dapr-http-max-request-size","128",
+      "-enable-profiling","true",
+      "-log-level", "debug",
       "-config", "/configuration/ashlake-config.yaml"
       ]
     volumes:
@@ -114,7 +117,9 @@ services:
       "-app-id", "archiver",
       "-app-port", "80",
       "-components-path", "/components",
-      "-dapr-http-max-request-size","100",
+      "-dapr-http-max-request-size","128",
+      "-dapr-http-read-buffer-size","64",
+      "-log-level", "debug",
       "-config", "/configuration/ashlake-config.yaml"
       ]
     volumes:
@@ -138,7 +143,8 @@ services:
       "-app-id", "collector",
       "-app-port", "80",
       "-components-path", "/components",
-      "-dapr-http-max-request-size","100",
+      "-dapr-http-max-request-size","128",
+      "-log-level", "debug",
       "-config", "/configuration/ashlake-config.yaml"
       ]
     volumes:
@@ -162,7 +168,8 @@ services:
       "-app-id", "compressor",
       "-app-port", "80",
       "-components-path", "/components",
-      "-dapr-http-max-request-size","100",
+      "-dapr-http-max-request-size","128",
+      "-log-level", "debug",
       "-config", "/configuration/ashlake-config.yaml"
       ]
     volumes:
@@ -185,7 +192,8 @@ services:
       "-app-id", "yandestore",
       "-app-port", "80",
       "-components-path", "/components",
-      "-dapr-http-max-request-size","100",
+      "-dapr-http-read-buffer-size","64",
+      "-log-level", "debug",
       "-config", "/configuration/ashlake-config.yaml"
       ]
     volumes:

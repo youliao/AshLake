@@ -1,5 +1,4 @@
 ﻿using AshLake.Services.YandeStore.Application.Posts;
-using AshLake.Services.YandeStore.Application.Services;
 using AshLake.Services.YandeStore.Infrastructure.Repositories.Posts;
 using AshLake.Services.YandeStore.Infrastructure.Services;
 using Dapr.Client;

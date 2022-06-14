@@ -27,7 +27,8 @@ public class YandeArchiverController : ControllerBase
     {
         if (string.IsNullOrWhiteSpace(ids)) return Ok(new List<PostMetadata>());
         var idArr = ids.Split(',');
-        Guard.Against.OutOfRange(idArr.Length, nameof(ids), 1, 100);
+
+        Guard.Against.OutOfRange(idArr.Length, nameof(ids), 1, 1000);
         var list = await repository.FindAsync(x => idArr.Contains(x.Id)) ?? new List<PostMetadata>();
 
         return Ok(list.Select(x => x.Data));
