@@ -5,7 +5,7 @@ namespace AshLake.Services.Archiver.Domain.Entities;
 public abstract record Metadata
 {
     [BsonId]
-    public string Id { get => Data["id"]?.ToString() ?? throw new ArgumentNullException(nameof(Id)); }
+    public int Id { get => Data["id"].AsInt32; }
 
     [BsonExtraElements]
     public BsonDocument Data { get; init; } = default!;

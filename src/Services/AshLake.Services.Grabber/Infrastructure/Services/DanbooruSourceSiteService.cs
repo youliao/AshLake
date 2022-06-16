@@ -87,7 +87,7 @@ public class DanbooruSourceSiteService : IDanbooruSourceSiteService
         var md5 = metadata[YandePostMetadataKeys.md5]?.ToString();
         Guard.Against.NullOrEmpty(md5);
 
-        var data = await _httpClient.GetStreamAsync(previewUrl);
+        var data = await _httpClient.GetByteArrayAsync(previewUrl);
         Guard.Against.Null(data, nameof(data));
 
         return new ImageFile(md5, ImageType.JPG, data);
@@ -101,7 +101,7 @@ public class DanbooruSourceSiteService : IDanbooruSourceSiteService
         var isDeleted = metadata[DanbooruPostMetadataKeys.is_deleted]?.ToObject<bool>();
         Guard.Against.InvalidInput(isDeleted,
                                    DanbooruPostMetadataKeys.is_deleted,
-                                   x => x is true);
+                                   x => x == false);
 
         var fileUrl = metadata[DanbooruPostMetadataKeys.file_url]?.ToString();
         Guard.Against.NullOrEmpty(fileUrl);
@@ -113,7 +113,7 @@ public class DanbooruSourceSiteService : IDanbooruSourceSiteService
         var md5 = metadata[DanbooruPostMetadataKeys.md5]?.ToString();
         Guard.Against.NullOrEmpty(md5);
 
-        var data = await _httpClient.GetStreamAsync(fileUrl);
+        var data = await _httpClient.GetByteArrayAsync(fileUrl);
         Guard.Against.Null(data, nameof(data));
 
         return new ImageFile(md5, imagetType, data);

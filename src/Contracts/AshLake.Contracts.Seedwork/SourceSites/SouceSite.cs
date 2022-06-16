@@ -2,3 +2,7 @@
 public interface ISouceSite
 {
 }
+
+public class Yande : ISouceSite { }
+
+public class Danbooru : ISouceSite { }

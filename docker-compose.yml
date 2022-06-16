@@ -1,26 +1,20 @@
 version: '3.4'
 
 services:
-  mongo:
-    image: mongo:4
-
-  postgres-yandestore:
-    image: postgres:14
-
-  postgres-hangfire:
-    image: postgres:14
-
-  redis-easycaching:
-    image: redis:7
+  healthcheck:
+    image: xabarilcoding/healthchecksui:5.0.0
+    depends_on:
+      - grabber
+      - archiver
+      - collector
+      - compressor
+      - yandestore
 
   redis-state:
     image: redis:7
 
-  rabbitmq:
-    image: rabbitmq:management-alpine
-
-  minio:
-    image: minio/minio:latest
+  redis-pubsub:
+    image: redis:7
 
   seq:
     image: datalust/seq:latest
@@ -28,27 +22,22 @@ services:
   zipkin:
     image: openzipkin/zipkin-slim
 
-  healthcheck:
-    image: xabarilcoding/healthchecksui:5.0.0
-    depends_on:
-      - grabber
-      - archiver
-      - collector
-      - yandestore
-
   grabber:
     image: ${DOCKER_REGISTRY-}ashlakeservicesgrabber
     build:
       context: .
       dockerfile: src/Services/AshLake.Services.Grabber/Dockerfile
     depends_on:
-      - redis-easycaching
+      - grabber-redis
 
   grabber-dapr:
-    image: "daprio/daprd:1.7.2"
+    image: "daprio/daprd:1.7.4"
     network_mode: "service:grabber"
     depends_on:
       - grabber
+
+  grabber-redis:
+    image: redis:7
 
   archiver:
     image: ${DOCKER_REGISTRY-}ashlakeservicesarchiver
@@ -56,15 +45,20 @@ services:
       context: .
       dockerfile: src/Services/AshLake.Services.Archiver/Dockerfile
     depends_on:
-      - postgres-hangfire
-      - mongo
-      - grabber
+      - archiver-mongo
+      - archiver-redis
 
   archiver-dapr:
-    image: "daprio/daprd:1.7.2"
+    image: "daprio/daprd:1.7.4"
     network_mode: "service:archiver"
     depends_on:
       - archiver
+
+  archiver-mongo:
+    image: mongo:4
+
+  archiver-redis:
+    image: redis:7
 
   collector:
     image: ${DOCKER_REGISTRY-}ashlakeservicescollector
@@ -72,16 +66,20 @@ services:
       context: .
       dockerfile: src/Services/AshLake.Services.Collector/Dockerfile
     depends_on:
-      - minio
-      - postgres-hangfire
-      - grabber
-      - archiver
+      - collector-minio
+      - collector-redis
 
   collector-dapr:
-    image: "daprio/daprd:1.7.2"
+    image: "daprio/daprd:1.7.4"
     network_mode: "service:collector"
     depends_on:
       - collector
+
+  collector-minio:
+    image: minio/minio:latest
+
+  collector-redis:
+    image: redis:7
 
   compressor:
     image: ${DOCKER_REGISTRY-}ashlakeservicescompressor
@@ -89,13 +87,19 @@ services:
       context: .
       dockerfile: src/Services/AshLake.Services.Compressor/Dockerfile
     depends_on:
-      - collector
+      - compressor-minio
+
+  compressor-minio:
+    image: minio/minio:latest
 
   compressor-dapr:
-    image: "daprio/daprd:1.7.2"
+    image: "daprio/daprd:1.7.4"
     network_mode: "service:compressor"
     depends_on:
       - compressor
+
+  compressor-redis:
+    image: redis:7
 
   yandestore:
     image: ${DOCKER_REGISTRY-}ashlakeservicesyandestore
@@ -103,11 +107,17 @@ services:
       context: .
       dockerfile: src/Services/AshLake.Services.YandeStore/Dockerfile
     depends_on:
-      - archiver
-      - postgres-yandestore
+      - yandestore-redis
+      - yandestore-postgres
 
   yandestore-dapr:
-    image: "daprio/daprd:1.7.2"
+    image: "daprio/daprd:1.7.4"
     network_mode: "service:yandestore"
     depends_on:
       - yandestore
+
+  yandestore-redis:
+    image: redis:7
+
+  yandestore-postgres:
+    image: postgres:14

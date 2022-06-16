@@ -11,9 +11,9 @@ public interface IMetadataRepository<TSouceSite, TMetadata>
 
     Task<AddRangeResult> AddRangeAsync(IEnumerable<TMetadata> metadatas);
 
-    Task<TMetadata> DeleteAsync(string id);
+    Task<TMetadata> DeleteAsync(int id);
 
-    Task<TMetadata> SingleAsync(string id);
+    Task<TMetadata> SingleAsync(int id);
 
     Task<IEnumerable<TMetadata>> FindAsync(Expression<Func<TMetadata, bool>> filter);
     Task<IEnumerable<TMetadata>> FindAsync(FilterDefinition<TMetadata> filter);

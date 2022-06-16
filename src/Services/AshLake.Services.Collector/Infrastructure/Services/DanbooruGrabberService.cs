@@ -3,25 +3,25 @@ using MongoDB.Bson.Serialization;
 
 namespace AshLake.Services.Collector.Infrastructure.Services;
 
-public interface IYandeGrabberService
+public interface IDanbooruService
 {
     Task<PostFile?> GetPostFile(int postId);
 
     Task<string?> GetPostObjectKey(int postId);
 }
 
-public class YandeGrabberService : IYandeGrabberService
+public class DanbooruGrabberService : IDanbooruService
 {
     private readonly HttpClient _httpClient;
 
-    public YandeGrabberService(HttpClient httpClient)
+    public DanbooruGrabberService(HttpClient httpClient)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     }
 
     public async Task<PostFile?> GetPostFile(int postId)
     {
-        using var response = await _httpClient.GetAsync($"/api/sites/yande/postfiles/{postId}");
+        using var response = await _httpClient.GetAsync($"/api/sites/danbooru/postfiles/{postId}");
         if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
             return null;
@@ -46,7 +46,7 @@ public class YandeGrabberService : IYandeGrabberService
 
     public async Task<string?> GetPostObjectKey(int postId)
     {
-        using var response = await _httpClient.GetAsync($"/api/sites/yande/postmetadata/{postId}");
+        using var response = await _httpClient.GetAsync($"/api/sites/danbooru/postmetadata/{postId}");
         if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
             return null;
@@ -55,10 +55,10 @@ public class YandeGrabberService : IYandeGrabberService
 
         var postmetadata = BsonSerializer.Deserialize<BsonDocument>(await response.Content.ReadAsStringAsync());
 
-        var postmd5 = postmetadata[YandePostMetadataKeys.md5].AsString;
+        var postmd5 = postmetadata[DanbooruPostMetadataKeys.md5].AsString;
         Guard.Against.NullOrWhiteSpace(postmd5);
 
-        var fileExt = postmetadata[YandePostMetadataKeys.file_ext].AsString;
+        var fileExt = postmetadata[DanbooruPostMetadataKeys.file_ext].AsString;
         Guard.Against.NullOrWhiteSpace(fileExt);
 
         return $"{postmd5}.{fileExt}";

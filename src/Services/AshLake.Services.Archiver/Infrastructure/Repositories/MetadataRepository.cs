@@ -35,9 +35,9 @@ public class MetadataRepository<TSouceSite, TMetadata> : IMetadataRepository<TSo
         var ids = metadatas.Select(x => x.Id);
         var exists = await _database.GetEntityCollection<TMetadata>().Find(x => ids.Contains(x.Id)).ToListAsync() ?? new List<TMetadata>();
 
-        var addedIds = new List<string>();
-        var modifiedIds = new List<string>();
-        var unchangedIds = new List<string>();
+        var addedIds = new List<int>();
+        var modifiedIds = new List<int>();
+        var unchangedIds = new List<int>();
 
         var bulkModels = new List<WriteModel<TMetadata>>();
         foreach (var item in metadatas)
@@ -74,7 +74,7 @@ public class MetadataRepository<TSouceSite, TMetadata> : IMetadataRepository<TSo
         return addRangeResult;
     }
 
-    public async Task<TMetadata> DeleteAsync(string id)
+    public async Task<TMetadata> DeleteAsync(int id)
     {
         return await _database.GetEntityCollection<TMetadata>()
             .FindOneAndDeleteAsync(x => x.Id == id);
@@ -90,7 +90,7 @@ public class MetadataRepository<TSouceSite, TMetadata> : IMetadataRepository<TSo
         return await _database.GetEntityCollection<TMetadata>().Find(filter).ToListAsync();
     }
 
-    public async Task<TMetadata> SingleAsync(string id)
+    public async Task<TMetadata> SingleAsync(int id)
     {
         return await _database.GetEntityCollection<TMetadata>()
             .Find(x => x.Id == id)

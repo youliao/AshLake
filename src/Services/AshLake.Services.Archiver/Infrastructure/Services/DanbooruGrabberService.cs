@@ -23,15 +23,12 @@ public class DanbooruGrabberService : IDanbooruGrabberService
 
     public async Task<string?> GetPostObjectKey(int postId)
     {
-        var response = await _httpClient.GetAsync($"/api/sites/danbooru/postmetadata/{postId}");
+        using var response = await _httpClient.GetAsync($"/api/sites/danbooru/postmetadata/{postId}");
         if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
             return null;
         }
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new HttpRequestException(await response.Content.ReadAsStringAsync());
-        }
+        response.EnsureSuccessStatusCode();
 
         var postmetadata = BsonSerializer.Deserialize<BsonDocument>(await response.Content.ReadAsStringAsync());
 

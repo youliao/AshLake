@@ -2,7 +2,6 @@
 using AshLake.Services.YandeStore.Infrastructure.Repositories.Posts;
 using AshLake.Services.YandeStore.Infrastructure.Services;
 using Dapr.Client;
-using Hangfire.PostgreSql;
 using HealthChecks.UI.Client;
 using Hellang.Middleware.ProblemDetails;
 using Newtonsoft.Json.Converters;
@@ -135,8 +134,7 @@ internal static class ProgramExtensions
     {
         builder.Services.AddHangfire(c =>
         {
-            c.UsePostgreSqlStorage(builder.Configuration["HangfireConnectionString"],
-                                   new PostgreSqlStorageOptions() { SchemaName = AshLakeApp.YandeStore.ToString() });
+            c.UseRedisStorage(builder.Configuration["HangfireConnectionString"]);
         });
 
         builder.Services.AddHangfireServer(opt =>
@@ -157,7 +155,7 @@ internal static class ProgramExtensions
 
     public static void AddCustomApplicationServices(this WebApplicationBuilder builder)
     {
-        builder.Services.AddSingleton<IYandeArchiverService>(_ =>
+        builder.Services.AddScoped<IYandeArchiverService>(_ =>
             new YandeArchiverService(DaprClient.CreateInvokeHttpClient("archiver")));
 
         builder.Services.AddScoped<IPostRepository, PostRepository>();

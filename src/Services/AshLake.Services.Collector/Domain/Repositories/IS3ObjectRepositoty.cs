@@ -8,7 +8,7 @@ public interface IS3ObjectRepositoty<T> where T : IS3Object
 
     Task<bool> ExistsAsync(string objectKey);
 
-    Task<Stream?> GetStreamAsync(string objectKey);
+    Task<byte[]?> GetDataAsync(string objectKey);
 
     Task RemoveAsync(string objectKey);
 }

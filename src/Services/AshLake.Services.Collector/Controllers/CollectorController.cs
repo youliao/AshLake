@@ -12,9 +12,9 @@ public class CollectorController : ControllerBase
     public async Task<ActionResult> GetPostFileAsync(string objectKey,
         [FromServices] IS3ObjectRepositoty<PostFile> repositoty)
     {
-        var stream = await repositoty.GetStreamAsync(objectKey);
-        if (stream is null) return NotFound();
+        var data = await repositoty.GetDataAsync(objectKey);
+        if (data is null) return NotFound();
 
-        return File(stream, MimeMapping.MimeUtility.GetMimeMapping(objectKey));
+        return File(data, MimeMapping.MimeUtility.GetMimeMapping(objectKey));
     }
 }

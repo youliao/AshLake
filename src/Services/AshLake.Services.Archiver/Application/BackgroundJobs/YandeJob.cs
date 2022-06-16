@@ -31,13 +31,13 @@ public class YandeJob
         var result = await _postMetadataRepository.AddRangeAsync(dataList);
 
         if (result.AddedIds.Count > 0)
-            await _eventBus.PublishAsync(new PostMetadataAddedIntegrationEvent<Yande>(result.AddedIds));
+            await _eventBus.PublishAsync(new YandePostMetadataAddedIntegrationEvent(result.AddedIds));
 
         if (result.ModifiedIds.Count > 0)
-            await _eventBus.PublishAsync(new PostMetadataModifiedIntegrationEvent<Yande>(result.ModifiedIds));
+            await _eventBus.PublishAsync(new YandePostMetadataAddedIntegrationEvent(result.ModifiedIds));
 
         if (result.UnchangedIds.Count > 0)
-            await _eventBus.PublishAsync(new PostMetadataUnchangedIntegrationEvent<Yande>(result.UnchangedIds));
+            await _eventBus.PublishAsync(new YandePostMetadataAddedIntegrationEvent(result.UnchangedIds));
 
         return new { Added = result.AddedIds.Count, Modified = result.ModifiedIds.Count, Unchanged = result.UnchangedIds.Count };
     }
@@ -50,7 +50,7 @@ public class YandeJob
         var result = await _tagMetadataRepository.AddRangeAsync(dataList);
 
         if (result.AddedIds.Count > 0 || result.ModifiedIds.Count > 0)
-            await _eventBus.PublishAsync(new TagMetadataChangedIntegrationEvent<Yande>(type));
+            await _eventBus.PublishAsync(new YandeTagMetadataChangedIntegrationEvent(type));
 
         return new { Added = result.AddedIds.Count, Modified = result.ModifiedIds.Count, Unchanged = result.UnchangedIds.Count };
     }

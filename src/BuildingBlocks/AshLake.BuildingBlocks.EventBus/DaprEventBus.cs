@@ -1,4 +1,3 @@
-using TypeNameFormatter;
 namespace AshLake.BuildingBlocks.EventBus;
 
 public class DaprEventBus : IEventBus
@@ -16,7 +15,7 @@ public class DaprEventBus : IEventBus
 
     public async Task PublishAsync(IntegrationEvent integrationEvent)
     {
-        var topicName = integrationEvent.GetType().GetFormattedName();
+        var topicName = integrationEvent.GetType().Name;
 
         _logger.LogInformation(
             "Publishing event {@Event} to {PubsubName}.{TopicName}",

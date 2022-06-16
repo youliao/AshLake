@@ -31,13 +31,13 @@ public class DanbooruJob
         var result = await _postMetadataRepository.AddRangeAsync(dataList);
 
         if (result.AddedIds.Count > 0)
-            await _eventBus.PublishAsync(new PostMetadataAddedIntegrationEvent<Danbooru>(result.AddedIds));
+            await _eventBus.PublishAsync(new DanbooruPostMetadataAddedIntegrationEvent(result.AddedIds));
 
         if (result.ModifiedIds.Count > 0)
-            await _eventBus.PublishAsync(new PostMetadataModifiedIntegrationEvent<Danbooru>(result.ModifiedIds));
+            await _eventBus.PublishAsync(new DanbooruPostMetadataModifiedIntegrationEvent(result.ModifiedIds));
 
         if (result.UnchangedIds.Count > 0)
-            await _eventBus.PublishAsync(new PostMetadataUnchangedIntegrationEvent<Danbooru>(result.UnchangedIds));
+            await _eventBus.PublishAsync(new DanbooruPostMetadataUnchangedIntegrationEvent(result.UnchangedIds));
 
         return new { Added = result.AddedIds.Count, Modified = result.ModifiedIds.Count, Unchanged = result.UnchangedIds.Count };
     }
@@ -50,7 +50,7 @@ public class DanbooruJob
         var result = await _tagMetadataRepository.AddRangeAsync(dataList);
 
         if (result.AddedIds.Count > 0 || result.ModifiedIds.Count > 0)
-            await _eventBus.PublishAsync(new TagMetadataChangedIntegrationEvent<Danbooru>(type));
+            await _eventBus.PublishAsync(new DanbooruTagMetadataChangedIntegrationEvent(type));
 
         return new { Added = result.AddedIds.Count, Modified = result.ModifiedIds.Count, Unchanged = result.UnchangedIds.Count };
     }

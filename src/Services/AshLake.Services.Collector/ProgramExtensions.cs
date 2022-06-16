@@ -2,7 +2,6 @@
 using AshLake.BuildingBlocks.EventBus.Abstractions;
 using AshLake.Services.Collector.Application.BackgroundJobs;
 using AshLake.Services.Collector.Domain.Repositories;
-using Hangfire.PostgreSql;
 using Hangfire;
 using Microsoft.OpenApi.Models;
 using Dapr.Client;
@@ -97,8 +96,7 @@ internal static class ProgramExtensions
     {
         builder.Services.AddHangfire(c =>
         {
-            c.UsePostgreSqlStorage(builder.Configuration["HangfireConnectionString"],
-                                   new PostgreSqlStorageOptions() { SchemaName = AshLakeApp.Collector.ToString() });
+            c.UseRedisStorage(builder.Configuration["HangfireConnectionString"]);
         });
 
         builder.Services.AddHangfireServer(opt =>
@@ -119,26 +117,32 @@ internal static class ProgramExtensions
     public static void AddCustomApplicationServices(this WebApplicationBuilder builder)
     {
         #region Repositories
-        builder.Services.AddSingleton(_ =>
-        {
-            return new Minio.MinioClient()
+
+        builder.Services.AddSingleton(x => new Minio.MinioClient()
                 .WithEndpoint(builder.Configuration["ImageStorageEndpoint"])
                 .WithCredentials(builder.Configuration["ImageStorageAccessKey"],
                     builder.Configuration["ImageStorageSecretKey"])
-                .Build();
-        });
+                .Build()
+        );
         builder.Services.AddSingleton(typeof(IS3ObjectRepositoty<>), typeof(S3ObjectRepositoty<>));
+
         #endregion
 
         #region Integration
-        builder.Services.AddSingleton<IYandeGrabberService>(_ =>
-            new YandeGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
 
         builder.Services.AddScoped<IEventBus, DaprEventBus>();
+
+        builder.Services.AddSingleton<IYandeGrabberService, YandeGrabberService>(_ =>
+            new YandeGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
+
+        builder.Services.AddSingleton<IDanbooruService, DanbooruGrabberService>(_ => 
+            new DanbooruGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
         #endregion
 
         #region BackgroundJobs
+
         builder.Services.AddScoped(typeof(YandeJob));
+
         #endregion
     }
 }

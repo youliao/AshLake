@@ -14,20 +14,24 @@ public class PostJob
         _archiverService = archiverService ?? throw new ArgumentNullException(nameof(archiverService));
     }
 
-    public async Task<int> AddOrUpdatePost(string postId)
+    public async Task<int> AddOrUpdatePost(int postId)
     {
-        var metadata = await _archiverService.GetPostMetadata(int.Parse(postId));
+        var metadata = await _archiverService.GetPostMetadata(postId);
         var command = metadata.Adapt<AddOrUpdatePostCommand>();
 
         return await _mediator.Send(command);
     }
 
-    public async Task<int> BulkAddPosts(IEnumerable<string> postIds)
+    public async Task<int> BulkAddPosts(IEnumerable<int> postIds)
     {
-        var bsons = await _archiverService.GetPostMetadataByIds(postIds.Select(x => int.Parse(x)));
+        var bsons = await _archiverService.GetPostMetadataByRange(postIds.Min(), postIds.Max());
         var commands = new List<AddOrUpdatePostCommand>();
+
         foreach (var item in bsons)
         {
+            if (!postIds.Contains(item.GetValue(YandePostMetadataKeys.id).AsInt32))
+                continue;
+
             var command = item.Adapt<AddOrUpdatePostCommand>();
             commands.Add(command);
         }
@@ -35,12 +39,15 @@ public class PostJob
         return await _mediator.Send(new BulkAddPostsCommand(commands));
     }
 
-    public async Task<int> BulkUpdatePosts(IEnumerable<string> postIds)
+    public async Task<int> BulkUpdatePosts(IEnumerable<int> postIds)
     {
-        var bsons = await _archiverService.GetPostMetadataByIds(postIds.Select(x => int.Parse(x)));
+        var bsons = await _archiverService.GetPostMetadataByRange(postIds.Min(), postIds.Max());
         var commands = new List<AddOrUpdatePostCommand>();
+
         foreach (var item in bsons)
         {
+            if (!postIds.Contains(item.GetValue(YandePostMetadataKeys.id).AsInt32))
+                continue;
             var command = item.Adapt<AddOrUpdatePostCommand>();
             commands.Add(command);
         }

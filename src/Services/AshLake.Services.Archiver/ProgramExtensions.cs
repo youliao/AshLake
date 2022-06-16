@@ -6,7 +6,6 @@ using Serilog;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
 using AshLake.Services.Archiver.Domain.Services;
-using Hangfire.PostgreSql;
 
 namespace AshLake.Services.Archiver;
 
@@ -75,14 +74,13 @@ internal static class ProgramExtensions
     {
         builder.Services.AddHangfire(c =>
         {
-            c.UsePostgreSqlStorage(builder.Configuration["HangfireConnectionString"],
-                                   new PostgreSqlStorageOptions() { SchemaName = AshLakeApp.Archiver.ToString() });
+            c.UseRedisStorage(builder.Configuration["HangfireConnectionString"]);
         });
 
         builder.Services.AddHangfireServer(opt =>
         {
             opt.ShutdownTimeout = TimeSpan.FromMinutes(30);
-            opt.WorkerCount = 3;
+            opt.WorkerCount = 5;
             opt.Queues = new[] { "postmetadata", "tagmetadata" };
         });
     }
@@ -143,9 +141,9 @@ internal static class ProgramExtensions
         #region Integration
 
         builder.Services.AddScoped<IEventBus, DaprEventBus>();
-        builder.Services.AddSingleton<IYandeGrabberService>(_ =>
+        builder.Services.AddSingleton<IYandeGrabberService,YandeGrabberService>(_ =>
             new YandeGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
-        builder.Services.AddSingleton<IDanbooruGrabberService>(_ =>
+        builder.Services.AddSingleton<IDanbooruGrabberService, DanbooruGrabberService>(_ =>
             new DanbooruGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
 
         #endregion

@@ -89,7 +89,7 @@ public class KonachanSourceSiteService : IKonachanSourceSiteService
         var md5 = metadata[KonachanPostMetadataKeys.md5]?.ToString();
         Guard.Against.NullOrEmpty(md5);
 
-        var data = await _httpClient.GetStreamAsync(previewUrl);
+        var data = await _httpClient.GetByteArrayAsync(previewUrl);
         Guard.Against.Null(data, nameof(data));
 
         return new ImageFile(md5, ImageType.JPG, data);
@@ -117,7 +117,7 @@ public class KonachanSourceSiteService : IKonachanSourceSiteService
         var md5 = metadata[KonachanPostMetadataKeys.md5]?.ToString();
         Guard.Against.NullOrEmpty(md5);
 
-        var data = await _httpClient.GetStreamAsync(fileUrl);
+        var data = await _httpClient.GetByteArrayAsync(fileUrl);
         Guard.Against.Null(data, nameof(data));
 
         return new ImageFile(md5, imagetType, data);

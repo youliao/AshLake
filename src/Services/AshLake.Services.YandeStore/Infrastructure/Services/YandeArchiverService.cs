@@ -5,7 +5,7 @@ namespace AshLake.Services.YandeStore.Infrastructure.Services;
 public interface IYandeArchiverService
 {
     Task<BsonDocument> GetPostMetadata(int id);
-    Task<IEnumerable<BsonDocument>> GetPostMetadataByIds(IEnumerable<int> ids);
+    Task<IEnumerable<BsonDocument>> GetPostMetadataByRange(int rangeFrom, int rangeTo);
 }
 
 public class YandeArchiverService : IYandeArchiverService
@@ -23,10 +23,17 @@ public class YandeArchiverService : IYandeArchiverService
         return BsonDocument.Parse(json);
     }
 
-    public async Task<IEnumerable<BsonDocument>> GetPostMetadataByIds(IEnumerable<int> ids)
+    public async Task<IEnumerable<BsonDocument>> GetPostMetadataByRange(int rangeFrom, int rangeTo)
     {
-        var json = await _httpClient.GetStringAsync($"/api/sites/yande/postmetadata?ids={string.Join(',', ids)}");
+        var json = await _httpClient.GetStringAsync($"/api/sites/yande/postmetadata?rangeFrom={rangeFrom}&rangeTo={rangeTo}");
         var list = BsonSerializer.Deserialize<BsonArray>(json).Select(x => x.AsBsonDocument);
         return list;
     }
+
+    //public async Task<IEnumerable<BsonDocument>> GetPostMetadataByIds(IEnumerable<int> ids)
+    //{
+    //    var json = await _httpClient.GetStringAsync($"/api/sites/yande/postmetadata?ids={string.Join(',', ids)}");
+    //    var list = BsonSerializer.Deserialize<BsonArray>(json).Select(x => x.AsBsonDocument);
+    //    return list;
+    //}
 }

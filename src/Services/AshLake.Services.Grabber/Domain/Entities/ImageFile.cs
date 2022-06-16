@@ -2,18 +2,18 @@
 
 public class ImageFile
 {
-    public string PostMD5 { get; private set; } = null!;
+    public string PostMD5 { get; private set; }
 
     public ImageType Type { get; private set; }
 
-    public Stream Data { get; private set; } = null!;
+    public byte[] Data { get; private set; }
 
     public string ObjectKey { get => $"{PostMD5}.{Type}".ToLower(); }
 
-    public ImageFile(string postMd5, ImageType type, Stream data)
+    public ImageFile(string postMd5, ImageType type, byte[] data)
     {
         PostMD5 = postMd5?.ToLower() ?? throw new ArgumentNullException(nameof(postMd5));
         Type = type;
-        Data = data ?? throw new ArgumentNullException(nameof(data));
+        Data = data;
     }
 }

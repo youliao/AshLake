@@ -1,65 +1,6 @@
 version: '3.4'
 
 services:
-  mongo:
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: mongoadmin
-      MONGO_INITDB_ROOT_PASSWORD: mongoadmin
-    volumes:
-      - archiver-nosqldata:/data/db
-    ports:
-      - "27017:27017"
-
-  postgres-yandestore:
-    environment:
-      POSTGRES_USER: root 
-      POSTGRES_DB: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - yandestore-sqldata:/var/lib/postgresql/data
-
-  postgres-hangfire:
-    environment:
-      POSTGRES_USER: root 
-      POSTGRES_DB: postgres
-      POSTGRES_PASSWORD: postgres
-    volumes:
-      - hangfire-data:/var/lib/postgresql/data
-
-  redis-easycaching:
-
-  redis-state:
-
-  rabbitmq:
-    ports:
-      - "5672:5672"
-
-  minio:
-    environment:
-      MINIO_ACCESS_KEY: minio
-      MINIO_SECRET_KEY: minio123
-    command: server /data --console-address ":9001"
-    volumes:
-      - collector-objectdata:/data
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-
-  seq:
-    environment:
-      - ACCEPT_EULA=Y
-      - SEQ_CACHE_SYSTEMRAMTARGET=0.2
-    volumes:
-      - seq-data:/data
-    ports:
-      - "5340:80"
-
-  zipkin:
-    ports:
-      - "9411:9411"
-
   healthcheck:
     environment:
       - HealthChecksUI__HealthChecks__0__Name=Grabber API
@@ -75,6 +16,23 @@ services:
     ports:
       - "5107:80"
 
+  redis-state:
+
+  redis-pubsub:
+
+  seq:
+    environment:
+      - ACCEPT_EULA=Y
+      - SEQ_CACHE_SYSTEMRAMTARGET=0.2
+    volumes:
+      - seq-data:/data
+    ports:
+      - "5340:80"
+
+  zipkin:
+    ports:
+      - "9411:9411"
+
   grabber:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -82,7 +40,7 @@ services:
       - YandeUrl=https://yande.re/
       - DanbooruUrl=https://danbooru.donmai.us/
       - KonachanUrl=https://konachan.com/
-      - EasycachingRedisHost=redis-easycaching
+      - EasycachingRedisHost=grabber-redis
       - SeqServerUrl=http://seq
     ports:
       - "80"
@@ -102,12 +60,14 @@ services:
       - "./dapr/components/:/components"
       - "./dapr/configuration/:/configuration"
 
+  grabber-redis:
+
   archiver:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - MongoDatabaseConnectionString=mongodb://mongoadmin:mongoadmin@mongo:27017?maxPoolSize=500
-      - HangfireConnectionString=Host=postgres-hangfire;Database=postgres;Username=root;Password=postgres;MaxPoolSize=500;
+      - MongoDatabaseConnectionString=mongodb://mongoadmin:mongoadmin@archiver-mongo:27017?maxPoolSize=500
+      - HangfireConnectionString=archiver-redis:6379
       - SeqServerUrl=http://seq
     ports:
       - "80"
@@ -125,15 +85,26 @@ services:
     volumes:
       - "./dapr/components/:/components"
       - "./dapr/configuration/:/configuration"
-     
+
+  archiver-mongo:
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongoadmin
+      MONGO_INITDB_ROOT_PASSWORD: mongoadmin
+    volumes:
+      - archiver-nosqldata:/data/db
+    ports:
+      - "27017:27017"
+
+  archiver-redis:
+
   collector:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ImageStorageEndpoint=minio:9000
+      - ImageStorageEndpoint=collector-minio:9000
       - ImageStorageAccessKey=minio
       - ImageStorageSecretKey=minio123
-      - HangfireConnectionString=Host=postgres-hangfire;Database=postgres;Username=root;Password=postgres;MaxPoolSize=500;
+      - HangfireConnectionString=collector-redis:6379
       - SeqServerUrl=http://seq
     ports:
       - "80"
@@ -151,14 +122,27 @@ services:
       - "./dapr/components/:/components"
       - "./dapr/configuration/:/configuration"
 
+  collector-minio:
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+    command: server /data --console-address ":9001"
+    volumes:
+      - collector-objectdata:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
+  collector-redis:
+
   compressor:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ImageStorageEndpoint=minio:9000
+      - ImageStorageEndpoint=compressor-minio:9000
       - ImageStorageAccessKey=minio
       - ImageStorageSecretKey=minio123
-      - HangfireConnectionString=Host=postgres-hangfire;Database=postgres;Username=root;Password=postgres;MaxPoolSize=500;
+      - HangfireConnectionString=compressor-redis:6379
       - SeqServerUrl=http://seq
     ports:
       - "80"
@@ -176,12 +160,25 @@ services:
       - "./dapr/components/:/components"
       - "./dapr/configuration/:/configuration"
 
+  compressor-minio:
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+    command: server /data --console-address ":9001"
+    volumes:
+      - collector-objectdata:/data
+    ports:
+      - "19000:9000"
+      - "19001:9001"
+
+  compressor-redis:
+
   yandestore:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - DBConnectionString=Host=postgres-yandestore;Database=postgres;Username=root;Password=postgres;MaxPoolSize=500;
-      - HangfireConnectionString=Host=postgres-hangfire;Database=postgres;Username=root;Password=postgres;MaxPoolSize=500;
+      - DBConnectionString=Host=yandestore-postgres;Database=postgres;Username=root;Password=postgres;
+      - HangfireConnectionString=yandestore-redis:6379
       - RetryMigrations=true
       - SeqServerUrl=http://seq
     ports:
@@ -200,12 +197,22 @@ services:
       - "./dapr/components/:/components"
       - "./dapr/configuration/:/configuration"
 
+  yandestore-postgres:
+    environment:
+      POSTGRES_USER: root 
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432"
+    volumes:
+      - yandestore-sqldata:/var/lib/postgresql/data
+
+  yandestore-redis:
+    image: redis:7
+
 volumes:
   seq-data:
-  hangfire-data:
   archiver-nosqldata:
-    external: false
   collector-objectdata:
-    external: false
+  compressor-objectdata:
   yandestore-sqldata:
-    external: false

@@ -1,6 +1,4 @@
-﻿using AshLake.Services.Compressor.Domain.Entities;
-
-namespace AshLake.Services.Compressor.Domain.Repositories;
+﻿namespace AshLake.Services.Compressor.Domain.Repositories;
 
 public interface IS3ObjectRepositoty<T> where T : IS3Object
 {

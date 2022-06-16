@@ -12,7 +12,6 @@ using AshLake.Services.Compressor.Infrastructure;
 using AshLake.Services.Compressor.Domain.Repositories;
 using AshLake.Services.Compressor.Infrastructure.Repositories;
 using AshLake.Services.Compressor.Infrastructure.Services;
-using Hangfire.PostgreSql;
 
 namespace AshLake.Services.Compressor;
 
@@ -100,8 +99,7 @@ internal static class ProgramExtensions
     {
         builder.Services.AddHangfire(c =>
         {
-            c.UsePostgreSqlStorage(builder.Configuration["HangfireConnectionString"],
-                                   new PostgreSqlStorageOptions() { SchemaName = AshLakeApp.Compressor.ToString() });
+            c.UseRedisStorage(builder.Configuration["HangfireConnectionString"]);
         });
 
         builder.Services.AddHangfireServer(opt =>

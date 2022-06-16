@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using AshLake.Services.Archiver.Infrastructure.Extensions;
 using AshLake.Services.Archiver.Application.Commands;
+using MongoDB.Driver;
 
 namespace AshLake.Services.Archiver.Controllers;
 
@@ -13,23 +14,34 @@ public class YandeArchiverController : ControllerBase
     public async Task<ActionResult> GetPostMetadataAsync(int id,
         [FromServices] IMetadataRepository<Yande,PostMetadata> repository)
     {
-        var metadata = await repository.SingleAsync(id.ToString());
+        var metadata = await repository.SingleAsync(id);
         if (metadata is null) return NotFound();
 
         return Ok(metadata.Data);
     }
 
+    //[Route("/api/sites/yande/postmetadata")]
+    //[HttpGet]
+    //[ProducesResponseType(StatusCodes.Status200OK)]
+    //public async Task<ActionResult> GetPostMetadataByIdsAsync(string ids,
+    //[FromServices] IMetadataRepository<Yande, PostMetadata> repository)
+    //{
+    //    if (string.IsNullOrWhiteSpace(ids)) return Ok(new List<PostMetadata>());
+    //    var idArr = ids.Split(',');
+
+    //    Guard.Against.OutOfRange(idArr.Length, nameof(ids), 1, 100);
+    //    var list = await repository.FindAsync(x => idArr.Contains(x.Id)) ?? new List<PostMetadata>();
+
+    //    return Ok(list.Select(x => x.Data));
+    //}
+
     [Route("/api/sites/yande/postmetadata")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult> GetPostMetadataByIdsAsync(string ids,
+    public async Task<ActionResult> GetPostMetadataByRangeAsync(int rangeFrom, int rangeTo,
     [FromServices] IMetadataRepository<Yande, PostMetadata> repository)
     {
-        if (string.IsNullOrWhiteSpace(ids)) return Ok(new List<PostMetadata>());
-        var idArr = ids.Split(',');
-
-        Guard.Against.OutOfRange(idArr.Length, nameof(ids), 1, 1000);
-        var list = await repository.FindAsync(x => idArr.Contains(x.Id)) ?? new List<PostMetadata>();
+        var list = await repository.FindAsync(x => x.Id>=rangeFrom && x.Id<= rangeTo) ?? new List<PostMetadata>();
 
         return Ok(list.Select(x => x.Data));
     }
@@ -40,7 +52,7 @@ public class YandeArchiverController : ControllerBase
     public async Task<ActionResult> GetTagMetadataByTypeAsync(int type,
     [FromServices] IMetadataRepository<Yande, TagMetadata> repository)
     {
-        var filter = new MongoDB.Driver.FilterDefinitionBuilder<TagMetadata>().Eq(YandeTagMetadataKeys.type, type);
+        var filter = Builders<TagMetadata>.Filter.Eq(YandeTagMetadataKeys.type, type);
         var list = await repository.FindAsync(filter);
 
         return Ok(list.Select(x => x.Data));

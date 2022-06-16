@@ -19,15 +19,15 @@ public class PostPreviewJob
 
     public async Task<string> AddOrUpdatePreview(string objectKey)
     {
-        var fileData = await _collectorService.GetPostFile(objectKey);
+        var fileData = await _collectorService.GetPostFileData(objectKey);
         if (fileData is null) return EntityState.None.ToString();
 
         var isExists = await _previewRepositoty.ExistsAsync(objectKey);
 
-        var image = await Image.LoadAsync(fileData);
+        using var image = Image.Load(fileData);
 
         using var resizedData = new MemoryStream();
-        ResizeTo(ref image, 300);
+        ResizeTo(image, 300);
         image.SaveAsJpeg(resizedData);
 
         var preview = new PostPreview(Path.GetFileNameWithoutExtension(objectKey), resizedData.ToArray());
@@ -42,13 +42,13 @@ public class PostPreviewJob
         var isExists = await _previewRepositoty.ExistsAsync(objectKey);
         if (isExists) return EntityState.Unchanged.ToString();
 
-        var fileData = await _collectorService.GetPostFile(objectKey);
+        var fileData = await _collectorService.GetPostFileData(objectKey);
         if (fileData is null) return EntityState.None.ToString();
 
-        var image = await Image.LoadAsync(fileData);
+        using var image = Image.Load(fileData);
 
         using var resizedData = new MemoryStream();
-        ResizeTo(ref image, 300);
+        ResizeTo(image, 300);
         image.SaveAsJpeg(resizedData);
 
         var postMd5 = Path.GetFileNameWithoutExtension(objectKey);
@@ -58,7 +58,7 @@ public class PostPreviewJob
         return isExists ? EntityState.Modified.ToString() : EntityState.Added.ToString();
     }
 
-    private void ResizeTo(ref Image image,int longSide)
+    private void ResizeTo(Image image,int longSide)
     {
         var imageLongside = Math.Max(image.Width, image.Height);
         var ratio = (double)imageLongside / longSide;

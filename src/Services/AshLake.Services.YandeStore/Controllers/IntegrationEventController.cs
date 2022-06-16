@@ -8,21 +8,21 @@ namespace AshLake.Services.YandeStore.Controllers;
 [Route("api/[controller]")]
 public class IntegrationEventController : ApiControllerBase
 {
-    [HttpPost("YandePostMetadataAdded")]
-    [Topic(DaprEventBus.DaprPubsubName, $"{nameof(PostMetadataAddedIntegrationEvent<ISouceSite>)}<{nameof(Yande)}>")]
-    public Task HandleAsync(PostMetadataAddedIntegrationEvent<Yande> e)
-    {
-        BackgroundJob.Enqueue<PostJob>(x => x.BulkAddPosts(e.PostIds));
+    //[HttpPost("YandePostMetadataAdded")]
+    //[Topic(DaprEventBus.DaprPubsubName, nameof(PostMetadataAddedIntegrationEvent))]
+    //public Task HandleAsync(PostMetadataAddedIntegrationEvent e)
+    //{
+    //    BackgroundJob.Enqueue<PostJob>(x => x.BulkAddPosts(e.PostIds));
 
-        return Task.CompletedTask;
-    }
+    //    return Task.CompletedTask;
+    //}
 
-    [HttpPost("YandePostMetadataModified")]
-    [Topic(DaprEventBus.DaprPubsubName, $"{nameof(PostMetadataModifiedIntegrationEvent<ISouceSite>)}<{nameof(Yande)}>")]
-    public Task HandleAsync(PostMetadataModifiedIntegrationEvent<Yande> e)
-    {
-        BackgroundJob.Enqueue<PostJob>(x => x.BulkUpdatePosts(e.PostIds));
+    //[HttpPost("YandePostMetadataModified")]
+    //[Topic(DaprEventBus.DaprPubsubName, nameof(PostMetadataModifiedIntegrationEvent))]
+    //public Task HandleAsync(PostMetadataModifiedIntegrationEvent<Yande> e)
+    //{
+    //    BackgroundJob.Enqueue<PostJob>(x => x.BulkUpdatePosts(e.PostIds));
 
-        return Task.CompletedTask;
-    }
+    //    return Task.CompletedTask;
+    //}
 }

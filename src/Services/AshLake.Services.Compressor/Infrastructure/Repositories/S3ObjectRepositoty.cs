@@ -18,7 +18,6 @@ public class S3ObjectRepositoty<T> : IS3ObjectRepositoty<T> where T : IS3Object
     public async Task PutAsync(T s3Object)
     {
         using var stream = new MemoryStream(s3Object.Data);
-
         var args = new PutObjectArgs()
             .WithBucket(_bucketName)
             .WithObject(s3Object.ObjectKey)
