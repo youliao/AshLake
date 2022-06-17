@@ -3,6 +3,7 @@
 public interface IYandeSourceSiteService
 {
     Task<ImageFile> GetFileAsync(int id);
+    Task<ImageLink> GetFileLinkAsync(int id);
     Task<ImageFile> GetPreviewAsync(int id);
     Task<JToken> GetLatestPostMetadataAsync();
     Task<JToken?> GetPostMetadataAsync(int id);
@@ -121,6 +122,35 @@ public class YandeSourceSiteService : IYandeSourceSiteService
         Guard.Against.Null(data, nameof(data));
 
         return new ImageFile(md5, imagetType, data);
+    }
+
+    public async Task<ImageLink> GetFileLinkAsync(int id)
+    {
+        var metadata = await GetPostMetadataAsync(id);
+        Guard.Against.Null(metadata, nameof(metadata));
+
+        var status = metadata[YandePostMetadataKeys.status]?.ToString();
+        Guard.Against.NullOrEmpty(status);
+        var postStatus = Enum.Parse<PostStatus>(status.ToUpper());
+        Guard.Against.InvalidInput(postStatus,
+                                   YandePostMetadataKeys.status,
+                                   x => x != PostStatus.DELETED);
+
+        var fileUrl = metadata[YandePostMetadataKeys.file_url]?.ToString();
+        Guard.Against.NullOrEmpty(fileUrl);
+
+        var fileExt = metadata[YandePostMetadataKeys.file_ext]?.ToString();
+        Guard.Against.NullOrEmpty(fileExt);
+        var imagetType = Enum.Parse<ImageType>(fileExt.ToUpper());
+
+        var md5 = metadata[YandePostMetadataKeys.md5]?.ToString();
+        Guard.Against.NullOrEmpty(md5);
+
+        using var httpRequest = new HttpRequestMessage(HttpMethod.Head, fileUrl);
+        using var httpResponse = await _httpClient.SendAsync(httpRequest);
+        httpResponse.EnsureSuccessStatusCode();
+
+        return new ImageLink(fileUrl, md5, imagetType);
     }
 
     public async Task<IEnumerable<JToken>> GetTagMetadataListAsync(int? type,int limit, int page)
