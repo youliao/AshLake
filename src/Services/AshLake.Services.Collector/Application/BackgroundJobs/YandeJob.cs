@@ -6,11 +6,11 @@ namespace AshLake.Services.Collector.Application.BackgroundJobs;
 public class YandeJob
 {
     private readonly IS3ObjectRepositoty<PostFile> _fileRepositoty;
-    private readonly IYandeGrabberService _grabberService;
+    private readonly IGrabberService _grabberService;
     private readonly IDownloadService _downloadService;
     private readonly IEventBus _eventBus;
 
-    public YandeJob(IS3ObjectRepositoty<PostFile> fileRepositoty, IYandeGrabberService grabberService, IDownloadService downloadService, IEventBus eventBus)
+    public YandeJob(IS3ObjectRepositoty<PostFile> fileRepositoty, IGrabberService grabberService, IDownloadService downloadService, IEventBus eventBus)
     {
         _fileRepositoty = fileRepositoty ?? throw new ArgumentNullException(nameof(fileRepositoty));
         _grabberService = grabberService ?? throw new ArgumentNullException(nameof(grabberService));
@@ -23,31 +23,35 @@ public class YandeJob
         var link = await _grabberService.GetPostFileLink(postId);
         if (link is null) return EntityState.None.ToString();
 
-        using var file = await _downloadService.DownloadFileTaskAsync(link.Url);
+        using var data = await _downloadService.DownloadFileTaskAsync(link.Url);
 
-        var isExists = await _fileRepositoty.ExistsAsync(link.GetObjectId());
+        var objectKey = link.GetObjectKey();
 
-        var postFile = new PostFile(link.Md5, file)
+        var isExists = await _fileRepositoty.ExistsAsync(objectKey);
 
-        await _fileRepositoty.PutAsync(link);
-        await _eventBus.PublishAsync(new PostFileChangedIntegrationEvent(link.ObjectKey));
+        var postFile = new PostFile(link.Md5, data, objectKey);
+
+        await _fileRepositoty.PutAsync(postFile);
+        await _eventBus.PublishAsync(new PostFileChangedIntegrationEvent(objectKey));
 
         return isExists ? EntityState.Modified.ToString() : EntityState.Added.ToString();
     }
 
     public async Task<string> AddFile(int postId)
     {
-        var objectKey = await _grabberService.GetPostObjectKey(postId);
-        if (objectKey is null) return EntityState.None.ToString();
+        var link = await _grabberService.GetPostFileLink(postId);
+        if (link is null) return EntityState.None.ToString();
+
+        var objectKey = link.GetObjectKey();
 
         var isExists = await _fileRepositoty.ExistsAsync(objectKey);
         if (isExists) return EntityState.Unchanged.ToString();
 
-        var file = await _grabberService.GetPostFile(postId);
-        if (file is null) return EntityState.None.ToString();
+        using var data = await _downloadService.DownloadFileTaskAsync(link.Url);
+        var postFile = new PostFile(link.Md5, data, objectKey);
 
-        await _fileRepositoty.PutAsync(file);
-        await _eventBus.PublishAsync(new PostFileChangedIntegrationEvent(file.ObjectKey));
+        await _fileRepositoty.PutAsync(postFile);
+        await _eventBus.PublishAsync(new PostFileChangedIntegrationEvent(objectKey));
         return EntityState.Added.ToString();
     }
 }

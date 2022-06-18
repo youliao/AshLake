@@ -4,7 +4,7 @@ public record class ImageLink(string Url, string Md5);
 
 public static class ImageLinkExtensions
 {
-    public static string GetObjectId(this ImageLink link)
+    public static string GetObjectKey(this ImageLink link)
     {
         var fileExt = Path.GetExtension(link.Url);
 

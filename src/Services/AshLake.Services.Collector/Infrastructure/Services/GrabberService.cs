@@ -3,25 +3,25 @@ using MongoDB.Bson.Serialization;
 
 namespace AshLake.Services.Collector.Infrastructure.Services;
 
-public interface IYandeGrabberService
+public interface IGrabberService<T> where T : ISouceSite
 {
     Task<ImageLink?> GetPostFileLink(int postId);
 
     Task<string?> GetPostObjectKey(int postId);
 }
 
-public class YandeGrabberService : IYandeGrabberService
+public class GrabberService<T> : IGrabberService<T> where T : ISouceSite
 {
     private readonly HttpClient _httpClient;
 
-    public YandeGrabberService(HttpClient httpClient)
+    public GrabberService(HttpClient httpClient)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     }
 
     public async Task<ImageLink?> GetPostFileLink(int postId)
     {
-        using var response = await _httpClient.GetAsync($"/api/sites/yande/postfilelinks/{postId}");
+        using var response = await _httpClient.GetAsync($"/api/sites/{nameof(T).ToLower()}/postfilelinks/{postId}");
         if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
             return null;
@@ -33,7 +33,7 @@ public class YandeGrabberService : IYandeGrabberService
 
     public async Task<string?> GetPostObjectKey(int postId)
     {
-        using var response = await _httpClient.GetAsync($"/api/sites/yande/postmetadata/{postId}");
+        using var response = await _httpClient.GetAsync($"/api/sites/{nameof(T).ToLower()}/postmetadata/{postId}");
         if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
             return null;

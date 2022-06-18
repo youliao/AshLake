@@ -141,8 +141,8 @@ internal static class ProgramExtensions
             return new DownloadService(downloadOpt);
         });
 
-        builder.Services.AddSingleton<IYandeGrabberService, YandeGrabberService>(_ =>
-            new YandeGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
+        builder.Services.AddSingleton<IGrabberService, GrabberService>(_ =>
+            new GrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
 
         builder.Services.AddSingleton<IDanbooruService, DanbooruGrabberService>(_ => 
             new DanbooruGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
