@@ -6,11 +6,11 @@ namespace AshLake.Services.Collector.Application.BackgroundJobs;
 public class DanbooruJob
 {
     private readonly IS3ObjectRepositoty<PostFile> _fileRepositoty;
-    private readonly IDanbooruService _grabberService;
+    private readonly IGrabberService<Danbooru> _grabberService;
     private readonly IDownloadService _downloadService;
     private readonly IEventBus _eventBus;
 
-    public DanbooruJob(IS3ObjectRepositoty<PostFile> fileRepositoty, IDanbooruService grabberService, IDownloadService downloadService, IEventBus eventBus)
+    public DanbooruJob(IS3ObjectRepositoty<PostFile> fileRepositoty, IGrabberService<Danbooru> grabberService, IDownloadService downloadService, IEventBus eventBus)
     {
         _fileRepositoty = fileRepositoty ?? throw new ArgumentNullException(nameof(fileRepositoty));
         _grabberService = grabberService ?? throw new ArgumentNullException(nameof(grabberService));
@@ -29,7 +29,10 @@ public class DanbooruJob
 
         var isExists = await _fileRepositoty.ExistsAsync(objectKey);
 
-        var postFile = new PostFile(link.Md5, data, objectKey);
+        byte[] bytes = new byte[data.Length];
+        data.Read(bytes, 0, bytes.Length);
+        data.Seek(0, SeekOrigin.Begin);
+        var postFile = new PostFile(link.Md5, bytes, objectKey);
 
         await _fileRepositoty.PutAsync(postFile);
         await _eventBus.PublishAsync(new PostFileChangedIntegrationEvent(objectKey));
@@ -48,7 +51,11 @@ public class DanbooruJob
         if (isExists) return EntityState.Unchanged.ToString();
 
         using var data = await _downloadService.DownloadFileTaskAsync(link.Url);
-        var postFile = new PostFile(link.Md5, data, objectKey);
+
+        byte[] bytes = new byte[data.Length];
+        data.Read(bytes, 0, bytes.Length);
+        data.Seek(0, SeekOrigin.Begin);
+        var postFile = new PostFile(link.Md5, bytes, objectKey);
 
         await _fileRepositoty.PutAsync(postFile);
         await _eventBus.PublishAsync(new PostFileChangedIntegrationEvent(objectKey));

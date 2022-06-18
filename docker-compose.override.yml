@@ -39,8 +39,7 @@ services:
       - EasycachingRedisHost=grabber-redis
       - SeqServerUrl=http://seq
     ports:
-      - "80"
-      - "7777"
+      - "30001:80"
 
   grabber-dapr:
     command: ["./daprd",
@@ -64,7 +63,7 @@ services:
       - HangfireConnectionString=archiver-redis:6379
       - SeqServerUrl=http://seq
     ports:
-      - "80"
+      - "30002:80"
 
   archiver-dapr:
     command: ["./daprd",
@@ -99,7 +98,7 @@ services:
       - HangfireConnectionString=collector-redis:6379
       - SeqServerUrl=http://seq
     ports:
-      - "80"
+      - "30003:80"
 
   collector-dapr:
     command: ["./daprd",
@@ -135,7 +134,7 @@ services:
       - HangfireConnectionString=compressor-redis:6379
       - SeqServerUrl=http://seq
     ports:
-      - "80"
+      - "30004:80"
 
   compressor-dapr:
     command: ["./daprd",
@@ -170,7 +169,7 @@ services:
       - RetryMigrations=true
       - SeqServerUrl=http://seq
     ports:
-      - "80"
+      - "30005:80"
 
   yandestore-dapr:
     command: ["./daprd",

@@ -17,11 +17,13 @@ public class S3ObjectRepositoty<T> : IS3ObjectRepositoty<T> where T : IS3Object
 
     public async Task PutAsync(T post)
     {
+        using var stream = new MemoryStream(post.Data);
+
         var args = new PutObjectArgs()
             .WithBucket(_bucketName)
             .WithObject(post.ObjectKey)
-            .WithStreamData(post.Data)
-            .WithObjectSize(post.Data.Length);
+            .WithStreamData(stream)
+            .WithObjectSize(stream.Length);
 
         await _minioClient.PutObjectAsync(args);
     }

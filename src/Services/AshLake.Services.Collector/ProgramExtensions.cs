@@ -133,7 +133,7 @@ internal static class ProgramExtensions
         {
             var downloadOpt = new DownloadConfiguration()
             {
-                ChunkCount = 8, // file parts to download, default value is 1
+                ChunkCount = 1, // file parts to download, default value is 1
                 OnTheFlyDownload = true, // caching in-memory or not? default values is true
                 ParallelDownload = true // download parts of file as parallel or not. Default value is false
             };
@@ -141,11 +141,10 @@ internal static class ProgramExtensions
             return new DownloadService(downloadOpt);
         });
 
-        builder.Services.AddSingleton<IGrabberService, GrabberService>(_ =>
-            new GrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
-
-        builder.Services.AddSingleton<IDanbooruService, DanbooruGrabberService>(_ => 
-            new DanbooruGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
+        builder.Services.AddSingleton<IGrabberService<Yande>>(_ =>
+            new GrabberService<Yande>(DaprClient.CreateInvokeHttpClient("grabber")));
+        builder.Services.AddSingleton<IGrabberService<Danbooru>>(_ =>
+            new GrabberService<Danbooru>(DaprClient.CreateInvokeHttpClient("grabber")));
         #endregion
 
         #region BackgroundJobs

@@ -2,7 +2,7 @@
 
 public interface IS3Object
 {
-    public Stream Data { get; }
+    public byte[] Data { get; }
 
     public string ObjectKey { get; }
 }
