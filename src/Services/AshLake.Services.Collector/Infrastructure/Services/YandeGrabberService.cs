@@ -5,7 +5,7 @@ namespace AshLake.Services.Collector.Infrastructure.Services;
 
 public interface IYandeGrabberService
 {
-    Task<PostFile?> GetPostFile(int postId);
+    Task<ImageLink?> GetPostFileLink(int postId);
 
     Task<string?> GetPostObjectKey(int postId);
 }
@@ -19,29 +19,16 @@ public class YandeGrabberService : IYandeGrabberService
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     }
 
-    public async Task<PostFile?> GetPostFile(int postId)
+    public async Task<ImageLink?> GetPostFileLink(int postId)
     {
-        using var response = await _httpClient.GetAsync($"/api/sites/yande/postfiles/{postId}");
+        using var response = await _httpClient.GetAsync($"/api/sites/yande/postfilelinks/{postId}");
         if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
             return null;
         }
         response.EnsureSuccessStatusCode();
 
-        var contentType = response.Content.Headers.ContentType?.ToString();
-        Guard.Against.NullOrWhiteSpace(contentType);
-
-        var fileExt = contentType?.Split('/').LastOrDefault();
-        Guard.Against.NullOrWhiteSpace(fileExt);
-        var imageType = Enum.Parse<ImageType>(fileExt.ToUpper());
-
-        var postmd5 = response.Headers?.GetValues("X-MD5").FirstOrDefault();
-        Guard.Against.NullOrWhiteSpace(postmd5);
-
-        var data = await response.Content.ReadAsByteArrayAsync();
-        Guard.Against.Null(data);
-
-        return new PostFile(postmd5, imageType, data);
+        return await response.Content.ReadFromJsonAsync<ImageLink>(); 
     }
 
     public async Task<string?> GetPostObjectKey(int postId)

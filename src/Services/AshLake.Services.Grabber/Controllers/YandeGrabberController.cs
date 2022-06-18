@@ -86,6 +86,27 @@ public class YandeGrabberController : ControllerBase
         }
     }
 
+    [Route("/api/sites/yande/postfilelinks/{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [HttpGet]
+    public async Task<ActionResult> GetPostFileLink(int id)
+    {
+        try
+        {
+            var imageLink = await _sourceSiteService.GetFileLinkAsync(id);
+            return Ok(imageLink);
+        }
+        catch (ArgumentException)
+        {
+            return NotFound();
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
     [Route("/api/sites/yande/tagmetadata")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpGet]

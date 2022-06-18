@@ -139,10 +139,6 @@ public class YandeSourceSiteService : IYandeSourceSiteService
         var fileUrl = metadata[YandePostMetadataKeys.file_url]?.ToString();
         Guard.Against.NullOrEmpty(fileUrl);
 
-        var fileExt = metadata[YandePostMetadataKeys.file_ext]?.ToString();
-        Guard.Against.NullOrEmpty(fileExt);
-        var imagetType = Enum.Parse<ImageType>(fileExt.ToUpper());
-
         var md5 = metadata[YandePostMetadataKeys.md5]?.ToString();
         Guard.Against.NullOrEmpty(md5);
 
@@ -150,7 +146,7 @@ public class YandeSourceSiteService : IYandeSourceSiteService
         using var httpResponse = await _httpClient.SendAsync(httpRequest);
         httpResponse.EnsureSuccessStatusCode();
 
-        return new ImageLink(fileUrl, md5, imagetType);
+        return new ImageLink(fileUrl, md5);
     }
 
     public async Task<IEnumerable<JToken>> GetTagMetadataListAsync(int? type,int limit, int page)

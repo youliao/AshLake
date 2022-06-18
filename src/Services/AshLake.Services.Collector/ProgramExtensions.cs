@@ -1,8 +1,5 @@
 ﻿using Hellang.Middleware.ProblemDetails;
-using AshLake.BuildingBlocks.EventBus.Abstractions;
-using AshLake.Services.Collector.Application.BackgroundJobs;
 using AshLake.Services.Collector.Domain.Repositories;
-using Hangfire;
 using Microsoft.OpenApi.Models;
 using Dapr.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -131,6 +128,18 @@ internal static class ProgramExtensions
         #region Integration
 
         builder.Services.AddScoped<IEventBus, DaprEventBus>();
+
+        builder.Services.AddSingleton<IDownloadService, DownloadService>(_ =>
+        {
+            var downloadOpt = new DownloadConfiguration()
+            {
+                ChunkCount = 8, // file parts to download, default value is 1
+                OnTheFlyDownload = true, // caching in-memory or not? default values is true
+                ParallelDownload = true // download parts of file as parallel or not. Default value is false
+            };
+
+            return new DownloadService(downloadOpt);
+        });
 
         builder.Services.AddSingleton<IYandeGrabberService, YandeGrabberService>(_ =>
             new YandeGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));

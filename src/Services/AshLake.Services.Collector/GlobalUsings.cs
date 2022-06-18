@@ -13,3 +13,4 @@ global using AshLake.Services.Collector.Application.BackgroundJobs;
 global using Hangfire;
 global using AshLake.Contracts.Seedwork;
 global using AshLake.BuildingBlocks.EventBus.Abstractions;
+global using Downloader;

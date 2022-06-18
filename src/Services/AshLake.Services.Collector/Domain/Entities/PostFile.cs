@@ -6,17 +6,15 @@ public class PostFile : IS3Object
 {
     public string PostMD5 { get; private set; } = null!;
 
-    public ImageType Type { get; private set; }
-
     public byte[] Data { get; private set; } = null!;
 
-    public string ObjectKey { get => $"{PostMD5}.{Type}".ToLower(); }
+    public string ObjectKey { get; private set; } = null!;
 
-    public PostFile(string postMd5, ImageType type, byte[] data)
+    public PostFile(string postMD5, byte[] data, string objectKey)
     {
-        PostMD5 = postMd5?.ToLower() ?? throw new ArgumentNullException(nameof(postMd5));
-        Type = type;
+        PostMD5 = postMD5 ?? throw new ArgumentNullException(nameof(postMD5));
         Data = data ?? throw new ArgumentNullException(nameof(data));
+        ObjectKey = objectKey ?? throw new ArgumentNullException(nameof(objectKey));
     }
 
     public bool IsMatch()

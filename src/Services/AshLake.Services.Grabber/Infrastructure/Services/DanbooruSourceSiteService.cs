@@ -18,7 +18,7 @@ public class DanbooruSourceSiteService : IDanbooruSourceSiteService
 
     public DanbooruSourceSiteService(IEasyCachingProviderFactory factory, HttpClient httpClient)
     {
-        _cachingProvider = factory.GetCachingProvider(nameof(Yande));
+        _cachingProvider = factory.GetCachingProvider(nameof(Danbooru));
         _httpClient = httpClient;
     }
 

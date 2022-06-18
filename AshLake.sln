@@ -46,7 +46,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AshLake.Services.Compressor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AshLake.BuildingBlocks.Pagination", "src\BuildingBlocks\AshLake.BuildingBlocks.Pagination\AshLake.BuildingBlocks.Pagination.csproj", "{4626DC8B-751A-4ED9-B9D7-BFD158A6F9DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AshLake.Contracts.Collector", "src\Contracts\AshLake.Contracts.Collector\AshLake.Contracts.Collector.csproj", "{924EF044-4429-42A9-8216-B1CB0379F30C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AshLake.Contracts.Collector", "src\Contracts\AshLake.Contracts.Collector\AshLake.Contracts.Collector.csproj", "{924EF044-4429-42A9-8216-B1CB0379F30C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
