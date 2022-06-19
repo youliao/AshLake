@@ -89,14 +89,14 @@ services:
     depends_on:
       - compressor-minio
 
-  compressor-minio:
-    image: minio/minio:latest
-
   compressor-dapr:
     image: "daprio/daprd:1.7.4"
     network_mode: "service:compressor"
     depends_on:
       - compressor
+
+  compressor-minio:
+    image: minio/minio:latest
 
   compressor-redis:
     image: redis:7
@@ -116,8 +116,8 @@ services:
     depends_on:
       - yandestore
 
-  yandestore-redis:
-    image: redis:7
-
   yandestore-postgres:
     image: postgres:14
+
+  yandestore-redis:
+    image: redis:7

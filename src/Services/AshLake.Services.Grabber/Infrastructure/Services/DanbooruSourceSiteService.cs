@@ -2,7 +2,7 @@
 {
     Task<ImageFile> GetFileAsync(int id);
     Task<ImageFile> GetPreviewAsync(int id);
-    Task<ImageLink> GetFileLinkAsync(int id);
+    Task<string> GetFileUrlAsync(int id);
     Task<JToken> GetLatestPostMetadataAsync();
     Task<JToken?> GetPostMetadataAsync(int id);
     Task<IEnumerable<JToken>> GetPostMetadataListAsync(string tags, int limit, int page);
@@ -120,7 +120,7 @@ public class DanbooruSourceSiteService : IDanbooruSourceSiteService
         return new ImageFile(md5, imagetType, data);
     }
 
-    public async Task<ImageLink> GetFileLinkAsync(int id)
+    public async Task<string> GetFileUrlAsync(int id)
     {
         var metadata = await GetPostMetadataAsync(id);
         Guard.Against.Null(metadata, nameof(metadata));
@@ -133,17 +133,11 @@ public class DanbooruSourceSiteService : IDanbooruSourceSiteService
         var fileUrl = metadata[DanbooruPostMetadataKeys.file_url]?.ToString();
         Guard.Against.NullOrEmpty(fileUrl);
 
-        var fileExt = metadata[DanbooruPostMetadataKeys.file_ext]?.ToString();
-        Guard.Against.NullOrEmpty(fileExt);
+        //using var httpRequest = new HttpRequestMessage(HttpMethod.Head, fileUrl);
+        //using var httpResponse = await _httpClient.SendAsync(httpRequest);
+        //httpResponse.EnsureSuccessStatusCode();
 
-        var md5 = metadata[DanbooruPostMetadataKeys.md5]?.ToString();
-        Guard.Against.NullOrEmpty(md5);
-
-        using var httpRequest = new HttpRequestMessage(HttpMethod.Head, fileUrl);
-        using var httpResponse = await _httpClient.SendAsync(httpRequest);
-        httpResponse.EnsureSuccessStatusCode();
-
-        return new ImageLink(fileUrl, $"{md5}.{fileExt}");
+        return fileUrl;
     }
 
     public async Task<IEnumerable<JToken>> GetTagMetadataListAsync(int? type, int limit, int page)

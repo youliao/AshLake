@@ -92,7 +92,7 @@ public class DanbooruGrabberController : ControllerBase
     {
         try
         {
-            var imageLink = await _sourceSiteService.GetFileLinkAsync(id);
+            var imageLink = await _sourceSiteService.GetFileUrlAsync(id);
             return Ok(imageLink);
         }
         catch (ArgumentException)

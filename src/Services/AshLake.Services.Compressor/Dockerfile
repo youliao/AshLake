@@ -7,6 +7,7 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["src/Services/AshLake.Services.Compressor/AshLake.Services.Compressor.csproj", "src/Services/AshLake.Services.Compressor/"]
+COPY ["src/BuildingBlocks/AshLake.BuildingBlocks.S3Object/AshLake.BuildingBlocks.S3Object.csproj", "src/BuildingBlocks/AshLake.BuildingBlocks.S3Object/"]
 COPY ["src/Contracts/AshLake.Contracts.Seedwork/AshLake.Contracts.Seedwork.csproj", "src/Contracts/AshLake.Contracts.Seedwork/"]
 COPY ["src/BuildingBlocks/AshLake.BuildingBlocks.EventBus/AshLake.BuildingBlocks.EventBus.csproj", "src/BuildingBlocks/AshLake.BuildingBlocks.EventBus/"]
 COPY ["src/BuildingBlocks/AshLake.BuildingBlocks.Healthchecks/AshLake.BuildingBlocks.Healthchecks.csproj", "src/BuildingBlocks/AshLake.BuildingBlocks.Healthchecks/"]

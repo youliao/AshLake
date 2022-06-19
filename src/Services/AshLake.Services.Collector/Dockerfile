@@ -3,6 +3,7 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 EXPOSE 80
+EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
@@ -10,7 +11,9 @@ COPY ["src/Services/AshLake.Services.Collector/AshLake.Services.Collector.csproj
 COPY ["src/Contracts/AshLake.Contracts.Archiver/AshLake.Contracts.Archiver.csproj", "src/Contracts/AshLake.Contracts.Archiver/"]
 COPY ["src/Contracts/AshLake.Contracts.Seedwork/AshLake.Contracts.Seedwork.csproj", "src/Contracts/AshLake.Contracts.Seedwork/"]
 COPY ["src/BuildingBlocks/AshLake.BuildingBlocks.EventBus/AshLake.BuildingBlocks.EventBus.csproj", "src/BuildingBlocks/AshLake.BuildingBlocks.EventBus/"]
+COPY ["src/BuildingBlocks/AshLake.BuildingBlocks.S3Object/AshLake.BuildingBlocks.S3Object.csproj", "src/BuildingBlocks/AshLake.BuildingBlocks.S3Object/"]
 COPY ["src/BuildingBlocks/AshLake.BuildingBlocks.Healthchecks/AshLake.BuildingBlocks.Healthchecks.csproj", "src/BuildingBlocks/AshLake.BuildingBlocks.Healthchecks/"]
+COPY ["src/Contracts/AshLake.Contracts.Collector/AshLake.Contracts.Collector.csproj", "src/Contracts/AshLake.Contracts.Collector/"]
 RUN dotnet restore "src/Services/AshLake.Services.Collector/AshLake.Services.Collector.csproj"
 COPY . .
 WORKDIR "/src/src/Services/AshLake.Services.Collector"

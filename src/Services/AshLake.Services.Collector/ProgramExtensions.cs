@@ -132,6 +132,11 @@ internal static class ProgramExtensions
             new GrabberService<Yande>(DaprClient.CreateInvokeHttpClient("grabber")));
         builder.Services.AddSingleton<IGrabberService<Danbooru>>(_ =>
             new GrabberService<Danbooru>(DaprClient.CreateInvokeHttpClient("grabber")));
+
+        builder.Services.AddSingleton<IArchiverService<Yande>>(_ =>
+            new ArchiverService<Yande>(DaprClient.CreateInvokeHttpClient("archiver")));
+        builder.Services.AddSingleton<IArchiverService<Danbooru>>(_ =>
+            new ArchiverService<Danbooru>(DaprClient.CreateInvokeHttpClient("archiver")));
         #endregion
 
         #region BackgroundJobs
