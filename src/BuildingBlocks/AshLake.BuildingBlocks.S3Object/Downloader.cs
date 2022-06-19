@@ -2,7 +2,7 @@
 
 public interface IDownloader
 {
-    Task<byte[]> DownloadFileTaskAsync(string url);
+    Task<Stream> DownloadFileAsync(string url);
 }
 public class Downloader : IDownloader
 {
@@ -13,8 +13,8 @@ public class Downloader : IDownloader
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     }
 
-    public async Task<byte[]> DownloadFileTaskAsync(string url)
+    public async Task<Stream> DownloadFileAsync(string url)
     {
-        return await _httpClient.GetByteArrayAsync(url);
+        return await _httpClient.GetStreamAsync(url);
     }
 }

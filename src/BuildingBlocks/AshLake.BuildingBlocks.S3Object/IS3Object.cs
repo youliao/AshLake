@@ -4,5 +4,5 @@ public interface IS3Object
 {
     public string ObjectKey { get; }
 
-    public byte[] Data { get; }
+    public Stream Data { get; }
 }

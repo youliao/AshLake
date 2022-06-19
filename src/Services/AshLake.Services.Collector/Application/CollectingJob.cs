@@ -22,15 +22,13 @@ public class CollectingJob<T> where T : ISouceSite
         var link = await _grabberService.GetPostFileLink(postId);
         if (link is null) return EntityState.None.ToString();
 
-        var data = await _downloader.DownloadFileTaskAsync(link.Url);
-
-        var isExists = await _fileRepositoty.ExistsAsync(link.ObjectKey);
-
-        var postFile = new PostFile(link.ObjectKey, data);
+        var data = await _downloader.DownloadFileAsync(link.Url);
+        using var postFile = new PostFile(link.ObjectKey, data);
 
         await _fileRepositoty.PutAsync(postFile);
         await _eventBus.PublishAsync(new PostFileChangedIntegrationEvent(link.ObjectKey));
 
+        var isExists = await _fileRepositoty.ExistsAsync(link.ObjectKey);
         return isExists ? EntityState.Modified.ToString() : EntityState.Added.ToString();
     }
 
@@ -42,7 +40,7 @@ public class CollectingJob<T> where T : ISouceSite
         var isExists = await _fileRepositoty.ExistsAsync(link.ObjectKey);
         if (isExists) return EntityState.Unchanged.ToString();
 
-        var data = await _downloader.DownloadFileTaskAsync(link.Url);
+        var data = await _downloader.DownloadFileAsync(link.Url);
 
         var postFile = new PostFile(link.ObjectKey, data);
 

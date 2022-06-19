@@ -23,15 +23,19 @@ public class CompressingJob
         var fileUrl = await _collectorService.GetPostFileUrlAsync(objectKey);
         if (fileUrl is null) return EntityState.None.ToString();
 
-        var data = await _downloader.DownloadFileTaskAsync(fileUrl) ?? throw new InvalidDataException();
+        var data = await _downloader.DownloadFileAsync(fileUrl) ?? throw new InvalidDataException();
+        using var stream = new MemoryStream();
+        data.CopyTo(stream);
+        stream.Position = 0;
 
-        using var image = Image.Load(data);
+        using var image = await Image.LoadAsync(stream);
 
-        using var resizedData = new MemoryStream();
+        var resizedData = new MemoryStream();
         ResizeTo(image, 300);
         image.SaveAsJpeg(resizedData);
 
-        var preview = new PostPreview(objectKey, resizedData.ToArray());
+        var previewObjectKey = Path.ChangeExtension(objectKey, "jpg");
+        using var preview = new PostPreview(previewObjectKey, resizedData);
         await _previewRepositoty.PutAsync(preview);
         var isExists = await _previewRepositoty.ExistsAsync(objectKey);
         return isExists ? EntityState.Modified.ToString() : EntityState.Added.ToString();
@@ -47,14 +51,19 @@ public class CompressingJob
         var fileUrl = await _collectorService.GetPostFileUrlAsync(objectKey);
         if (fileUrl is null) return EntityState.None.ToString();
 
-        var data = await _downloader.DownloadFileTaskAsync(fileUrl) ?? throw new InvalidDataException();
-        using var image = Image.Load(data);
+        var data = await _downloader.DownloadFileAsync(fileUrl) ?? throw new InvalidDataException();
+        using var stream = new MemoryStream();
+        data.CopyTo(stream);
+        stream.Position = 0;
 
-        using var resizedData = new MemoryStream();
+        using var image = await Image.LoadAsync(stream);
+
+        var resizedData = new MemoryStream();
         ResizeTo(image, 300);
         image.SaveAsJpeg(resizedData);
 
-        var preview = new PostPreview(objectKey, resizedData.ToArray());
+        var previewObjectKey = Path.ChangeExtension(objectKey, "jpg");
+        using var preview = new PostPreview(previewObjectKey, resizedData);
         await _previewRepositoty.PutAsync(preview);
         return isExists ? EntityState.Modified.ToString() : EntityState.Added.ToString();
     }
