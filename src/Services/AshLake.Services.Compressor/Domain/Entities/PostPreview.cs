@@ -2,15 +2,13 @@
 
 public class PostPreview : IS3Object
 {
-    public string PostMD5 { get; private set; } = null!;
+    public string ObjectKey { get; private set; } = null!;
 
-    public byte[] Data { get; private set; } = null!;
+    public byte[] Data { get; private set; }
 
-    public string ObjectKey { get => $"{PostMD5}.jpg".ToLower(); }
-
-    public PostPreview(string postMd5, byte[] data)
+    public PostPreview(string objectKey, byte[] data)
     {
-        PostMD5 = postMd5?.ToLower() ?? throw new ArgumentNullException(nameof(postMd5));
+        ObjectKey = objectKey ?? throw new ArgumentNullException(nameof(objectKey));
         Data = data ?? throw new ArgumentNullException(nameof(data));
     }
 }

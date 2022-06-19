@@ -1,4 +1,5 @@
 ﻿using AshLake.Contracts.Collector.Events;
+using AshLake.Services.Compressor.Application;
 using Dapr;
 using Hangfire;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +14,7 @@ public class IntegrationEventController : ControllerBase
     [Topic(DaprEventBus.DaprPubsubName, nameof(PostFileChangedIntegrationEvent))]
     public Task HandleAsync(PostFileChangedIntegrationEvent e)
     {
-        BackgroundJob.Enqueue<PostPreviewJob>(x => x.AddPreview(e.ObjectKey));
+        BackgroundJob.Enqueue<CompressingJob>(x => x.AddPreview(e.ObjectKey));
         return Task.CompletedTask;
     }
 }

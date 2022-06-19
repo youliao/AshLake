@@ -1,13 +1,8 @@
 ﻿namespace AshLake.Services.Collector.Domain.Entities;
 
-public record class ImageLink(string Url, string Md5);
+public record class ImageLink(string Url, string ObjectKey);
 
 public static class ImageLinkExtensions
 {
-    public static string GetObjectKey(this ImageLink link)
-    {
-        var fileExt = Path.GetExtension(link.Url);
-
-        return link.Md5 + fileExt;
-    }
+    public static string GetMd5(this ImageLink link) => Path.GetFileNameWithoutExtension(link.ObjectKey);
 }

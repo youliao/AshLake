@@ -48,6 +48,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AshLake.BuildingBlocks.Pagi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AshLake.Contracts.Collector", "src\Contracts\AshLake.Contracts.Collector\AshLake.Contracts.Collector.csproj", "{924EF044-4429-42A9-8216-B1CB0379F30C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AshLake.BuildingBlocks.S3Object", "src\BuildingBlocks\AshLake.BuildingBlocks.S3Object\AshLake.BuildingBlocks.S3Object.csproj", "{8B96C78A-C42E-40E2-BFDF-499B2721E9B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -102,6 +104,10 @@ Global
 		{924EF044-4429-42A9-8216-B1CB0379F30C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{924EF044-4429-42A9-8216-B1CB0379F30C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{924EF044-4429-42A9-8216-B1CB0379F30C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B96C78A-C42E-40E2-BFDF-499B2721E9B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B96C78A-C42E-40E2-BFDF-499B2721E9B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B96C78A-C42E-40E2-BFDF-499B2721E9B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B96C78A-C42E-40E2-BFDF-499B2721E9B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -123,6 +129,7 @@ Global
 		{1692C765-B907-4E67-A24A-B6145ACE5A83} = {D573494F-6826-48D0-A95A-D6BEEDCA2B63}
 		{4626DC8B-751A-4ED9-B9D7-BFD158A6F9DB} = {26B3D76D-6E9A-478C-AA0D-1F993C8746B9}
 		{924EF044-4429-42A9-8216-B1CB0379F30C} = {D83940CC-43BB-4625-9A66-204C15AFCB55}
+		{8B96C78A-C42E-40E2-BFDF-499B2721E9B8} = {26B3D76D-6E9A-478C-AA0D-1F993C8746B9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EDC91361-03C5-4AF8-AB4A-E5B82895C858}

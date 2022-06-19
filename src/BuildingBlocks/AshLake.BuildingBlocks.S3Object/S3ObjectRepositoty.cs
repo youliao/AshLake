@@ -1,7 +1,20 @@
-﻿using AshLake.Services.Collector.Domain.Repositories;
-using Minio;
+﻿using Minio;
 
-namespace AshLake.Services.Collector.Infrastructure;
+namespace AshLake.BuildingBlocks.S3Object;
+
+public interface IS3ObjectRepositoty<T> where T : IS3Object
+{
+    Task PutAsync(T post);
+
+    Task<bool> ExistsAsync(string objectKey);
+
+    Task<Stream?> GetDataAsync(string objectKey);
+
+    Task<string?> GetPresignedUrlAsync(string objectKey);
+
+    Task RemoveAsync(string objectKey);
+
+}
 
 public class S3ObjectRepositoty<T> : IS3ObjectRepositoty<T> where T : IS3Object
 {
@@ -15,13 +28,12 @@ public class S3ObjectRepositoty<T> : IS3ObjectRepositoty<T> where T : IS3Object
         CreateBucketAsync(_bucketName).Wait();
     }
 
-    public async Task PutAsync(T post)
+    public async Task PutAsync(T s3Object)
     {
-        using var stream = new MemoryStream(post.Data);
-
+        using var stream = new MemoryStream(s3Object.Data);
         var args = new PutObjectArgs()
             .WithBucket(_bucketName)
-            .WithObject(post.ObjectKey)
+            .WithObject(s3Object.ObjectKey)
             .WithStreamData(stream)
             .WithObjectSize(stream.Length);
 
@@ -49,13 +61,17 @@ public class S3ObjectRepositoty<T> : IS3ObjectRepositoty<T> where T : IS3Object
         }
     }
 
-    public async Task<byte[]?> GetDataAsync(string objectKey)
+    public async Task<Stream?> GetDataAsync(string objectKey)
     {
-        using var stream = new MemoryStream();
+        var data = new MemoryStream();
         var args = new GetObjectArgs()
             .WithBucket(_bucketName)
             .WithObject(objectKey)
-            .WithCallbackStream(x=> x.CopyTo(stream));
+            .WithCallbackStream(stream =>
+            {
+                stream.CopyTo(data);
+                stream.Dispose();
+            });
 
         try
         {
@@ -70,9 +86,30 @@ public class S3ObjectRepositoty<T> : IS3ObjectRepositoty<T> where T : IS3Object
             throw;
         }
 
-        stream.Position = 0;
+        data.Position = 0;
 
-        return stream.ToArray();
+        return data;
+    }
+
+    public async Task<string?> GetPresignedUrlAsync(string objectKey)
+    {
+        var args = new PresignedGetObjectArgs()
+            .WithBucket(_bucketName)
+            .WithObject(objectKey)
+            .WithExpiry(600);
+
+        try
+        {
+            return await _minioClient.PresignedGetObjectAsync(args);
+        }
+        catch (Minio.Exceptions.ObjectNotFoundException)
+        {
+            return null;
+        }
+        catch
+        {
+            throw;
+        }
     }
 
     public async Task RemoveAsync(string objectKey)
@@ -92,8 +129,6 @@ public class S3ObjectRepositoty<T> : IS3ObjectRepositoty<T> where T : IS3Object
         var args = new MakeBucketArgs()
             .WithBucket(bucketName);
         await _minioClient.MakeBucketAsync(args);
-
-        await SetBucketPolicyAsync(bucketName);
     }
 
     private async Task<bool> BucketExistsAsync(string bucketName)
@@ -102,15 +137,5 @@ public class S3ObjectRepositoty<T> : IS3ObjectRepositoty<T> where T : IS3Object
             .WithBucket(bucketName);
 
         return await _minioClient.BucketExistsAsync(args);
-    }
-
-    private async Task SetBucketPolicyAsync(string bucketName)
-    {
-        var policyJson = $"{{\"Version\":\"2012-10-17\",\"Statement\":[{{\"Effect\":\"Allow\",\"Principal\":{{\"AWS\":[\"*\"]}},\"Action\":[\"s3:GetObject\"],\"Resource\":[\"arn:aws:s3:::{bucketName}/*\"]}}]}}";
-        var args = new SetPolicyArgs()
-            .WithBucket(bucketName)
-            .WithPolicy(policyJson);
-
-        await _minioClient.SetPolicyAsync(args);
     }
 }
