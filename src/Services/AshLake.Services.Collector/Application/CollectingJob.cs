@@ -21,40 +21,24 @@ public class CollectingJob<T> where T : ISouceSite
 
     public async Task<string> AddOrUpdateFile(int postId)
     {
-        var fileUrl = await _grabberService.GetPostFileUrl(postId);
-        if (fileUrl is null) return EntityState.None.ToString();
-
-        var objectKey = await _archiverService.GetPostObjectKey(postId);
-        if (objectKey is null) return EntityState.None.ToString();
-
-        var data = await _downloader.DownloadFileAsync(fileUrl);
-
-        using var postFile = new PostFile(objectKey, data);
-
-        await _fileRepositoty.PutAsync(postFile);
-        await _eventBus.PublishAsync(new PostFileChangedIntegrationEvent(objectKey));
-
-        var isExists = await _fileRepositoty.ExistsAsync(objectKey);
-        return isExists ? EntityState.Modified.ToString() : EntityState.Added.ToString();
-    }
-
-    public async Task<string> AddFile(int postId)
-    {
         var objectKey = await _archiverService.GetPostObjectKey(postId);
         if(objectKey is null) return EntityState.None.ToString();
 
-        var isExists = await _fileRepositoty.ExistsAsync(objectKey);
-        if (isExists) return EntityState.Unchanged.ToString();
+        var stat = await _fileRepositoty.StatObjectAsync(objectKey);
+        var fileMd5 = Path.GetFileNameWithoutExtension(objectKey);
+        if (stat is not null && stat.ETag == fileMd5) return EntityState.Unchanged.ToString();
 
         var fileUrl = await _grabberService.GetPostFileUrl(postId);
-        if (fileUrl is null) return EntityState.None.ToString();
+        if (fileUrl is null && stat is null) return EntityState.None.ToString();
+        if (fileUrl is null && stat is not null) return EntityState.Unchanged.ToString();
 
-        var data = await _downloader.DownloadFileAsync(fileUrl);
+        var data = await _downloader.DownloadFileAsync(fileUrl!);
 
         var postFile = new PostFile(objectKey, data);
 
         await _fileRepositoty.PutAsync(postFile);
         await _eventBus.PublishAsync(new PostFileChangedIntegrationEvent(objectKey));
-        return EntityState.Added.ToString();
+
+        return stat is null ? EntityState.Added.ToString() : EntityState.Modified.ToString();
     }
 }

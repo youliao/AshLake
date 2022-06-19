@@ -12,7 +12,7 @@ public class IntegrationEventController : ControllerBase
     {
         foreach (var postId in e.PostIds)
         {
-            BackgroundJob.Enqueue<CollectingJob<Yande>>(x => x.AddFile(postId));
+            BackgroundJob.Enqueue<CollectingJob<Yande>>(x => x.AddOrUpdateFile(postId));
         }
 
         return Task.CompletedTask;
@@ -24,7 +24,7 @@ public class IntegrationEventController : ControllerBase
     {
         foreach (var postId in e.PostIds)
         {
-            BackgroundJob.Enqueue<CollectingJob<Danbooru>>(x => x.AddFile(postId));
+            BackgroundJob.Enqueue<CollectingJob<Danbooru>>(x => x.AddOrUpdateFile(postId));
         }
 
         return Task.CompletedTask;

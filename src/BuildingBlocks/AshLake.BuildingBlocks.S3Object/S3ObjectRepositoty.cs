@@ -1,4 +1,5 @@
 ﻿using Minio;
+using Minio.DataModel;
 
 namespace AshLake.BuildingBlocks.S3Object;
 
@@ -7,6 +8,7 @@ public interface IS3ObjectRepositoty<T> where T : IS3Object
     Task PutAsync(T post);
 
     Task<bool> ExistsAsync(string objectKey);
+    Task<ObjectStat?> StatObjectAsync(string objectKey);
 
     Task<Stream?> GetDataAsync(string objectKey);
 
@@ -63,12 +65,32 @@ public class S3ObjectRepositoty<T> : IS3ObjectRepositoty<T> where T : IS3Object
 
         try
         {
-            await _minioClient.StatObjectAsync(args);
+            var stat = await _minioClient.StatObjectAsync(args);
             return true;
         }
         catch (Minio.Exceptions.ObjectNotFoundException)
         {
             return false;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public async Task<ObjectStat?> StatObjectAsync(string objectKey)
+    {
+        var args = new StatObjectArgs()
+            .WithBucket(_bucketName)
+            .WithObject(objectKey);
+
+        try
+        {
+            return await _minioClient.StatObjectAsync(args);
+        }
+        catch (Minio.Exceptions.ObjectNotFoundException)
+        {
+            return null;
         }
         catch
         {

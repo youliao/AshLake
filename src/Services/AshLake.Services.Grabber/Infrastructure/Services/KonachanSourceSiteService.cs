@@ -16,7 +16,7 @@ public class KonachanSourceSiteService : IKonachanSourceSiteService
     private readonly IEasyCachingProvider _cachingProvider;
     private readonly HttpClient _httpClient;
 
-    private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(30);
+    private readonly TimeSpan _cacheExpiration = TimeSpan.FromHours(1);
 
     public KonachanSourceSiteService(IEasyCachingProviderFactory factory, HttpClient httpClient)
     {

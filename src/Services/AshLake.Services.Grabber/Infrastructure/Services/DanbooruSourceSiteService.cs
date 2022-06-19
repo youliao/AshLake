@@ -15,7 +15,7 @@ public class DanbooruSourceSiteService : IDanbooruSourceSiteService
     private readonly IEasyCachingProvider _cachingProvider;
     private readonly HttpClient _httpClient;
 
-    private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(30);
+    private readonly TimeSpan _cacheExpiration = TimeSpan.FromHours(1);
 
     public DanbooruSourceSiteService(IEasyCachingProviderFactory factory, HttpClient httpClient)
     {
