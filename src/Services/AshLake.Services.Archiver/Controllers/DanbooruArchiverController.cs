@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using AshLake.Services.Archiver.Infrastructure.Extensions;
 using AshLake.Services.Archiver.Application.Commands;
+using MongoDB.Driver;
 
 namespace AshLake.Services.Archiver.Controllers;
 
@@ -11,7 +12,7 @@ public class DanbooruArchiverController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> GetPostMetadataAsync(int id,
-        [FromServices] IMetadataRepository<Yande,PostMetadata> repository)
+        [FromServices] IMetadataRepository<Danbooru,PostMetadata> repository)
     {
         var metadata = await repository.SingleAsync(id);
         if (metadata is null) return NotFound();
@@ -19,27 +20,24 @@ public class DanbooruArchiverController : ControllerBase
         return Ok(metadata.Data);
     }
 
-    //[Route("/api/sites/danbooru/postmetadata")]
-    //[HttpGet]
-    //[ProducesResponseType(StatusCodes.Status200OK)]
-    //public async Task<ActionResult> GetPostMetadataByIdsAsync(string ids,
-    //[FromServices] IMetadataRepository<Yande, PostMetadata> repository)
-    //{
-    //    if (string.IsNullOrWhiteSpace(ids)) return Ok(new List<PostMetadata>());
+    [Route("/api/sites/danbooru/postmetadata")]
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> GetPostMetadataByRangeAsync(int rangeFrom, int rangeTo,
+    [FromServices] IMetadataRepository<Danbooru, PostMetadata> repository)
+    {
+        var list = await repository.FindAsync(x => x.Id>=rangeFrom && x.Id<= rangeTo) ?? new List<PostMetadata>();
 
-    //    var idArr = ids.Split(',');
-    //    var list = await repository.FindAsync(x => idArr.Contains(x.Id)) ?? new List<PostMetadata>();
-
-    //    return Ok(list.Select(x => x.Data));
-    //}
+        return Ok(list.Select(x => x.Data));
+    }
 
     [Route("/api/sites/danbooru/tagmetadata")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> GetTagMetadataByTypeAsync(int type,
-    [FromServices] IMetadataRepository<Yande, TagMetadata> repository)
+    [FromServices] IMetadataRepository<Danbooru, TagMetadata> repository)
     {
-        var filter = new MongoDB.Driver.FilterDefinitionBuilder<TagMetadata>().Eq(YandeTagMetadataKeys.type, type);
+        var filter = Builders<TagMetadata>.Filter.Eq(YandeTagMetadataKeys.type, type);
         var list = await repository.FindAsync(filter);
 
         return Ok(list.Select(x => x.Data));
