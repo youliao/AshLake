@@ -46,10 +46,10 @@ public class DanbooruArchiverController : ControllerBase
     [Route("/api/sites/danbooru/postmetadatajobs/batches")]
     [HttpPost]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
-    public ActionResult<List<string>> CreatePostMetadataJobsAsync(CreatePostMetadataJobsCommand command,
+    public ActionResult<List<string>> CreatePostMetadataJobsAsync(CreateAddPostMetadataJobsCommand command,
                 [FromServices] IBackgroundJobClient backgroundJobClient)
     {
-        var calls = new List<Expression<Func<DanbooruJob, Task>>>();
+        var calls = new List<Expression<Func<PostMetadataJob<Danbooru>, Task>>>();
 
         for (int i = command.StartId; i <= command.EndId; i += command.Step)
         {
@@ -57,28 +57,6 @@ public class DanbooruArchiverController : ControllerBase
             int endId = i + command.Step - 1;
             endId = Math.Min(endId, command.EndId);
             calls.Add(x => x.AddOrUpdatePostMetadata(startId, endId, command.Step));
-        }
-
-        if (calls.Count == 0) return Ok();
-
-        var jobIdList = backgroundJobClient.EnqueueSuccessively(calls);
-        return Ok(jobIdList);
-    }
-
-    [Route("/api/sites/danbooru/tagmetadatajobs/batches")]
-    [HttpPost]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
-    public ActionResult<List<string>> CreateTagMetadataJobsAsync(CreateTagMetadataJobsCommand command,
-            [FromServices] IBackgroundJobClient backgroundJobClient)
-    {
-        var calls = new List<Expression<Func<DanbooruJob, Task>>>();
-
-        IEnumerable<int> tagTypes = command.TagTypes ?? new List<int>() { 0, 1, 3, 4, 5, 6 };
-
-        foreach(var item in tagTypes)
-        {
-            var type = item;
-            calls.Add(x => x.AddOrUpdateTagMetadata(type));
         }
 
         if (calls.Count == 0) return Ok();

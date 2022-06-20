@@ -43,13 +43,13 @@ public class YandeArchiverController : ControllerBase
         return Ok(list.Select(x => x.Data));
     }
 
-    [Route("/api/sites/yande/postmetadatajobs/batches")]
+    [Route("/api/sites/yande/addpostmetadatajobs/batches")]
     [HttpPost]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
-    public ActionResult<List<string>> CreatePostMetadataJobsAsync(CreatePostMetadataJobsCommand command,
+    public ActionResult<List<string>> CreateAddPostMetadataJobsAsync(CreateAddPostMetadataJobsCommand command,
                 [FromServices] IBackgroundJobClient backgroundJobClient)
     {
-        var calls = new List<Expression<Func<YandeJob, Task>>>();
+        var calls = new List<Expression<Func<PostMetadataJob<Yande>, Task>>>();
 
         for (int i = command.StartId; i <= command.EndId; i += command.Step)
         {
@@ -65,13 +65,35 @@ public class YandeArchiverController : ControllerBase
         return Ok(jobIdList);
     }
 
+    [Route("/api/sites/yande/updatepostmetadatajobs/batches")]
+    [HttpPost]
+    [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
+    public ActionResult<List<string>> CreateUpdatePostMetadataJobsAsync(CreateUpdatePostMetadataJobsCommand command,
+            [FromServices] IBackgroundJobClient backgroundJobClient)
+    {
+        var calls = new List<Expression<Func<PostMetadataJob<Yande>, Task>>>();
+
+        for (int i = command.StartId; i <= command.EndId; i += command.Step)
+        {
+            int startId = i;
+            int endId = i + command.Step - 1;
+            endId = Math.Min(endId, command.EndId);
+            calls.Add(x => x.ReplacePostMetadata(startId, endId, command.Step));
+        }
+
+        if (calls.Count == 0) return Ok();
+
+        var jobIdList = backgroundJobClient.EnqueueSuccessively(calls);
+        return Ok(jobIdList);
+    }
+
     [Route("/api/sites/yande/tagmetadatajobs/batches")]
     [HttpPost]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
     public ActionResult<List<string>> CreateTagMetadataJobsAsync(CreateTagMetadataJobsCommand command,
             [FromServices] IBackgroundJobClient backgroundJobClient)
     {
-        var calls = new List<Expression<Func<YandeJob, Task>>>();
+        var calls = new List<Expression<Func<TagMetadataJob<Yande>, Task>>>();
 
         IEnumerable<int> tagTypes = command.TagTypes ?? new List<int>() { 0, 1, 3, 4, 5, 6 };
 

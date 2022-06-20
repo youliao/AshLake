@@ -30,9 +30,9 @@ public class MetadataRepository<TSouceSite, TMetadata> : IMetadataRepository<TSo
         return EntityState.Modified;
     }
 
-    public async Task<AddRangeResult> AddRangeAsync(IEnumerable<TMetadata> metadatas)
+    public async Task<AddRangeResult> AddRangeAsync(IEnumerable<TMetadata> metadataList)
     {
-        var ids = metadatas.Select(x => x.Id);
+        var ids = metadataList.Select(x => x.Id);
         var exists = await _database.GetEntityCollection<TMetadata>().Find(x => ids.Contains(x.Id)).ToListAsync() ?? new List<TMetadata>();
 
         var addedIds = new List<int>();
@@ -40,7 +40,7 @@ public class MetadataRepository<TSouceSite, TMetadata> : IMetadataRepository<TSo
         var unchangedIds = new List<int>();
 
         var bulkModels = new List<WriteModel<TMetadata>>();
-        foreach (var item in metadatas)
+        foreach (var item in metadataList)
         {
             var one = exists.SingleOrDefault(x => x.Id == item.Id);
             if (one is null)
@@ -72,6 +72,26 @@ public class MetadataRepository<TSouceSite, TMetadata> : IMetadataRepository<TSo
         var bulkWriteResult = await _database.GetEntityCollection<TMetadata>().BulkWriteAsync(bulkModels);
 
         return addRangeResult;
+    }
+
+    public async Task<ReplaceRangeResult> ReplaceRangeAsync(IEnumerable<TMetadata> metadataList)
+    {
+        if (metadataList == null || metadataList.Count() == 0) throw new ArgumentNullException(nameof(metadataList));
+
+        var ids = metadataList.Select(x => x.Id);
+        var exists = await _database.GetEntityCollection<TMetadata>().Find(x => ids.Contains(x.Id)).ToListAsync() ?? new List<TMetadata>();
+
+        var bulkModels = metadataList.Select(x => new ReplaceOneModel<TMetadata>(Builders<TMetadata>.Filter.Eq(x => x.Id, x.Id),x){ IsUpsert = true });
+
+        var bulkWriteResult = await _database.GetEntityCollection<TMetadata>().BulkWriteAsync(bulkModels);
+
+        var processedIds = bulkWriteResult.ProcessedRequests.Select(x => (x as ReplaceOneModel<TMetadata>)!.Replacement.Id);
+        var addedIds = bulkWriteResult.Upserts.Select(x => x.Id.AsInt32);
+        var modifiedIds = processedIds.Except(addedIds);
+
+        var updateRangeResult = new ReplaceRangeResult(addedIds.ToList(), modifiedIds.ToList());
+
+        return updateRangeResult;
     }
 
     public async Task<TMetadata> DeleteAsync(int id)

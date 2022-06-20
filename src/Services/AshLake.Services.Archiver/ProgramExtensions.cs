@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
-using AshLake.Services.Archiver.Domain.Services;
 
 namespace AshLake.Services.Archiver;
 
@@ -141,16 +140,17 @@ internal static class ProgramExtensions
         #region Integration
 
         builder.Services.AddScoped<IEventBus, DaprEventBus>();
-        builder.Services.AddSingleton<IYandeGrabberService,YandeGrabberService>(_ =>
+        builder.Services.AddSingleton<IGrabberService<Yande>>(_ =>
             new YandeGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
-        builder.Services.AddSingleton<IDanbooruGrabberService, DanbooruGrabberService>(_ =>
+        builder.Services.AddSingleton<IGrabberService<Danbooru>>(_ =>
             new DanbooruGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
 
         #endregion
 
         #region BackgroundJobs
 
-        builder.Services.AddScoped(typeof(YandeJob));
+        builder.Services.AddScoped(typeof(PostMetadataJob<>));
+        builder.Services.AddScoped(typeof(TagMetadataJob<>));
 
         #endregion
     }

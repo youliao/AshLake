@@ -10,6 +10,7 @@ public interface IMetadataRepository<TSouceSite, TMetadata>
     Task<EntityState> AddOrUpdateAsync(TMetadata metadata);
 
     Task<AddRangeResult> AddRangeAsync(IEnumerable<TMetadata> metadatas);
+    Task<ReplaceRangeResult> ReplaceRangeAsync(IEnumerable<TMetadata> metadatas);
 
     Task<TMetadata> DeleteAsync(int id);
 

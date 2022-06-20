@@ -1,9 +1,8 @@
-﻿using AshLake.Services.Archiver.Domain.Services;
-using MongoDB.Bson.Serialization;
+﻿using MongoDB.Bson.Serialization;
 
 namespace AshLake.Services.Archiver.Infrastructure.Services;
 
-public class DanbooruGrabberService : IDanbooruGrabberService
+public class DanbooruGrabberService : IGrabberService<Danbooru>
 {
     private readonly HttpClient _httpClient;
 

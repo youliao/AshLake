@@ -1,6 +1,6 @@
-﻿namespace AshLake.Services.Archiver.Domain.Services;
+﻿namespace AshLake.Services.Archiver.Infrastructure.Services;
 
-public interface IYandeGrabberService
+public interface IGrabberService<T> where T : ISouceSite
 {
     Task<IEnumerable<BsonDocument>> GetPostMetadataList(int startId, int limit);
 
