@@ -1,6 +1,9 @@
 version: '3.4'
 
 services:
+  dapr-dashboard:
+    image: "daprio/dashboard:latest"
+
   healthcheck:
     image: xabarilcoding/healthchecksui:5.0.0
     depends_on:

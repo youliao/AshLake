@@ -12,7 +12,7 @@ public class IntegrationEventController : ControllerBase
     {
         foreach (var postId in e.PostIds)
         {
-            BackgroundJob.Enqueue<CollectingJob<Yande>>(x => x.AddOrUpdateFile(postId));
+            BackgroundJob.Enqueue<CollectingJob<Yande>>(x => x.AddFile(postId));
         }
 
         return Task.CompletedTask;
@@ -24,7 +24,7 @@ public class IntegrationEventController : ControllerBase
     {
         foreach (var postId in e.PostIds)
         {
-            BackgroundJob.Enqueue<CollectingJob<Yande>>(x => x.AddOrUpdateFile(postId));
+            BackgroundJob.Enqueue<CollectingJob<Yande>>(x => x.AddFile(postId));
         }
 
         return Task.CompletedTask;
@@ -36,7 +36,19 @@ public class IntegrationEventController : ControllerBase
     {
         foreach (var postId in e.PostIds)
         {
-            BackgroundJob.Enqueue<CollectingJob<Danbooru>>(x => x.AddOrUpdateFile(postId));
+            BackgroundJob.Enqueue<CollectingJob<Danbooru>>(x => x.AddFile(postId));
+        }
+
+        return Task.CompletedTask;
+    }
+
+    [HttpPost("DanbooruPostMetadataModified")]
+    [Topic(DaprEventBus.DaprPubsubName, nameof(DanbooruPostMetadataModifiedIntegrationEvent))]
+    public Task HandleAsync(DanbooruPostMetadataModifiedIntegrationEvent e)
+    {
+        foreach (var postId in e.PostIds)
+        {
+            BackgroundJob.Enqueue<CollectingJob<Danbooru>>(x => x.AddFile(postId));
         }
 
         return Task.CompletedTask;
