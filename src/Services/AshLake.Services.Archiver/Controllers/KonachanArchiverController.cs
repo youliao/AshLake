@@ -5,14 +5,14 @@ using MongoDB.Driver;
 
 namespace AshLake.Services.Archiver.Controllers;
 
-public class YandeArchiverController : ControllerBase
+public class KonachanArchiverController : ControllerBase
 {
-    [Route("/api/sites/yande/postmetadata/{id:int}")]
+    [Route("/api/sites/konachan/postmetadata/{id:int}")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> GetPostMetadataAsync(int id,
-        [FromServices] IMetadataRepository<Yande,PostMetadata> repository)
+        [FromServices] IMetadataRepository<Konachan,PostMetadata> repository)
     {
         var metadata = await repository.SingleAsync(id);
         if (metadata is null) return NotFound();
@@ -20,57 +20,56 @@ public class YandeArchiverController : ControllerBase
         return Ok(metadata.Data);
     }
 
-    [Route("/api/sites/yande/postmetadata")]
+    [Route("/api/sites/konachan/postmetadata")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> GetPostMetadataByRangeAsync(int rangeFrom, int rangeTo,
-    [FromServices] IMetadataRepository<Yande, PostMetadata> repository)
+    [FromServices] IMetadataRepository<Konachan, PostMetadata> repository)
     {
         var list = await repository.FindAsync(x => x.Id>=rangeFrom && x.Id<= rangeTo) ?? new List<PostMetadata>();
 
         return Ok(list.Select(x => x.Data));
     }
 
-    [Route("/api/sites/yande/postobjectkeys/{id:int}")]
+    [Route("/api/sites/konachan/postobjectkeys/{id:int}")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> GetPostobjectKeyAsync(int id,
-        [FromServices] IMetadataRepository<Yande, PostMetadata> repository)
+        [FromServices] IMetadataRepository<Konachan, PostMetadata> repository)
     {
         var metadata = await repository.SingleAsync(id);
         if (metadata is null) return NotFound();
 
-        var postmd5 = metadata.Data[YandePostMetadataKeys.md5].AsString;
+        var postmd5 = metadata.Data[KonachanPostMetadataKeys.md5].AsString;
         Guard.Against.NullOrWhiteSpace(postmd5);
 
-        var fileExt = metadata.Data[YandePostMetadataKeys.file_ext].AsString;
+        var fileExt = Path.GetExtension(metadata.Data[KonachanPostMetadataKeys.file_url].AsString);
         Guard.Against.NullOrWhiteSpace(fileExt);
 
-        var objectKey = $"{postmd5}.{fileExt}";
+        var objectKey = $"{postmd5}{fileExt}";
 
         return Ok(objectKey);
     }
 
+    //[Route("/api/sites/konachan/tagmetadata")]
+    //[HttpGet]
+    //[ProducesResponseType(StatusCodes.Status200OK)]
+    //public async Task<ActionResult> GetTagMetadataByTypeAsync(int type,
+    //[FromServices] IMetadataRepository<Konachan, TagMetadata> repository)
+    //{
+    //    var filter = Builders<TagMetadata>.Filter.Eq(KonachanTagMetadataKeys.type, type);
+    //    var list = await repository.FindAsync(filter);
 
-    [Route("/api/sites/yande/tagmetadata")]
-    [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult> GetTagMetadataByTypeAsync(int type,
-    [FromServices] IMetadataRepository<Yande, TagMetadata> repository)
-    {
-        var filter = Builders<TagMetadata>.Filter.Eq(YandeTagMetadataKeys.type, type);
-        var list = await repository.FindAsync(filter);
+    //    return Ok(list.Select(x => x.Data));
+    //}
 
-        return Ok(list.Select(x => x.Data));
-    }
-
-    [Route("/api/sites/yande/addpostmetadatajobs/batches")]
+    [Route("/api/sites/konachan/addpostmetadatajobs/batches")]
     [HttpPost]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
     public ActionResult<List<string>> CreateAddPostMetadataJobsAsync(CreateAddPostMetadataJobsCommand command,
                 [FromServices] IBackgroundJobClient backgroundJobClient)
     {
-        var calls = new List<Expression<Func<PostMetadataJob<Yande>, Task>>>();
+        var calls = new List<Expression<Func<PostMetadataJob<Konachan>, Task>>>();
 
         for (int i = command.StartId; i <= command.EndId; i += command.Step)
         {
@@ -86,13 +85,13 @@ public class YandeArchiverController : ControllerBase
         return Ok(jobIdList);
     }
 
-    [Route("/api/sites/yande/updatepostmetadatajobs/batches")]
+    [Route("/api/sites/konachan/updatepostmetadatajobs/batches")]
     [HttpPost]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
     public ActionResult<List<string>> CreateUpdatePostMetadataJobsAsync(CreateUpdatePostMetadataJobsCommand command,
             [FromServices] IBackgroundJobClient backgroundJobClient)
     {
-        var calls = new List<Expression<Func<PostMetadataJob<Yande>, Task>>>();
+        var calls = new List<Expression<Func<PostMetadataJob<Konachan>, Task>>>();
 
         for (int i = command.StartId; i <= command.EndId; i += command.Step)
         {
@@ -108,13 +107,13 @@ public class YandeArchiverController : ControllerBase
         return Ok(jobIdList);
     }
 
-    [Route("/api/sites/yande/tagmetadatajobs/batches")]
+    [Route("/api/sites/konachan/tagmetadatajobs/batches")]
     [HttpPost]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
     public ActionResult<List<string>> CreateTagMetadataJobsAsync(CreateTagMetadataJobsCommand command,
             [FromServices] IBackgroundJobClient backgroundJobClient)
     {
-        var calls = new List<Expression<Func<TagMetadataJob<Yande>, Task>>>();
+        var calls = new List<Expression<Func<TagMetadataJob<Konachan>, Task>>>();
 
         IEnumerable<int> tagTypes = command.TagTypes ?? new List<int>() { 0, 1, 3, 4, 5, 6 };
 

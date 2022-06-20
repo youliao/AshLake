@@ -53,4 +53,28 @@ public class IntegrationEventController : ControllerBase
 
         return Task.CompletedTask;
     }
+
+    [HttpPost("KonachanPostMetadataAdded")]
+    [Topic(DaprEventBus.DaprPubsubName, nameof(KonachanPostMetadataAddedIntegrationEvent))]
+    public Task HandleAsync(KonachanPostMetadataAddedIntegrationEvent e)
+    {
+        foreach (var postId in e.PostIds)
+        {
+            BackgroundJob.Enqueue<CollectingJob<Konachan>>(x => x.AddFile(postId));
+        }
+
+        return Task.CompletedTask;
+    }
+
+    [HttpPost("KonachanPostMetadataModified")]
+    [Topic(DaprEventBus.DaprPubsubName, nameof(KonachanPostMetadataModifiedIntegrationEvent))]
+    public Task HandleAsync(KonachanPostMetadataModifiedIntegrationEvent e)
+    {
+        foreach (var postId in e.PostIds)
+        {
+            BackgroundJob.Enqueue<CollectingJob<Konachan>>(x => x.AddFile(postId));
+        }
+
+        return Task.CompletedTask;
+    }
 }

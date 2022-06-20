@@ -144,6 +144,8 @@ internal static class ProgramExtensions
             new YandeGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
         builder.Services.AddSingleton<IGrabberService<Danbooru>>(_ =>
             new DanbooruGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
+        builder.Services.AddSingleton<IGrabberService<Konachan>>(_ =>
+            new KonachanGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
 
         #endregion
 

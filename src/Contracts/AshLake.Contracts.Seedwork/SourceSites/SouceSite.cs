@@ -6,3 +6,5 @@ public interface ISouceSite
 public class Yande : ISouceSite { }
 
 public class Danbooru : ISouceSite { }
+
+public class Konachan : ISouceSite { }

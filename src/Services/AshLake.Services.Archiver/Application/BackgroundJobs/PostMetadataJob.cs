@@ -29,13 +29,13 @@ public class PostMetadataJob<T> where T : ISouceSite
         var result = await _postMetadataRepository.AddRangeAsync(dataList);
 
         if (result.AddedIds.Count > 0)
-            await _eventBus.PublishAsync(PostMetadataAddedIntegrationEventBuilder(result.AddedIds));
+            await _eventBus.PublishAsync(EventBuilders<T>.PostMetadataAddedIntegrationEventBuilder(result.AddedIds));
 
         if (result.ModifiedIds.Count > 0)
-            await _eventBus.PublishAsync(PostMetadataModifiedIntegrationEventBuilder(result.ModifiedIds));
+            await _eventBus.PublishAsync(EventBuilders<T>.PostMetadataModifiedIntegrationEventBuilder(result.ModifiedIds));
 
         if (result.UnchangedIds.Count > 0)
-            await _eventBus.PublishAsync(PostMetadataUnchangedIntegrationEventBuilder(result.UnchangedIds));
+            await _eventBus.PublishAsync(EventBuilders<T>.PostMetadataUnchangedIntegrationEventBuilder(result.UnchangedIds));
 
         return new { Added = result.AddedIds.Count, Modified = result.ModifiedIds.Count, Unchanged = result.UnchangedIds.Count };
     }
@@ -51,53 +51,11 @@ public class PostMetadataJob<T> where T : ISouceSite
         var result = await _postMetadataRepository.ReplaceRangeAsync(dataList);
 
         if (result.AddedIds.Count > 0)
-            await _eventBus.PublishAsync(PostMetadataAddedIntegrationEventBuilder(result.AddedIds));
+            await _eventBus.PublishAsync(EventBuilders<T>.PostMetadataAddedIntegrationEventBuilder(result.AddedIds));
 
         if (result.ModifiedIds.Count > 0)
-            await _eventBus.PublishAsync(PostMetadataModifiedIntegrationEventBuilder(result.ModifiedIds));
+            await _eventBus.PublishAsync(EventBuilders<T>.PostMetadataModifiedIntegrationEventBuilder(result.ModifiedIds));
 
         return new { Added = result.AddedIds.Count, Modified = result.ModifiedIds.Count };
-    }
-
-    private IntegrationEvent PostMetadataAddedIntegrationEventBuilder(IReadOnlyList<int> PostIds)
-    {
-        var souceSite = typeof(T).Name;
-
-        IntegrationEvent integrationEvent = souceSite switch
-        {
-            nameof(Yande) => new YandePostMetadataAddedIntegrationEvent(PostIds),
-            nameof(Danbooru) => new DanbooruPostMetadataAddedIntegrationEvent(PostIds),
-            _ => throw new ArgumentOutOfRangeException(nameof(souceSite))
-        };
-
-        return integrationEvent;
-    }
-
-    private IntegrationEvent PostMetadataModifiedIntegrationEventBuilder(IReadOnlyList<int> PostIds)
-    {
-        var souceSite = typeof(T).Name;
-
-        IntegrationEvent integrationEvent = souceSite switch
-        {
-            nameof(Yande) => new YandePostMetadataModifiedIntegrationEvent(PostIds),
-            nameof(Danbooru) => new DanbooruPostMetadataModifiedIntegrationEvent(PostIds),
-            _ => throw new ArgumentOutOfRangeException(nameof(souceSite))
-        };
-
-        return integrationEvent;
-    }
-
-    private IntegrationEvent PostMetadataUnchangedIntegrationEventBuilder(IReadOnlyList<int> PostIds)
-    {
-        var souceSite = typeof(T).Name;
-
-        IntegrationEvent integrationEvent = souceSite switch
-        {
-            nameof(Yande) => new YandePostMetadataUnchangedIntegrationEvent(PostIds),
-            nameof(Danbooru) => new DanbooruPostMetadataUnchangedIntegrationEvent(PostIds),
-            _ => throw new ArgumentOutOfRangeException(nameof(souceSite))
-        };
-
-        return integrationEvent;
     }
 }
