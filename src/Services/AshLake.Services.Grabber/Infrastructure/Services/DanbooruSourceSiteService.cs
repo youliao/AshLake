@@ -44,10 +44,7 @@ public class DanbooruSourceSiteService : IDanbooruSourceSiteService
 
         if(dic != null) await _cachingProvider.SetAllAsync(dic, _cacheExpiration);
 
-        var first = list!.First();
-        if (first.Value<string>(DanbooruPostMetadataKeys.id) != idStr) return null;
-
-        return first;
+        return list.SingleOrDefault(x => x.Value<string>(DanbooruPostMetadataKeys.id) == idStr);
     }
 
     public async Task<IEnumerable<JToken>> GetPostMetadataListAsync(string tags, int limit, int page)

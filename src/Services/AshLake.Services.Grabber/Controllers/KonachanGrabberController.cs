@@ -86,6 +86,27 @@ public class KonachanGrabberController : ControllerBase
         }
     }
 
+    [Route("/api/sites/konachan/postfileurls/{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [HttpGet]
+    public async Task<ActionResult> GetPostFileUrl(int id)
+    {
+        try
+        {
+            var imageLink = await _sourceSiteService.GetFileUrlAsync(id);
+            return Ok(imageLink);
+        }
+        catch (ArgumentException)
+        {
+            return NotFound();
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
     [Route("/api/sites/konachan/tagmetadata")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpGet]

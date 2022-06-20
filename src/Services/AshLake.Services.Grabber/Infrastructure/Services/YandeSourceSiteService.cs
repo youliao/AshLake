@@ -46,10 +46,7 @@ public class YandeSourceSiteService : IYandeSourceSiteService
 
         await _cachingProvider.SetAllAsync(dic, _cacheExpiration);
 
-        var first = list.First();
-        if (first[YandePostMetadataKeys.id]!.ToString() != idStr) return null;
-
-        return first;
+        return list.SingleOrDefault(x => x.Value<string>(YandePostMetadataKeys.id) == idStr);
     }
 
     public async Task<IEnumerable<JToken>> GetPostMetadataListAsync(string tags, int limit, int page)

@@ -3,6 +3,7 @@
 public interface IKonachanSourceSiteService
 {
     Task<ImageFile> GetFileAsync(int id);
+    Task<string> GetFileUrlAsync(int id);
     Task<ImageFile> GetPreviewAsync(int id);
     Task<JToken> GetLatestPostMetadataAsync();
     Task<JToken?> GetPostMetadataAsync(int id);
@@ -45,10 +46,7 @@ public class KonachanSourceSiteService : IKonachanSourceSiteService
 
         await _cachingProvider.SetAllAsync(dic, _cacheExpiration);
 
-        var first = list.First();
-        if (first[KonachanPostMetadataKeys.id]!.ToString() != idStr) return null;
-
-        return first;
+        return list.SingleOrDefault(x => x.Value<string>(KonachanPostMetadataKeys.id) == idStr);
     }
 
     public async Task<IEnumerable<JToken>> GetPostMetadataListAsync(string tags, int limit, int page)
@@ -121,6 +119,27 @@ public class KonachanSourceSiteService : IKonachanSourceSiteService
         Guard.Against.Null(data, nameof(data));
 
         return new ImageFile(md5, imagetType, data);
+    }
+    public async Task<string> GetFileUrlAsync(int id)
+    {
+        var metadata = await GetPostMetadataAsync(id);
+        Guard.Against.Null(metadata, nameof(metadata));
+
+        var status = metadata[KonachanPostMetadataKeys.status]?.ToString();
+        Guard.Against.NullOrEmpty(status);
+        var postStatus = Enum.Parse<PostStatus>(status.ToUpper());
+        Guard.Against.InvalidInput(postStatus,
+                                   KonachanPostMetadataKeys.status,
+                                   x => x != PostStatus.DELETED);
+
+        var fileUrl = metadata[KonachanPostMetadataKeys.file_url]?.ToString();
+        Guard.Against.NullOrEmpty(fileUrl);
+
+        //using var httpRequest = new HttpRequestMessage(HttpMethod.Head, fileUrl);
+        //using var httpResponse = await _httpClient.SendAsync(httpRequest);
+        //httpResponse.EnsureSuccessStatusCode();
+
+        return fileUrl;
     }
 
     public async Task<IEnumerable<JToken>> GetTagMetadataListAsync(int? type,int limit, int page)

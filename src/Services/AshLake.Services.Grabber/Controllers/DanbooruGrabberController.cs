@@ -1,4 +1,6 @@
-﻿namespace AshLake.Services.Grabber.Controllers;
+﻿using AshLake.Services.Grabber.Infrastructure.Services;
+
+namespace AshLake.Services.Grabber.Controllers;
 
 public class DanbooruGrabberController : ControllerBase
 {
@@ -74,7 +76,7 @@ public class DanbooruGrabberController : ControllerBase
             Response.Headers.Add("X-MD5", image.PostMD5);
             return File(image.Data, MimeMapping.MimeUtility.GetMimeMapping(image.Type.ToString()));
         }
-        catch (ArgumentException)
+        catch(ArgumentException)
         {
             return NotFound();
         }
@@ -84,11 +86,11 @@ public class DanbooruGrabberController : ControllerBase
         }
     }
 
-    [Route("/api/sites/danbooru/postfilelinks/{id:int}")]
+    [Route("/api/sites/danbooru/postfileurls/{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpGet]
-    public async Task<ActionResult> GetPostFileLink(int id)
+    public async Task<ActionResult> GetPostFileUrl(int id)
     {
         try
         {
@@ -110,7 +112,7 @@ public class DanbooruGrabberController : ControllerBase
     [HttpGet]
     public async Task<ActionResult> GetTagMetadataList(int? type, int limit, int page)
     {
-        var list = await _sourceSiteService.GetTagMetadataListAsync(type, limit, page);
+        var list = await _sourceSiteService.GetTagMetadataListAsync(type,limit, page);
         return Ok(list);
     }
 }
