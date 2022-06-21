@@ -107,7 +107,7 @@ internal static class ProgramExtensions
     {
         app.UseHangfireDashboard("/hangfire", new DashboardOptions
         {
-            AsyncAuthorization = new IDashboardAsyncAuthorizationFilter[0]
+            Authorization = new IDashboardAuthorizationFilter[0]
         });
     }
 

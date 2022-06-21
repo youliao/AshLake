@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
-using Hangfire.Dashboard.BasicAuthorization;
 using Hangfire.Dashboard;
 
 namespace AshLake.Services.Archiver;
@@ -90,7 +89,7 @@ internal static class ProgramExtensions
     {
         app.UseHangfireDashboard("/hangfire", new DashboardOptions
         {
-            AsyncAuthorization = new IDashboardAsyncAuthorizationFilter[0]
+            Authorization = new IDashboardAuthorizationFilter[0]
         });
     }
 
