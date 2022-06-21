@@ -2,6 +2,7 @@
 using AshLake.Services.YandeStore.Infrastructure.Repositories.Posts;
 using AshLake.Services.YandeStore.Infrastructure.Services;
 using Dapr.Client;
+using Hangfire.Dashboard;
 using HealthChecks.UI.Client;
 using Hellang.Middleware.ProblemDetails;
 using Newtonsoft.Json.Converters;
@@ -149,7 +150,7 @@ internal static class ProgramExtensions
     {
         app.UseHangfireDashboard("/hangfire", new DashboardOptions
         {
-            Authorization = new[] { new HangfireAuthorizationFilter() }
+            AsyncAuthorization = new IDashboardAsyncAuthorizationFilter[0]
         });
     }
 

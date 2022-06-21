@@ -11,6 +11,7 @@ using AshLake.Contracts.Seedwork;
 using AshLake.Services.Compressor.Infrastructure;
 using AshLake.Services.Compressor.Infrastructure.Services;
 using AshLake.Services.Compressor.Application;
+using Hangfire.Dashboard;
 
 namespace AshLake.Services.Compressor;
 
@@ -112,7 +113,7 @@ internal static class ProgramExtensions
     {
         app.UseHangfireDashboard("/hangfire", new DashboardOptions
         {
-            Authorization = new[] { new HangfireAuthorizationFilter() }
+            AsyncAuthorization = new IDashboardAsyncAuthorizationFilter[0]
         });
     }
 
