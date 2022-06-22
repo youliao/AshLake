@@ -19,7 +19,25 @@ public class CollectingJob<T> where T : ISouceSite
         _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
     }
 
-    public async Task<string> AddFile(int postId)
+    [Queue("yande")]
+    public Task<string> AddYandeFile(int postId)
+    {
+        return AddFile(postId);
+    }
+
+    [Queue("danbooru")]
+    public Task<string> AddDanbooruFile(int postId)
+    {
+        return AddFile(postId);
+    }
+
+    [Queue("konachan")]
+    public Task<string> AddKonachanFile(int postId)
+    {
+        return AddFile(postId);
+    }
+
+    private async Task<string> AddFile(int postId)
     {
         var objectKey = await _archiverService.GetPostObjectKey(postId);
         if(objectKey is null) return EntityState.None.ToString();

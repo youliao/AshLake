@@ -100,6 +100,21 @@ internal static class ProgramExtensions
         {
             opt.ShutdownTimeout = TimeSpan.FromMinutes(30);
             opt.WorkerCount = 5;
+            opt.Queues = new string[] { "yande" };
+        });
+
+        builder.Services.AddHangfireServer(opt =>
+        {
+            opt.ShutdownTimeout = TimeSpan.FromMinutes(30);
+            opt.WorkerCount = 5;
+            opt.Queues = new string[] { "danbooru" };
+        });
+
+        builder.Services.AddHangfireServer(opt =>
+        {
+            opt.ShutdownTimeout = TimeSpan.FromMinutes(30);
+            opt.WorkerCount = 5;
+            opt.Queues = new string[] { "konachan" };
         });
     }
 

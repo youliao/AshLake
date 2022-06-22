@@ -12,7 +12,7 @@ public class IntegrationEventController : ControllerBase
     {
         foreach (var postId in e.PostIds)
         {
-            BackgroundJob.Enqueue<CollectingJob<Yande>>(x => x.AddFile(postId));
+            BackgroundJob.Enqueue<CollectingJob<Yande>>(x => x.AddYandeFile(postId));
         }
 
         return Task.CompletedTask;
@@ -24,7 +24,7 @@ public class IntegrationEventController : ControllerBase
     {
         foreach (var postId in e.PostIds)
         {
-            BackgroundJob.Enqueue<CollectingJob<Yande>>(x => x.AddFile(postId));
+            BackgroundJob.Enqueue<CollectingJob<Yande>>(x => x.AddYandeFile(postId));
         }
 
         return Task.CompletedTask;
@@ -36,7 +36,7 @@ public class IntegrationEventController : ControllerBase
     {
         foreach (var postId in e.PostIds)
         {
-            BackgroundJob.Enqueue<CollectingJob<Danbooru>>(x => x.AddFile(postId));
+            BackgroundJob.Enqueue<CollectingJob<Danbooru>>(x => x.AddDanbooruFile(postId));
         }
 
         return Task.CompletedTask;
@@ -48,7 +48,7 @@ public class IntegrationEventController : ControllerBase
     {
         foreach (var postId in e.PostIds)
         {
-            BackgroundJob.Enqueue<CollectingJob<Danbooru>>(x => x.AddFile(postId));
+            BackgroundJob.Enqueue<CollectingJob<Danbooru>>(x => x.AddDanbooruFile(postId));
         }
 
         return Task.CompletedTask;
@@ -60,7 +60,7 @@ public class IntegrationEventController : ControllerBase
     {
         foreach (var postId in e.PostIds)
         {
-            BackgroundJob.Enqueue<CollectingJob<Konachan>>(x => x.AddFile(postId));
+            BackgroundJob.Enqueue<CollectingJob<Konachan>>(x => x.AddKonachanFile(postId));
         }
 
         return Task.CompletedTask;
@@ -72,7 +72,7 @@ public class IntegrationEventController : ControllerBase
     {
         foreach (var postId in e.PostIds)
         {
-            BackgroundJob.Enqueue<CollectingJob<Konachan>>(x => x.AddFile(postId));
+            BackgroundJob.Enqueue<CollectingJob<Konachan>>(x => x.AddKonachanFile(postId));
         }
 
         return Task.CompletedTask;
