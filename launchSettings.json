@@ -2,25 +2,31 @@
   "profiles": {
     "Docker Compose": {
       "commandName": "DockerCompose",
-      "composeLaunchAction": "LaunchBrowser",
-      "composeLaunchServiceName": "archiver",
-      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger",
       "commandVersion": "1.0",
       "serviceActions": {
         "archiver": "StartDebugging",
         "archiver-dapr": "StartWithoutDebugging",
         "archiver-mongo": "StartWithoutDebugging",
         "archiver-redis": "StartWithoutDebugging",
+        //"collector": "StartDebugging",
+        //"collector-dapr": "StartWithoutDebugging",
+        //"collector-minio": "StartWithoutDebugging",
+        //"collector-redis": "StartWithoutDebugging",
+        //"compressor": "StartDebugging",
+        //"compressor-dapr": "StartWithoutDebugging",
+        //"compressor-minio": "StartWithoutDebugging",
+        //"compressor-redis": "StartWithoutDebugging",
         "grabber": "StartDebugging",
         "grabber-dapr": "StartWithoutDebugging",
         "grabber-redis": "StartWithoutDebugging",
+        //"healthcheck": "StartWithoutDebugging",
         "redis-pubsub": "StartWithoutDebugging",
         "redis-state": "StartWithoutDebugging",
         "seq": "StartWithoutDebugging",
-        "yandestore": "StartDebugging",
-        "yandestore-dapr": "StartWithoutDebugging",
-        "yandestore-postgres": "StartWithoutDebugging",
-        "yandestore-redis": "StartWithoutDebugging",
+        //"yandestore": "StartDebugging",
+        //"yandestore-dapr": "StartWithoutDebugging",
+        //"yandestore-postgres": "StartWithoutDebugging",
+        //"yandestore-redis": "StartWithoutDebugging",
         "zipkin": "StartWithoutDebugging"
       }
     }

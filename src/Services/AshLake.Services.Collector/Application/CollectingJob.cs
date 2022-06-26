@@ -19,42 +19,47 @@ public class CollectingJob<T> where T : ISouceSite
         _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
     }
 
-    [Queue("yande")]
-    public Task<string> AddYandeFile(int postId)
+    [Queue("{0}")]
+    public async Task<dynamic> AddFiles(string queue, IReadOnlyList<int> postIds)
     {
-        return AddFile(postId);
-    }
+        int added = 0;
+        int unchanged = 0;
+        int none = 0;
 
-    [Queue("danbooru")]
-    public Task<string> AddDanbooruFile(int postId)
-    {
-        return AddFile(postId);
-    }
+        await Parallel.ForEachAsync(postIds, new ParallelOptions { MaxDegreeOfParallelism = 5 }, async (postId, _) =>
+        {
+            var objectKey = await _archiverService.GetPostObjectKey(postId);
 
-    [Queue("konachan")]
-    public Task<string> AddKonachanFile(int postId)
-    {
-        return AddFile(postId);
-    }
+            if (objectKey is null)
+            {
+                none++;
+                return;
+            }
 
-    private async Task<string> AddFile(int postId)
-    {
-        var objectKey = await _archiverService.GetPostObjectKey(postId);
-        if(objectKey is null) return EntityState.None.ToString();
+            var exists = await _fileRepositoty.ExistsAsync(objectKey!);
+            if (exists)
+            {
+                unchanged++;
+                return;
+            }
 
-        var exists = await _fileRepositoty.ExistsAsync(objectKey);
-        if (exists)  return EntityState.Unchanged.ToString();
+            var fileUrl = await _grabberService.GetPostFileUrl(postId);
+            if (fileUrl is null)
+            {
+                none++;
+                return;
+            }
 
-        var fileUrl = await _grabberService.GetPostFileUrl(postId);
-        if (fileUrl is null) return EntityState.None.ToString();
+            var data = await _downloader.DownloadFileAsync(fileUrl!);
 
-        var data = await _downloader.DownloadFileAsync(fileUrl!);
+            var postFile = new PostFile(objectKey!, data);
 
-        var postFile = new PostFile(objectKey, data);
+            await _fileRepositoty.PutAsync(postFile);
+            await _eventBus.PublishAsync(new PostFileChangedIntegrationEvent(objectKey!));
 
-        await _fileRepositoty.PutAsync(postFile);
-        await _eventBus.PublishAsync(new PostFileChangedIntegrationEvent(objectKey));
+            added++;
+        });
 
-        return EntityState.Added.ToString();
+        return new { Added = added, Unchanged = unchanged, None = none };
     }
 }

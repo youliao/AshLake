@@ -43,7 +43,12 @@ public class KonachanArchiverController : ControllerBase
         var postmd5 = metadata.Data[KonachanPostMetadataKeys.md5].AsString;
         Guard.Against.NullOrWhiteSpace(postmd5);
 
-        var fileExt = Path.GetExtension(metadata.Data[KonachanPostMetadataKeys.file_url].AsString);
+
+        if(!metadata.Data.TryGetValue(KonachanPostMetadataKeys.file_url,out var fileUrl)){
+            return NotFound();
+        }
+
+        var fileExt = Path.GetExtension(fileUrl.AsString);
         Guard.Against.NullOrWhiteSpace(fileExt);
 
         var objectKey = $"{postmd5}{fileExt}";

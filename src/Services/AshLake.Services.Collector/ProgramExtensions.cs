@@ -98,22 +98,22 @@ internal static class ProgramExtensions
 
         builder.Services.AddHangfireServer(opt =>
         {
-            opt.ShutdownTimeout = TimeSpan.FromMinutes(30);
-            opt.WorkerCount = 5;
+            opt.ServerName = "localhost-yande";
+            opt.WorkerCount = 1;
             opt.Queues = new string[] { "yande" };
         });
 
         builder.Services.AddHangfireServer(opt =>
         {
-            opt.ShutdownTimeout = TimeSpan.FromMinutes(30);
-            opt.WorkerCount = 5;
+            opt.ServerName = "localhost-danbooru";
+            opt.WorkerCount = 1;
             opt.Queues = new string[] { "danbooru" };
         });
 
         builder.Services.AddHangfireServer(opt =>
         {
-            opt.ShutdownTimeout = TimeSpan.FromMinutes(30);
-            opt.WorkerCount = 5;
+            opt.ServerName = "localhost-konachan";
+            opt.WorkerCount = 1;
             opt.Queues = new string[] { "konachan" };
         });
     }
