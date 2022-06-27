@@ -6,6 +6,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
 using HealthChecks.UI.Client;
 using Hangfire.Dashboard;
+using Hangfire.Redis;
 
 namespace AshLake.Services.Collector;
 
@@ -93,7 +94,8 @@ internal static class ProgramExtensions
     {
         builder.Services.AddHangfire(c =>
         {
-            c.UseRedisStorage(builder.Configuration["HangfireConnectionString"]);
+            c.UseRedisStorage(builder.Configuration["HangfireConnectionString"],
+                              new RedisStorageOptions { FetchTimeout = TimeSpan.FromSeconds(10) });
         });
 
         builder.Services.AddHangfireServer(opt =>

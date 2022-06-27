@@ -20,6 +20,7 @@ public class CollectingJob<T> where T : ISouceSite
     }
 
     [Queue("{0}")]
+    [AutomaticRetry(Attempts = 3)]
     public async Task<dynamic> AddFiles(string queue, IReadOnlyList<int> postIds)
     {
         int added = 0;
