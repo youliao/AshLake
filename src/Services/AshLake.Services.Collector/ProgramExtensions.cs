@@ -165,7 +165,7 @@ internal static class ProgramExtensions
 
         builder.Services.AddHttpClient<IDownloader, Downloader>(config =>
         {
-            config.Timeout = TimeSpan.FromMinutes(5);
+            config.Timeout = TimeSpan.FromSeconds(100);
         });
 
         builder.Services.AddScoped(typeof(CollectingJob<>));

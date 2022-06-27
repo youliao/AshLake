@@ -23,11 +23,15 @@ public class CollectingJob<T> where T : ISouceSite
     [AutomaticRetry(Attempts = 3)]
     public async Task<dynamic> AddFiles(string queue, IReadOnlyList<int> postIds)
     {
+        var s_cts = new CancellationTokenSource();
+        s_cts.CancelAfter(TimeSpan.FromSeconds(100));
+
         int added = 0;
         int unchanged = 0;
         int none = 0;
 
-        await Parallel.ForEachAsync(postIds, new ParallelOptions { MaxDegreeOfParallelism = 5 }, async (postId, _) =>
+        var exception = default(Exception);
+        await Parallel.ForEachAsync(postIds, new ParallelOptions { MaxDegreeOfParallelism = 5 }, async (postId, s_cts) =>
         {
             var objectKey = await _archiverService.GetPostObjectKey(postId);
 
@@ -51,15 +55,26 @@ public class CollectingJob<T> where T : ISouceSite
                 return;
             }
 
-            var data = await _downloader.DownloadFileAsync(fileUrl!);
+            try
+            {
+                var data = await _downloader.DownloadFileAsync(fileUrl!);
 
-            var postFile = new PostFile(objectKey!, data);
+                var postFile = new PostFile(objectKey!, data);
 
-            await _fileRepositoty.PutAsync(postFile);
-            await _eventBus.PublishAsync(new PostFileChangedIntegrationEvent(objectKey!));
-
+                await _fileRepositoty.PutAsync(postFile);
+                await _eventBus.PublishAsync(new PostFileChangedIntegrationEvent(objectKey!));
+            }
+            catch(Exception e)
+            {
+                exception = e;
+            }
             added++;
         });
+
+        if(exception is not default(Exception))
+        {
+            throw exception;
+        }
 
         return new { Added = added, Unchanged = unchanged, None = none };
     }
