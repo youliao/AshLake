@@ -76,7 +76,7 @@ public class MetadataRepository<TSouceSite, TMetadata> : IMetadataRepository<TSo
 
     public async Task<ReplaceRangeResult> ReplaceRangeAsync(IEnumerable<TMetadata> metadataList)
     {
-        if (metadataList == null || metadataList.Count() == 0) throw new ArgumentNullException(nameof(metadataList));
+        if (metadataList == null || metadataList.Count() == 0) return new ReplaceRangeResult(new List<int>(), new List<int>());
 
         var ids = metadataList.Select(x => x.Id);
         var exists = await _database.GetEntityCollection<TMetadata>().Find(x => ids.Contains(x.Id)).ToListAsync() ?? new List<TMetadata>();

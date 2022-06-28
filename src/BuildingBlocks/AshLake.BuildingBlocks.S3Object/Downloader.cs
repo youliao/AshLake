@@ -2,7 +2,7 @@
 
 public interface IDownloader
 {
-    Task<Stream> DownloadFileAsync(string url);
+    Task<Stream> DownloadFileAsync(string url, CancellationToken token = default);
 }
 public class Downloader : IDownloader
 {
@@ -13,8 +13,8 @@ public class Downloader : IDownloader
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     }
 
-    public async Task<Stream> DownloadFileAsync(string url)
+    public async Task<Stream> DownloadFileAsync(string url,CancellationToken token = default)
     {
-        return await _httpClient.GetStreamAsync(url);
+        return await _httpClient.GetStreamAsync(url, token);
     }
 }

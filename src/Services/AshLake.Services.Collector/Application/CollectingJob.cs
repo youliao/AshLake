@@ -19,24 +19,63 @@ public class CollectingJob<T> where T : IBooru
         _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
     }
 
-    public async Task<string> AddFile(int postId)
+    [Queue("{0}")]
+    [AutomaticRetry(Attempts = 3)]
+    public async Task<dynamic> AddFiles(string queue, IReadOnlyList<int> postIds)
     {
-        var objectKey = await _archiverService.GetPostObjectKey(postId);
-        if(objectKey is null) return EntityState.None.ToString();
+        var s_cts = new CancellationTokenSource();
+        s_cts.CancelAfter(TimeSpan.FromSeconds(100));
 
-        var exists = await _fileRepositoty.ExistsAsync(objectKey);
-        if (exists)  return EntityState.Unchanged.ToString();
+        int added = 0;
+        int unchanged = 0;
+        int none = 0;
 
-        var fileUrl = await _grabberService.GetPostFileUrl(postId);
-        if (fileUrl is null) return EntityState.None.ToString();
+        var exception = default(Exception);
+        await Parallel.ForEachAsync(postIds, new ParallelOptions { MaxDegreeOfParallelism = 5 }, async (postId, s_cts) =>
+        {
+            var objectKey = await _archiverService.GetPostObjectKey(postId);
 
-        var data = await _downloader.DownloadFileAsync(fileUrl!);
+            if (objectKey is null)
+            {
+                none++;
+                return;
+            }
 
-        var postFile = new PostFile(objectKey, data);
+            var exists = await _fileRepositoty.ExistsAsync(objectKey!);
+            if (exists)
+            {
+                unchanged++;
+                return;
+            }
 
-        await _fileRepositoty.PutAsync(postFile);
-        await _eventBus.PublishAsync(new PostFileChangedIntegrationEvent(objectKey));
+            var fileUrl = await _grabberService.GetPostFileUrl(postId);
+            if (fileUrl is null)
+            {
+                none++;
+                return;
+            }
 
-        return EntityState.Added.ToString();
+            try
+            {
+                var data = await _downloader.DownloadFileAsync(fileUrl!);
+
+                var postFile = new PostFile(objectKey!, data);
+
+                await _fileRepositoty.PutAsync(postFile);
+                await _eventBus.PublishAsync(new PostFileChangedIntegrationEvent(objectKey!));
+            }
+            catch(Exception e)
+            {
+                exception = e;
+            }
+            added++;
+        });
+
+        if(exception is not default(Exception))
+        {
+            throw exception;
+        }
+
+        return new { Added = added, Unchanged = unchanged, None = none };
     }
 }

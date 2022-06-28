@@ -1,13 +1,6 @@
 version: '3.4'
 
 services:
-  dapr-dashboard:
-    volumes:
-      - "./dapr/components/:/home/nonroot/.dapr/components"
-      - "./dapr/configuration/:/home/nonroot/.dapr/configuration"
-    ports:
-      - "8080:8080"
-
   healthcheck:
     environment:
       - HealthChecksUI__HealthChecks__0__Name=Grabber API
@@ -50,6 +43,13 @@ services:
     volumes:
       - "./dapr/components/:/components"
       - "./dapr/configuration/:/configuration"
+    deploy:
+      resources:
+         limits:
+            cpus: "2.00"
+            memory: 500M
+         reservations:
+            memory: 100M
 
   archiver:
     environment:
@@ -71,6 +71,13 @@ services:
     volumes:
       - "./dapr/components/:/components"
       - "./dapr/configuration/:/configuration"
+    deploy:
+      resources:
+         limits:
+            cpus: "2.00"
+            memory: 500M
+         reservations:
+            memory: 100M
 
   archiver-mongo:
     environment:
@@ -103,6 +110,13 @@ services:
     volumes:
       - "./dapr/components/:/components"
       - "./dapr/configuration/:/configuration"
+    deploy:
+      resources:
+         limits:
+            cpus: "2.00"
+            memory: 500M
+         reservations:
+            memory: 100M
 
   collector-minio:
     environment:
@@ -115,9 +129,9 @@ services:
       - "9000:9000"
       - "9001:9001"
 
-  collector-redis:
-    volumes:
-      - collector-redisdata:/data
+  #collector-redis:
+  #  volumes:
+  #    - collector-redisdata:/data
 
   compressor:
     environment:
@@ -141,6 +155,13 @@ services:
     volumes:
       - "./dapr/components/:/components"
       - "./dapr/configuration/:/configuration"
+    deploy:
+      resources:
+         limits:
+            cpus: "2.00"
+            memory: 500M
+         reservations:
+            memory: 100M
 
   compressor-minio:
     environment:
@@ -174,6 +195,13 @@ services:
     volumes:
       - "./dapr/components/:/components"
       - "./dapr/configuration/:/configuration"
+    deploy:
+      resources:
+         limits:
+            cpus: "2.00"
+            memory: 500M
+         reservations:
+            memory: 100M
 
   yandestore-postgres:
     environment:
@@ -192,6 +220,6 @@ volumes:
   seq-data:
   archiver-nosqldata:
   collector-objectdata:
-  collector-redisdata:
+  #collector-redisdata:
   compressor-objectdata:
   yandestore-sqldata:

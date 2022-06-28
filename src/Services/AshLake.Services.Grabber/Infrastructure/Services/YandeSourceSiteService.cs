@@ -2,7 +2,7 @@
 
 public interface IYandeSourceSiteService
 {
-    Task<ImageFile> GetFileAsync(int id);
+    Task<Stream> GetFileAsync(int id);
     Task<string> GetFileUrlAsync(int id);
     Task<ImageFile> GetPreviewAsync(int id);
     Task<JToken> GetLatestPostMetadataAsync();
@@ -93,7 +93,7 @@ public class YandeSourceSiteService : IYandeSourceSiteService
         return new ImageFile(md5, ImageType.JPG, data);
     }
 
-    public async Task<ImageFile> GetFileAsync(int id)
+    public async Task<Stream> GetFileAsync(int id)
     {
         var metadata = await GetPostMetadataAsync(id);
         Guard.Against.Null(metadata, nameof(metadata));
@@ -108,17 +108,9 @@ public class YandeSourceSiteService : IYandeSourceSiteService
         var fileUrl = metadata[YandePostMetadataKeys.file_url]?.ToString();
         Guard.Against.NullOrEmpty(fileUrl);
 
-        var fileExt = metadata[YandePostMetadataKeys.file_ext]?.ToString();
-        Guard.Against.NullOrEmpty(fileExt);
-        var imagetType = Enum.Parse<ImageType>(fileExt.ToUpper());
+        var stream = await _httpClient.GetStreamAsync(fileUrl);
 
-        var md5 = metadata[YandePostMetadataKeys.md5]?.ToString();
-        Guard.Against.NullOrEmpty(md5);
-
-        var data = await _httpClient.GetByteArrayAsync(fileUrl);
-        Guard.Against.Null(data, nameof(data));
-
-        return new ImageFile(md5, imagetType, data);
+        return stream;
     }
 
     public async Task<string> GetFileUrlAsync(int id)

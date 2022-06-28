@@ -6,6 +6,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
 using HealthChecks.UI.Client;
 using Hangfire.Dashboard;
+using Hangfire.Redis;
 
 namespace AshLake.Services.Collector;
 
@@ -93,13 +94,29 @@ internal static class ProgramExtensions
     {
         builder.Services.AddHangfire(c =>
         {
-            c.UseRedisStorage(builder.Configuration["HangfireConnectionString"]);
+            c.UseRedisStorage(builder.Configuration["HangfireConnectionString"],
+                              new RedisStorageOptions { FetchTimeout = TimeSpan.FromSeconds(10) });
         });
 
         builder.Services.AddHangfireServer(opt =>
         {
-            opt.ShutdownTimeout = TimeSpan.FromMinutes(30);
-            opt.WorkerCount = 5;
+            opt.ServerName = "localhost-yande";
+            opt.WorkerCount = 1;
+            opt.Queues = new string[] { "yande" };
+        });
+
+        builder.Services.AddHangfireServer(opt =>
+        {
+            opt.ServerName = "localhost-danbooru";
+            opt.WorkerCount = 1;
+            opt.Queues = new string[] { "danbooru" };
+        });
+
+        builder.Services.AddHangfireServer(opt =>
+        {
+            opt.ServerName = "localhost-konachan";
+            opt.WorkerCount = 1;
+            opt.Queues = new string[] { "konachan" };
         });
     }
 
@@ -148,7 +165,7 @@ internal static class ProgramExtensions
 
         builder.Services.AddHttpClient<IDownloader, Downloader>(config =>
         {
-            config.Timeout = TimeSpan.FromMinutes(5);
+            config.Timeout = TimeSpan.FromSeconds(100);
         });
 
         builder.Services.AddScoped(typeof(CollectingJob<>));
