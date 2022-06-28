@@ -7,7 +7,7 @@ namespace AshLake.Services.Archiver.Controllers;
 
 public class KonachanArchiverController : ControllerBase
 {
-    [Route("/api/sites/konachan/postmetadata/{id:int}")]
+    [Route("/api/boorus/konachan/postmetadata/{id:int}")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -20,7 +20,7 @@ public class KonachanArchiverController : ControllerBase
         return Ok(metadata.Data);
     }
 
-    [Route("/api/sites/konachan/postmetadata")]
+    [Route("/api/boorus/konachan/postmetadata")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> GetPostMetadataByRangeAsync(int rangeFrom, int rangeTo,
@@ -31,7 +31,7 @@ public class KonachanArchiverController : ControllerBase
         return Ok(list.Select(x => x.Data));
     }
 
-    [Route("/api/sites/konachan/postobjectkeys/{id:int}")]
+    [Route("/api/boorus/konachan/postobjectkeys/{id:int}")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> GetPostobjectKeyAsync(int id,
@@ -51,7 +51,7 @@ public class KonachanArchiverController : ControllerBase
         return Ok(objectKey);
     }
 
-    //[Route("/api/sites/konachan/tagmetadata")]
+    //[Route("/api/boorus/konachan/tagmetadata")]
     //[HttpGet]
     //[ProducesResponseType(StatusCodes.Status200OK)]
     //public async Task<ActionResult> GetTagMetadataByTypeAsync(int type,
@@ -63,7 +63,7 @@ public class KonachanArchiverController : ControllerBase
     //    return Ok(list.Select(x => x.Data));
     //}
 
-    [Route("/api/sites/konachan/addpostmetadatajobs/batches")]
+    [Route("/api/boorus/konachan/addpostmetadatajobs/batches")]
     [HttpPost]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
     public ActionResult<List<string>> CreateAddPostMetadataJobsAsync(CreateAddPostMetadataJobsCommand command,
@@ -85,7 +85,7 @@ public class KonachanArchiverController : ControllerBase
         return Ok(jobIdList);
     }
 
-    [Route("/api/sites/konachan/updatepostmetadatajobs/batches")]
+    [Route("/api/boorus/konachan/updatepostmetadatajobs/batches")]
     [HttpPost]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
     public ActionResult<List<string>> CreateUpdatePostMetadataJobsAsync(CreateUpdatePostMetadataJobsCommand command,
@@ -107,7 +107,7 @@ public class KonachanArchiverController : ControllerBase
         return Ok(jobIdList);
     }
 
-    [Route("/api/sites/konachan/tagmetadatajobs/batches")]
+    [Route("/api/boorus/konachan/tagmetadatajobs/batches")]
     [HttpPost]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
     public ActionResult<List<string>> CreateTagMetadataJobsAsync(CreateTagMetadataJobsCommand command,

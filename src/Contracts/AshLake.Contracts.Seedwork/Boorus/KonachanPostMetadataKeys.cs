@@ -1,4 +1,4 @@
-﻿namespace AshLake.Contracts.Seedwork.SourceSites;
+﻿namespace AshLake.Contracts.Seedwork.Boorus;
 public class KonachanPostMetadataKeys
 {
     public const string id = "id";

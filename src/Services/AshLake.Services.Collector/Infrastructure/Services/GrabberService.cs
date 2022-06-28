@@ -3,12 +3,12 @@ using MongoDB.Bson.Serialization;
 
 namespace AshLake.Services.Collector.Infrastructure.Services;
 
-public interface IGrabberService<T> where T : ISouceSite
+public interface IGrabberService<T> where T : IBooru
 {
     Task<string?> GetPostFileUrl(int postId);
 }
 
-public class GrabberService<T> : IGrabberService<T> where T : ISouceSite
+public class GrabberService<T> : IGrabberService<T> where T : IBooru
 {
     private readonly HttpClient _httpClient;
 
@@ -22,7 +22,7 @@ public class GrabberService<T> : IGrabberService<T> where T : ISouceSite
 
     public async Task<string?> GetPostFileUrl(int postId)
     {
-        using var response = await _httpClient.GetAsync($"/api/sites/{_souceSiteName}/postfileurls/{postId}");
+        using var response = await _httpClient.GetAsync($"/api/boorus/{_souceSiteName}/postfileurls/{postId}");
         if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
             return null;

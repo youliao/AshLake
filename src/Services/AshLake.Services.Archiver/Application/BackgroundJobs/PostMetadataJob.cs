@@ -4,7 +4,7 @@ using MongoDB.Driver;
 namespace AshLake.Services.Archiver.Application.BackgroundJobs;
 
 [Queue("postmetadata")]
-public class PostMetadataJob<T> where T : ISouceSite
+public class PostMetadataJob<T> where T : IBooru
 {
     private readonly IMetadataRepository<T, PostMetadata> _postMetadataRepository;
     private readonly IGrabberService<T> _grabberService;

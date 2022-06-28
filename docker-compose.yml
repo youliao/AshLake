@@ -26,12 +26,7 @@ services:
     image: openzipkin/zipkin-slim
 
   grabber:
-    image: ${DOCKER_REGISTRY-}ashlakeservicesgrabber
-    build:
-      context: .
-      dockerfile: src/Services/AshLake.Services.Grabber/Dockerfile
-    depends_on:
-      - grabber-redis
+    image: youliao/booruapi:dev
 
   grabber-dapr:
     image: "daprio/daprd:1.7.4"

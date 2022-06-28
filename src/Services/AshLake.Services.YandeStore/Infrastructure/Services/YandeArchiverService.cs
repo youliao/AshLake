@@ -19,20 +19,20 @@ public class YandeArchiverService : IYandeArchiverService
 
     public async Task<BsonDocument> GetPostMetadata(int id)
     {
-        var json = await _httpClient.GetStringAsync($"/api/sites/yande/postmetadata/{id}");
+        var json = await _httpClient.GetStringAsync($"/api/boorus/yandere/postmetadata/{id}");
         return BsonDocument.Parse(json);
     }
 
     public async Task<IEnumerable<BsonDocument>> GetPostMetadataByRange(int rangeFrom, int rangeTo)
     {
-        var json = await _httpClient.GetStringAsync($"/api/sites/yande/postmetadata?rangeFrom={rangeFrom}&rangeTo={rangeTo}");
+        var json = await _httpClient.GetStringAsync($"/api/boorus/yandere/postmetadata?rangeFrom={rangeFrom}&rangeTo={rangeTo}");
         var list = BsonSerializer.Deserialize<BsonArray>(json).Select(x => x.AsBsonDocument);
         return list;
     }
 
     //public async Task<IEnumerable<BsonDocument>> GetPostMetadataByIds(IEnumerable<int> ids)
     //{
-    //    var json = await _httpClient.GetStringAsync($"/api/sites/yande/postmetadata?ids={string.Join(',', ids)}");
+    //    var json = await _httpClient.GetStringAsync($"/api/boorus/yandere/postmetadata?ids={string.Join(',', ids)}");
     //    var list = BsonSerializer.Deserialize<BsonArray>(json).Select(x => x.AsBsonDocument);
     //    return list;
     //}

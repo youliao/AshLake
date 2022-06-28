@@ -29,7 +29,7 @@ public class PostJob
 
         foreach (var item in bsons)
         {
-            if (!postIds.Contains(item.GetValue(YandePostMetadataKeys.id).AsInt32))
+            if (!postIds.Contains(item.GetValue(YanderePostMetadataKeys.id).AsInt32))
                 continue;
 
             var command = item.Adapt<AddOrUpdatePostCommand>();
@@ -46,7 +46,7 @@ public class PostJob
 
         foreach (var item in bsons)
         {
-            if (!postIds.Contains(item.GetValue(YandePostMetadataKeys.id).AsInt32))
+            if (!postIds.Contains(item.GetValue(YanderePostMetadataKeys.id).AsInt32))
                 continue;
             var command = item.Adapt<AddOrUpdatePostCommand>();
             commands.Add(command);

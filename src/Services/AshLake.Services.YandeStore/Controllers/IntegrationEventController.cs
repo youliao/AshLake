@@ -9,8 +9,8 @@ namespace AshLake.Services.YandeStore.Controllers;
 public class IntegrationEventController : ApiControllerBase
 {
     [HttpPost("YandePostMetadataAdded")]
-    [Topic(DaprEventBus.DaprPubsubName, nameof(YandePostMetadataAddedIntegrationEvent))]
-    public Task HandleAsync(YandePostMetadataAddedIntegrationEvent e)
+    [Topic(DaprEventBus.DaprPubsubName, nameof(YanderePostMetadataAddedIntegrationEvent))]
+    public Task HandleAsync(YanderePostMetadataAddedIntegrationEvent e)
     {
         BackgroundJob.Enqueue<PostJob>(x => x.BulkAddPosts(e.PostIds));
 
@@ -18,8 +18,8 @@ public class IntegrationEventController : ApiControllerBase
     }
 
     [HttpPost("YandePostMetadataModified")]
-    [Topic(DaprEventBus.DaprPubsubName, nameof(YandePostMetadataModifiedIntegrationEvent))]
-    public Task HandleAsync(YandePostMetadataModifiedIntegrationEvent e)
+    [Topic(DaprEventBus.DaprPubsubName, nameof(YanderePostMetadataModifiedIntegrationEvent))]
+    public Task HandleAsync(YanderePostMetadataModifiedIntegrationEvent e)
     {
         BackgroundJob.Enqueue<PostJob>(x => x.BulkUpdatePosts(e.PostIds));
 

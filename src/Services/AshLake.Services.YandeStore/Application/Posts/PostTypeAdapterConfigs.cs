@@ -16,45 +16,45 @@ public static class PostTypeAdapterConfigs
         TypeAdapterConfig<BsonDocument, AddOrUpdatePostCommand>
             .NewConfig()
             .Map(dest => dest.Author,
-                src => src[YandePostMetadataKeys.author].AsString)
+                src => src[YanderePostMetadataKeys.author].AsString)
             .Map(dest => dest.CreatedAt,
-                src => DateTimeOffset.FromUnixTimeSeconds(src[YandePostMetadataKeys.created_at].ToInt64()))
+                src => DateTimeOffset.FromUnixTimeSeconds(src[YanderePostMetadataKeys.created_at].ToInt64()))
             .Map(dest => dest.FileExt,
-                src => src[YandePostMetadataKeys.file_ext].AsString)
+                src => src[YanderePostMetadataKeys.file_ext].AsString)
             .Map(dest => dest.FileSize,
-                src => src[YandePostMetadataKeys.file_size].ToInt64())
+                src => src[YanderePostMetadataKeys.file_size].ToInt64())
             .Map(dest => dest.FileUrl,
-                src => src.ContainsKey(YandePostMetadataKeys.file_url)
-                    ? src[YandePostMetadataKeys.file_url].AsString
+                src => src.ContainsKey(YanderePostMetadataKeys.file_url)
+                    ? src[YanderePostMetadataKeys.file_url].AsString
                     : null)
             .Map(dest => dest.HasChildren,
-                src => src[YandePostMetadataKeys.has_children].AsBoolean)
+                src => src[YanderePostMetadataKeys.has_children].AsBoolean)
             .Map(dest => dest.Height,
-                src => src[YandePostMetadataKeys.height].AsNullableInt32)
+                src => src[YanderePostMetadataKeys.height].AsNullableInt32)
             .Map(dest => dest.Md5,
-                src => src[YandePostMetadataKeys.md5].AsString)
+                src => src[YanderePostMetadataKeys.md5].AsString)
             .Map(dest => dest.PostId,
-                src => src[YandePostMetadataKeys.id].AsNullableInt32)
+                src => src[YanderePostMetadataKeys.id].AsNullableInt32)
             .Map(dest => dest.ParentId,
-                src => src[YandePostMetadataKeys.parent_id].AsNullableInt32)
+                src => src[YanderePostMetadataKeys.parent_id].AsNullableInt32)
             .Map(dest => dest.Rating,
-                src => PostRating.SAFE, srcCond => srcCond[YandePostMetadataKeys.rating].AsString == "s")
+                src => PostRating.SAFE, srcCond => srcCond[YanderePostMetadataKeys.rating].AsString == "s")
             .Map(dest => dest.Rating,
-                src => PostRating.QUESTIONABLE, srcCond => srcCond[YandePostMetadataKeys.rating].AsString == "q")
+                src => PostRating.QUESTIONABLE, srcCond => srcCond[YanderePostMetadataKeys.rating].AsString == "q")
             .Map(dest => dest.Rating,
-                src => PostRating.EXPLICIT, srcCond => srcCond[YandePostMetadataKeys.rating].AsString == "e")
+                src => PostRating.EXPLICIT, srcCond => srcCond[YanderePostMetadataKeys.rating].AsString == "e")
             .Map(dest => dest.Score,
-                src => src[YandePostMetadataKeys.score].AsNullableInt32)
+                src => src[YanderePostMetadataKeys.score].AsNullableInt32)
             .Map(dest => dest.Source,
-                src => src[YandePostMetadataKeys.source].AsString)
+                src => src[YanderePostMetadataKeys.source].AsString)
             .Map(dest => dest.Status,
-                src => src[YandePostMetadataKeys.status].AsString)
+                src => src[YanderePostMetadataKeys.status].AsString)
             .Map(dest => dest.Tags,
-                src => src[YandePostMetadataKeys.tags].AsString.Split().ToList())
+                src => src[YanderePostMetadataKeys.tags].AsString.Split().ToList())
             .Map(dest => dest.UpdatedAt,
-                src => DateTimeOffset.FromUnixTimeSeconds(src[YandePostMetadataKeys.updated_at].ToInt64()))
+                src => DateTimeOffset.FromUnixTimeSeconds(src[YanderePostMetadataKeys.updated_at].ToInt64()))
             .Map(dest => dest.Width,
-                src => src[YandePostMetadataKeys.width].AsNullableInt32);
+                src => src[YanderePostMetadataKeys.width].AsNullableInt32);
     }
 
     private static void PostMetadataDtoTypeConfig()

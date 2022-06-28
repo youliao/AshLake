@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 namespace AshLake.Services.Archiver.Infrastructure.Repositories;
 
 public class MetadataRepository<TSouceSite, TMetadata> : IMetadataRepository<TSouceSite, TMetadata>
-    where TSouceSite : ISouceSite
+    where TSouceSite : IBooru
     where TMetadata : Metadata
 {
     private readonly IMongoDatabase _database;

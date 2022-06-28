@@ -3,7 +3,7 @@
 namespace AshLake.Services.Archiver.Application.BackgroundJobs;
 
 [Queue("tagmetadata")]
-public class TagMetadataJob<T> where T : ISouceSite
+public class TagMetadataJob<T> where T : IBooru
 {
     private readonly IMetadataRepository<T, TagMetadata> _tagMetadataRepository;
     private readonly IGrabberService<T> _grabberService;

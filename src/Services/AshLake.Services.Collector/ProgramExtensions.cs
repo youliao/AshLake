@@ -129,15 +129,15 @@ internal static class ProgramExtensions
 
         builder.Services.AddScoped<IEventBus, DaprEventBus>();
 
-        builder.Services.AddSingleton<IGrabberService<Yande>>(_ =>
-            new GrabberService<Yande>(DaprClient.CreateInvokeHttpClient("grabber")));
+        builder.Services.AddSingleton<IGrabberService<Yandere>>(_ =>
+            new GrabberService<Yandere>(DaprClient.CreateInvokeHttpClient("grabber")));
         builder.Services.AddSingleton<IGrabberService<Danbooru>>(_ =>
             new GrabberService<Danbooru>(DaprClient.CreateInvokeHttpClient("grabber")));
         builder.Services.AddSingleton<IGrabberService<Konachan>>(_ =>
             new GrabberService<Konachan>(DaprClient.CreateInvokeHttpClient("grabber")));
 
-        builder.Services.AddSingleton<IArchiverService<Yande>>(_ =>
-            new ArchiverService<Yande>(DaprClient.CreateInvokeHttpClient("archiver")));
+        builder.Services.AddSingleton<IArchiverService<Yandere>>(_ =>
+            new ArchiverService<Yandere>(DaprClient.CreateInvokeHttpClient("archiver")));
         builder.Services.AddSingleton<IArchiverService<Danbooru>>(_ =>
             new ArchiverService<Danbooru>(DaprClient.CreateInvokeHttpClient("archiver")));
         builder.Services.AddSingleton<IArchiverService<Konachan>>(_ =>

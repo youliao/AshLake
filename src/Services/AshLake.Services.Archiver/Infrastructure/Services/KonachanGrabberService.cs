@@ -13,7 +13,7 @@ public class KonachanGrabberService : IGrabberService<Konachan>
 
     public async Task<IEnumerable<BsonDocument>> GetPostMetadataList(int startId, int limit)
     {
-        var json = await _httpClient.GetStringAsync($"/api/sites/konachan/postmetadata?StartId={startId}&Page=1&Limit={limit}");
+        var json = await _httpClient.GetStringAsync($"/api/boorus/konachan/postmetadata?StartId={startId}&Page=1&Limit={limit}");
         var list = BsonSerializer.Deserialize<BsonArray>(json)
             .Select(x => x.AsBsonDocument);
 
@@ -22,7 +22,7 @@ public class KonachanGrabberService : IGrabberService<Konachan>
 
     public async Task<string?> GetPostObjectKey(int postId)
     {
-        using var response = await _httpClient.GetAsync($"/api/sites/konachan/postmetadata/{postId}");
+        using var response = await _httpClient.GetAsync($"/api/boorus/konachan/postmetadata/{postId}");
         if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
             return null;
@@ -43,7 +43,7 @@ public class KonachanGrabberService : IGrabberService<Konachan>
 
     public async Task<IEnumerable<BsonDocument>> GetTagMetadataList(int type)
     {
-        var json = await _httpClient.GetStringAsync($"/api/sites/konachan/tagmetadata?Type={type}&Page=1&Limit=0");
+        var json = await _httpClient.GetStringAsync($"/api/boorus/konachan/tagmetadata?Type={type}&Page=1&Limit=0");
         var list = BsonSerializer.Deserialize<BsonArray>(json)
             .Select(x => x.AsBsonDocument);
 

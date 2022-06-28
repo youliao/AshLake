@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 namespace AshLake.Services.Archiver.Domain.Repositories;
 
 public interface IMetadataRepository<TSouceSite, TMetadata> 
-    where TSouceSite : ISouceSite
+    where TSouceSite : IBooru
     where TMetadata : Metadata
 {
     Task<EntityState> AddOrUpdateAsync(TMetadata metadata);

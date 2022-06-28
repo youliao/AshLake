@@ -7,7 +7,7 @@ namespace AshLake.Services.Archiver.Controllers;
 
 public class DanbooruArchiverController : ControllerBase
 {
-    [Route("/api/sites/danbooru/postmetadata/{id:int}")]
+    [Route("/api/boorus/danbooru/postmetadata/{id:int}")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -20,7 +20,7 @@ public class DanbooruArchiverController : ControllerBase
         return Ok(metadata.Data);
     }
 
-    [Route("/api/sites/danbooru/postmetadata")]
+    [Route("/api/boorus/danbooru/postmetadata")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> GetPostMetadataByRangeAsync(int rangeFrom, int rangeTo,
@@ -31,7 +31,7 @@ public class DanbooruArchiverController : ControllerBase
         return Ok(list.Select(x => x.Data));
     }
 
-    [Route("/api/sites/danbooru/postobjectkeys/{id:int}")]
+    [Route("/api/boorus/danbooru/postobjectkeys/{id:int}")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> GetPostobjectKeyAsync(int id,
@@ -51,7 +51,7 @@ public class DanbooruArchiverController : ControllerBase
         return Ok(objectKey);
     }
 
-    //[Route("/api/sites/danbooru/tagmetadata")]
+    //[Route("/api/boorus/danbooru/tagmetadata")]
     //[HttpGet]
     //[ProducesResponseType(StatusCodes.Status200OK)]
     //public async Task<ActionResult> GetTagMetadataByTypeAsync(int type,
@@ -63,7 +63,7 @@ public class DanbooruArchiverController : ControllerBase
     //    return Ok(list.Select(x => x.Data));
     //}
 
-    [Route("/api/sites/danbooru/addpostmetadatajobs/batches")]
+    [Route("/api/boorus/danbooru/addpostmetadatajobs/batches")]
     [HttpPost]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
     public ActionResult<List<string>> CreateAddPostMetadataJobsAsync(CreateAddPostMetadataJobsCommand command,
@@ -85,7 +85,7 @@ public class DanbooruArchiverController : ControllerBase
         return Ok(jobIdList);
     }
 
-    [Route("/api/sites/danbooru/updatepostmetadatajobs/batches")]
+    [Route("/api/boorus/danbooru/updatepostmetadatajobs/batches")]
     [HttpPost]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
     public ActionResult<List<string>> CreateUpdatePostMetadataJobsAsync(CreateUpdatePostMetadataJobsCommand command,
@@ -107,7 +107,7 @@ public class DanbooruArchiverController : ControllerBase
         return Ok(jobIdList);
     }
 
-    [Route("/api/sites/danbooru/tagmetadatajobs/batches")]
+    [Route("/api/boorus/danbooru/tagmetadatajobs/batches")]
     [HttpPost]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
     public ActionResult<List<string>> CreateTagMetadataJobsAsync(CreateTagMetadataJobsCommand command,

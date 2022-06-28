@@ -7,7 +7,7 @@ global using AshLake.Services.Archiver.Infrastructure.Repositories;
 global using MongoDB.Bson;
 global using Hangfire;
 global using AshLake.Services.Archiver.Application.BackgroundJobs;
-global using AshLake.Contracts.Seedwork.SourceSites;
+global using AshLake.Contracts.Seedwork.Boorus;
 global using AshLake.Services.Archiver.Domain.Entities;
 global using AshLake.Services.Archiver.Infrastructure.Services;
 global using Dapr.Client;

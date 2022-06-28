@@ -2,18 +2,18 @@
 
 namespace AshLake.Services.Archiver.Infrastructure.Services;
 
-public class YandeGrabberService : IGrabberService<Yande>
+public class YandereGrabberService : IGrabberService<Yandere>
 {
     private readonly HttpClient _httpClient;
 
-    public YandeGrabberService(HttpClient httpClient)
+    public YandereGrabberService(HttpClient httpClient)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     }
 
     public async Task<IEnumerable<BsonDocument>> GetPostMetadataList(int startId, int limit)
     {
-        var json = await _httpClient.GetStringAsync($"/api/sites/yande/postmetadata?StartId={startId}&Page=1&Limit={limit}");
+        var json = await _httpClient.GetStringAsync($"/api/boorus/yandere/postmetadata?StartId={startId}&Page=1&Limit={limit}");
         var list = BsonSerializer.Deserialize<BsonArray>(json)
             .Select(x => x.AsBsonDocument);
 
@@ -22,7 +22,7 @@ public class YandeGrabberService : IGrabberService<Yande>
 
     public async Task<string?> GetPostObjectKey(int postId)
     {
-        using var response = await _httpClient.GetAsync($"/api/sites/yande/postmetadata/{postId}");
+        using var response = await _httpClient.GetAsync($"/api/boorus/yandere/postmetadata/{postId}");
         if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
             return null;
@@ -31,10 +31,10 @@ public class YandeGrabberService : IGrabberService<Yande>
 
         var postmetadata = BsonSerializer.Deserialize<BsonDocument>(await response.Content.ReadAsStringAsync());
 
-        var postmd5 = postmetadata[YandePostMetadataKeys.md5].AsString;
+        var postmd5 = postmetadata[YanderePostMetadataKeys.md5].AsString;
         Guard.Against.NullOrWhiteSpace(postmd5);
 
-        var fileExt = postmetadata[YandePostMetadataKeys.file_ext].AsString;
+        var fileExt = postmetadata[YanderePostMetadataKeys.file_ext].AsString;
         Guard.Against.NullOrWhiteSpace(fileExt);
 
         return $"{postmd5}.{fileExt}";
@@ -42,7 +42,7 @@ public class YandeGrabberService : IGrabberService<Yande>
 
     public async Task<IEnumerable<BsonDocument>> GetTagMetadataList(int type)
     {
-        var json = await _httpClient.GetStringAsync($"/api/sites/yande/tagmetadata?Type={type}&Page=1&Limit=0");
+        var json = await _httpClient.GetStringAsync($"/api/boorus/yandere/tagmetadata?Type={type}&Page=1&Limit=0");
         var list = BsonSerializer.Deserialize<BsonArray>(json)
             .Select(x => x.AsBsonDocument);
 

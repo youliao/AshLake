@@ -6,25 +6,25 @@ namespace AshLake.Services.Collector.Controllers;
 [ApiController]
 public class IntegrationEventController : ControllerBase
 {
-    [HttpPost("YandePostMetadataAdded")]
-    [Topic(DaprEventBus.DaprPubsubName, nameof(YandePostMetadataAddedIntegrationEvent))]
-    public Task HandleAsync(YandePostMetadataAddedIntegrationEvent e)
+    [HttpPost("YanderePostMetadataAdded")]
+    [Topic(DaprEventBus.DaprPubsubName, nameof(YanderePostMetadataAddedIntegrationEvent))]
+    public Task HandleAsync(YanderePostMetadataAddedIntegrationEvent e)
     {
         foreach (var postId in e.PostIds)
         {
-            BackgroundJob.Enqueue<CollectingJob<Yande>>(x => x.AddFile(postId));
+            BackgroundJob.Enqueue<CollectingJob<Yandere>>(x => x.AddFile(postId));
         }
 
         return Task.CompletedTask;
     }
 
-    [HttpPost("YandePostMetadataModified")]
-    [Topic(DaprEventBus.DaprPubsubName, nameof(YandePostMetadataModifiedIntegrationEvent))]
-    public Task HandleAsync(YandePostMetadataModifiedIntegrationEvent e)
+    [HttpPost("YanderePostMetadataModified")]
+    [Topic(DaprEventBus.DaprPubsubName, nameof(YanderePostMetadataModifiedIntegrationEvent))]
+    public Task HandleAsync(YanderePostMetadataModifiedIntegrationEvent e)
     {
         foreach (var postId in e.PostIds)
         {
-            BackgroundJob.Enqueue<CollectingJob<Yande>>(x => x.AddFile(postId));
+            BackgroundJob.Enqueue<CollectingJob<Yandere>>(x => x.AddFile(postId));
         }
 
         return Task.CompletedTask;

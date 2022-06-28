@@ -141,8 +141,8 @@ internal static class ProgramExtensions
         #region Integration
 
         builder.Services.AddScoped<IEventBus, DaprEventBus>();
-        builder.Services.AddSingleton<IGrabberService<Yande>>(_ =>
-            new YandeGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
+        builder.Services.AddSingleton<IGrabberService<Yandere>>(_ =>
+            new YandereGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
         builder.Services.AddSingleton<IGrabberService<Danbooru>>(_ =>
             new DanbooruGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
         builder.Services.AddSingleton<IGrabberService<Konachan>>(_ =>

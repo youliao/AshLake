@@ -5,5 +5,5 @@ public enum AshLakeApp
     Archiver = 1,
     Collector = 2,
     Compressor = 3,
-    YandeStore = 4
+    YandereStore = 4
 }

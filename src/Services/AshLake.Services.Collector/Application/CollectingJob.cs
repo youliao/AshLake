@@ -2,7 +2,7 @@
 
 namespace AshLake.Services.Collector.Application;
 
-public class CollectingJob<T> where T : ISouceSite
+public class CollectingJob<T> where T : IBooru
 {
     private readonly IGrabberService<T> _grabberService;
     private readonly IArchiverService<T> _archiverService;

@@ -1,6 +1,6 @@
 ﻿namespace AshLake.Contracts.Archiver.Events;
 
-public static class EventBuilders<T> where T : ISouceSite
+public static class EventBuilders<T> where T : IBooru
 {
     public static IntegrationEvent PostMetadataAddedIntegrationEventBuilder(IReadOnlyList<int> PostIds)
     {
@@ -8,7 +8,7 @@ public static class EventBuilders<T> where T : ISouceSite
 
         IntegrationEvent integrationEvent = souceSite switch
         {
-            nameof(Yande) => new YandePostMetadataAddedIntegrationEvent(PostIds),
+            nameof(Yandere) => new YanderePostMetadataAddedIntegrationEvent(PostIds),
             nameof(Danbooru) => new DanbooruPostMetadataAddedIntegrationEvent(PostIds),
             nameof(Konachan) => new KonachanPostMetadataAddedIntegrationEvent(PostIds),
             _ => throw new ArgumentOutOfRangeException(nameof(souceSite))
@@ -23,7 +23,7 @@ public static class EventBuilders<T> where T : ISouceSite
 
         IntegrationEvent integrationEvent = souceSite switch
         {
-            nameof(Yande) => new YandePostMetadataModifiedIntegrationEvent(PostIds),
+            nameof(Yandere) => new YanderePostMetadataModifiedIntegrationEvent(PostIds),
             nameof(Danbooru) => new DanbooruPostMetadataModifiedIntegrationEvent(PostIds),
             nameof(Konachan) => new KonachanPostMetadataModifiedIntegrationEvent(PostIds),
             _ => throw new ArgumentOutOfRangeException(nameof(souceSite))
@@ -38,7 +38,7 @@ public static class EventBuilders<T> where T : ISouceSite
 
         IntegrationEvent integrationEvent = souceSite switch
         {
-            nameof(Yande) => new YandePostMetadataUnchangedIntegrationEvent(PostIds),
+            nameof(Yandere) => new YanderePostMetadataUnchangedIntegrationEvent(PostIds),
             nameof(Danbooru) => new DanbooruPostMetadataUnchangedIntegrationEvent(PostIds),
             nameof(Konachan) => new KonachanPostMetadataUnchangedIntegrationEvent(PostIds),
             _ => throw new ArgumentOutOfRangeException(nameof(souceSite))

@@ -1,6 +1,6 @@
-﻿namespace AshLake.Contracts.Seedwork.SourceSites;
+﻿namespace AshLake.Contracts.Seedwork.Boorus;
 
-public class YandePostMetadataKeys
+public class YanderePostMetadataKeys
 {
     public const string id = "id";
     public const string tags = "tags";

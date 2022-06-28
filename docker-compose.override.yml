@@ -37,23 +37,14 @@ services:
       - "9411:9411"
 
   grabber:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-      - YandeUrl=https://yande.re/
-      - DanbooruUrl=https://danbooru.donmai.us/
-      - KonachanUrl=https://konachan.com/
-      - EasycachingRedisHost=grabber-redis
-      - SeqServerUrl=http://seq
     ports:
-      - "30001:80"
+      - "30001:3000"
 
   grabber-dapr:
     command: ["./daprd",
       "-app-id", "grabber",
-      "-app-port", "80",
+      "-app-port", "3000",
       "-components-path", "/components",
-      #"-enable-profiling","true",
       "-config", "/configuration/ashlake-config.yaml"
       ]
     volumes:
