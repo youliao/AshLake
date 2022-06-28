@@ -102,21 +102,21 @@ internal static class ProgramExtensions
         {
             opt.ServerName = "localhost-yande";
             opt.WorkerCount = 1;
-            opt.Queues = new string[] { "yande" };
+            opt.Queues = new string[] { nameof(Yandere).ToLower() };
         });
 
         builder.Services.AddHangfireServer(opt =>
         {
             opt.ServerName = "localhost-danbooru";
             opt.WorkerCount = 1;
-            opt.Queues = new string[] { "danbooru" };
+            opt.Queues = new string[] { nameof(Danbooru).ToLower() };
         });
 
         builder.Services.AddHangfireServer(opt =>
         {
             opt.ServerName = "localhost-konachan";
             opt.WorkerCount = 1;
-            opt.Queues = new string[] { "konachan" };
+            opt.Queues = new string[] { nameof(Konachan).ToLower() };
         });
     }
 

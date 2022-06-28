@@ -10,7 +10,7 @@ public class IntegrationEventController : ControllerBase
     [Topic(DaprEventBus.DaprPubsubName, nameof(YanderePostMetadataAddedIntegrationEvent))]
     public Task HandleAsync(YanderePostMetadataAddedIntegrationEvent e)
     {
-        BackgroundJob.Enqueue<CollectingJob<Yande>>(x => x.AddFiles("yande", e.PostIds));
+        BackgroundJob.Enqueue<CollectingJob<Yandere>>(x => x.AddFiles(nameof(Yandere).ToLower(), e.PostIds));
         return Task.CompletedTask;
     }
 
@@ -18,7 +18,7 @@ public class IntegrationEventController : ControllerBase
     [Topic(DaprEventBus.DaprPubsubName, nameof(YanderePostMetadataModifiedIntegrationEvent))]
     public Task HandleAsync(YanderePostMetadataModifiedIntegrationEvent e)
     {
-        BackgroundJob.Enqueue<CollectingJob<Yande>>(x => x.AddFiles("yande", e.PostIds));
+        BackgroundJob.Enqueue<CollectingJob<Yandere>>(x => x.AddFiles(nameof(Yandere).ToLower(), e.PostIds));
 
         return Task.CompletedTask;
     }
@@ -27,7 +27,7 @@ public class IntegrationEventController : ControllerBase
     [Topic(DaprEventBus.DaprPubsubName, nameof(DanbooruPostMetadataAddedIntegrationEvent))]
     public Task HandleAsync(DanbooruPostMetadataAddedIntegrationEvent e)
     {
-        BackgroundJob.Enqueue<CollectingJob<Danbooru>>(x => x.AddFiles("danbooru", e.PostIds));
+        BackgroundJob.Enqueue<CollectingJob<Danbooru>>(x => x.AddFiles(nameof(Danbooru).ToLower(), e.PostIds));
 
         return Task.CompletedTask;
     }
@@ -36,7 +36,7 @@ public class IntegrationEventController : ControllerBase
     [Topic(DaprEventBus.DaprPubsubName, nameof(DanbooruPostMetadataModifiedIntegrationEvent))]
     public Task HandleAsync(DanbooruPostMetadataModifiedIntegrationEvent e)
     {
-        BackgroundJob.Enqueue<CollectingJob<Danbooru>>(x => x.AddFiles("danbooru", e.PostIds));
+        BackgroundJob.Enqueue<CollectingJob<Danbooru>>(x => x.AddFiles(nameof(Danbooru).ToLower(), e.PostIds));
 
         return Task.CompletedTask;
     }
@@ -45,7 +45,7 @@ public class IntegrationEventController : ControllerBase
     [Topic(DaprEventBus.DaprPubsubName, nameof(KonachanPostMetadataAddedIntegrationEvent))]
     public Task HandleAsync(KonachanPostMetadataAddedIntegrationEvent e)
     {
-        BackgroundJob.Enqueue<CollectingJob<Konachan>>(x => x.AddFiles("konachan", e.PostIds));
+        BackgroundJob.Enqueue<CollectingJob<Konachan>>(x => x.AddFiles(nameof(Konachan).ToLower(), e.PostIds));
 
         return Task.CompletedTask;
     }
@@ -54,7 +54,7 @@ public class IntegrationEventController : ControllerBase
     [Topic(DaprEventBus.DaprPubsubName, nameof(KonachanPostMetadataModifiedIntegrationEvent))]
     public Task HandleAsync(KonachanPostMetadataModifiedIntegrationEvent e)
     {
-        BackgroundJob.Enqueue<CollectingJob<Konachan>>(x => x.AddFiles("konachan", e.PostIds));
+        BackgroundJob.Enqueue<CollectingJob<Konachan>>(x => x.AddFiles(nameof(Konachan).ToLower(), e.PostIds));
 
         return Task.CompletedTask;
     }
