@@ -48,18 +48,16 @@ public class CollectingJob<T> where T : IBooru
                 return;
             }
 
-            var fileUrl = await _grabberService.GetPostFileUrl(postId);
-            if (fileUrl is null)
-            {
-                none++;
-                return;
-            }
-
             try
             {
-                var data = await _downloader.DownloadFileAsync(fileUrl!);
+                var stream = await _grabberService.GetPostFile(postId);
+                if(stream is null)
+                {
+                    none++;
+                    return;
+                }
 
-                var postFile = new PostFile(objectKey!, data);
+                var postFile = new PostFile(objectKey!, stream);
 
                 await _fileRepositoty.PutAsync(postFile);
                 await _eventBus.PublishAsync(new PostFileChangedIntegrationEvent(objectKey!));

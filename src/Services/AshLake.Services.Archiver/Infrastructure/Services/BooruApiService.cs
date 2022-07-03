@@ -19,9 +19,9 @@ public class BooruApiService<T> : IBooruApiService<T> where T : IBooru
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     }
 
-    public async Task<IEnumerable<BsonDocument>> GetPostMetadataList(int startId, int limit)
+    public async Task<IEnumerable<BsonDocument>> GetPostMetadataList(int start, int limit)
     {
-        var json = await _httpClient.GetStringAsync($"/api/boorus/{_booru}/postmetadata?StartId={startId}&Page=1&Limit={limit}");
+        var json = await _httpClient.GetStringAsync($"/api/boorus/danbooru/posts?start={start}&limit={limit}");
         var list = BsonSerializer.Deserialize<BsonArray>(json)
             .Select(x => x.AsBsonDocument);
 

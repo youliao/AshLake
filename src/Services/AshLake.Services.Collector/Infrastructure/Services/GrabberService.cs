@@ -6,6 +6,7 @@ namespace AshLake.Services.Collector.Infrastructure.Services;
 public interface IGrabberService<T> where T : IBooru
 {
     Task<string?> GetPostFileUrl(int postId);
+    Task<Stream?> GetPostFile(int postId);
 }
 
 public class GrabberService<T> : IGrabberService<T> where T : IBooru
@@ -30,5 +31,17 @@ public class GrabberService<T> : IGrabberService<T> where T : IBooru
         response.EnsureSuccessStatusCode();
 
         return await response.Content.ReadAsStringAsync(); 
+    }
+
+    public async Task<Stream?> GetPostFile(int postId)
+    {
+        using var response = await _httpClient.GetAsync($"/api/boorus/{_souceSiteName}/postfiles/{postId}");
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadAsStreamAsync();
     }
 }
