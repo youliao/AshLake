@@ -2,18 +2,26 @@
 
 namespace AshLake.Services.Archiver.Infrastructure.Services;
 
-public class YandereGrabberService : IGrabberService<Yandere>
+public interface IBooruApiService<T> where T : IBooru
+{
+    Task<IEnumerable<BsonDocument>> GetPostMetadataList(int startId, int limit);
+
+    Task<IEnumerable<BsonDocument>> GetTagMetadataList(int type);
+}
+
+public class BooruApiService<T> : IBooruApiService<T> where T : IBooru
 {
     private readonly HttpClient _httpClient;
+    private readonly string _booru = typeof(T).Name.ToLower();
 
-    public YandereGrabberService(HttpClient httpClient)
+    public BooruApiService(HttpClient httpClient)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     }
 
     public async Task<IEnumerable<BsonDocument>> GetPostMetadataList(int startId, int limit)
     {
-        var json = await _httpClient.GetStringAsync($"/api/boorus/yandere/postmetadata?StartId={startId}&Page=1&Limit={limit}");
+        var json = await _httpClient.GetStringAsync($"/api/boorus/{_booru}/postmetadata?StartId={startId}&Page=1&Limit={limit}");
         var list = BsonSerializer.Deserialize<BsonArray>(json)
             .Select(x => x.AsBsonDocument);
 
@@ -22,7 +30,7 @@ public class YandereGrabberService : IGrabberService<Yandere>
 
     public async Task<string?> GetPostObjectKey(int postId)
     {
-        using var response = await _httpClient.GetAsync($"/api/boorus/yandere/postmetadata/{postId}");
+        using var response = await _httpClient.GetAsync($"/api/boorus/{_booru}/postmetadata/{postId}");
         if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
             return null;
@@ -42,7 +50,7 @@ public class YandereGrabberService : IGrabberService<Yandere>
 
     public async Task<IEnumerable<BsonDocument>> GetTagMetadataList(int type)
     {
-        var json = await _httpClient.GetStringAsync($"/api/boorus/yandere/tagmetadata?Type={type}&Page=1&Limit=0");
+        var json = await _httpClient.GetStringAsync($"/api/boorus/{_booru}/tagmetadata?Type={type}&Page=1&Limit=0");
         var list = BsonSerializer.Deserialize<BsonArray>(json)
             .Select(x => x.AsBsonDocument);
 

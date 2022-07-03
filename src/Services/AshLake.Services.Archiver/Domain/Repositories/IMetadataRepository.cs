@@ -16,6 +16,8 @@ public interface IMetadataRepository<TSouceSite, TMetadata>
 
     Task<TMetadata> SingleAsync(int id);
 
+    Task<TMetadata> SingleAsync(FilterDefinition<TMetadata> filter);
+
     Task<IEnumerable<TMetadata>> FindAsync(Expression<Func<TMetadata, bool>> filter);
     Task<IEnumerable<TMetadata>> FindAsync(FilterDefinition<TMetadata> filter);
 }

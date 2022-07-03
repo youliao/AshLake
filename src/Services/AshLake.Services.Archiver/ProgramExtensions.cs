@@ -141,12 +141,16 @@ internal static class ProgramExtensions
         #region Integration
 
         builder.Services.AddScoped<IEventBus, DaprEventBus>();
-        builder.Services.AddSingleton<IGrabberService<Yandere>>(_ =>
-            new YandereGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
-        builder.Services.AddSingleton<IGrabberService<Danbooru>>(_ =>
-            new DanbooruGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
-        builder.Services.AddSingleton<IGrabberService<Konachan>>(_ =>
-            new KonachanGrabberService(DaprClient.CreateInvokeHttpClient("grabber")));
+        builder.Services.AddSingleton<IBooruApiService<Yandere>>(_ =>
+            new BooruApiService<Yandere>(DaprClient.CreateInvokeHttpClient("booru-api")));
+        builder.Services.AddSingleton<IBooruApiService<Danbooru>>(_ =>
+            new BooruApiService<Danbooru>(DaprClient.CreateInvokeHttpClient("booru-api")));
+        builder.Services.AddSingleton<IBooruApiService<Konachan>>(_ =>
+            new BooruApiService<Konachan>(DaprClient.CreateInvokeHttpClient("booru-api")));
+        builder.Services.AddHttpClient<IImgProxyService>(config =>
+        {
+            config.BaseAddress = new Uri(builder.Configuration["ImgProxyHost"]);
+        });
 
         #endregion
 

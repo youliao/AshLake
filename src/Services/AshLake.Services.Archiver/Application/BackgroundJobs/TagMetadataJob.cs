@@ -6,10 +6,10 @@ namespace AshLake.Services.Archiver.Application.BackgroundJobs;
 public class TagMetadataJob<T> where T : IBooru
 {
     private readonly IMetadataRepository<T, TagMetadata> _tagMetadataRepository;
-    private readonly IGrabberService<T> _grabberService;
+    private readonly IBooruApiService<T> _grabberService;
     private readonly IEventBus _eventBus;
 
-    public TagMetadataJob(IMetadataRepository<T, TagMetadata> tagMetadataRepository, IGrabberService<T> grabberService, IEventBus eventBus)
+    public TagMetadataJob(IMetadataRepository<T, TagMetadata> tagMetadataRepository, IBooruApiService<T> grabberService, IEventBus eventBus)
     {
         _tagMetadataRepository = tagMetadataRepository ?? throw new ArgumentNullException(nameof(tagMetadataRepository));
         _grabberService = grabberService ?? throw new ArgumentNullException(nameof(grabberService));

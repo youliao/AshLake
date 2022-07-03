@@ -117,4 +117,12 @@ public class MetadataRepository<TSouceSite, TMetadata> : IMetadataRepository<TSo
             .Limit(1)
             .SingleOrDefaultAsync();
     }
+
+    public async Task<TMetadata> SingleAsync(FilterDefinition<TMetadata> filter)
+    {
+        return await _database.GetEntityCollection<TMetadata>()
+            .Find(filter)
+            .Limit(1)
+            .SingleOrDefaultAsync();
+    }
 }
