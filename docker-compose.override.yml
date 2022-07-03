@@ -3,16 +3,8 @@ version: '3.4'
 services:
   healthcheck:
     environment:
-      - HealthChecksUI__HealthChecks__0__Name=Grabber API
-      - HealthChecksUI__HealthChecks__0__Uri=http://grabber/hc
-      - HealthChecksUI__HealthChecks__1__Name=Archiver API
-      - HealthChecksUI__HealthChecks__1__Uri=http://archiver/hc
-      - HealthChecksUI__HealthChecks__2__Name=Collector API
-      - HealthChecksUI__HealthChecks__2__Uri=http://collector/hc
-      - HealthChecksUI__HealthChecks__3__Name=Compressor API
-      - HealthChecksUI__HealthChecks__3__Uri=http://compressor/hc
-      - HealthChecksUI__HealthChecks__4__Name=YandeStore API
-      - HealthChecksUI__HealthChecks__4__Uri=http://yandestore/hc
+      - HealthChecksUI__HealthChecks__0__Name=Archiver API
+      - HealthChecksUI__HealthChecks__0__Uri=http://archiver/hc
     ports:
       - "5107:80"
 
@@ -29,13 +21,13 @@ services:
     ports:
       - "9411:9411"
 
-  grabber:
+  booru-api:
     ports:
       - "30001:3000"
 
-  grabber-dapr:
+  booru-api-dapr:
     command: ["./daprd",
-      "-app-id", "grabber",
+      "-app-id", "booru-api",
       "-app-port", "3000",
       "-components-path", "/components",
       "-config", "/configuration/ashlake-config.yaml"
@@ -55,8 +47,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - MongoDatabaseConnectionString=mongodb://mongoadmin:mongoadmin@archiver-mongo:27017?maxPoolSize=500
-      - HangfireConnectionString=archiver-redis:6379
+      - MongoConnectionString=mongodb://mongoadmin:mongoadmin@archiver-mongo:27017?maxPoolSize=500
+      - RedisConnectionString=archiver-redis:6379
       - SeqServerUrl=http://seq
     ports:
       - "30002:80"
@@ -90,20 +82,17 @@ services:
 
   collector:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-      - ImageStorageEndpoint=collector-minio:9000
-      - ImageStorageAccessKey=minio
-      - ImageStorageSecretKey=minio123
-      - HangfireConnectionString=collector-redis:6379
-      - SeqServerUrl=http://seq
+      S3_BUCKET_NAME: postfile
+      ARIA2_HOST: aria2
+      ARIA2_SECRET: ARIA2
+      RCLONE_HOST: http://collector-rclone:5572
     ports:
-      - "30003:80"
+      - 30003:3000
 
   collector-dapr:
     command: ["./daprd",
       "-app-id", "collector",
-      "-app-port", "80",
+      "-app-port", "3000",
       "-components-path", "/components",
       "-config", "/configuration/ashlake-config.yaml"
       ]
@@ -122,104 +111,123 @@ services:
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio123
+      #MINIO_NOTIFY_AMQP_ENABLE: on
+      #MINIO_NOTIFY_AMQP_URL: amqp://rabbitmq:5672
+      #MINIO_NOTIFY_AMQP_EXCHANGE: collector.minio.events
+      #MINIO_NOTIFY_AMQP_EXCHANGE_TYPE: fanout
+      #MINIO_NOTIFY_AMQP_DELIVERY_MODE: 2
+      #MINIO_NOTIFY_AMQP_AUTO_DELETED: "off"
+      #MINIO_NOTIFY_AMQP_DURABLE: "on"
     command: server /data --console-address ":9001"
     volumes:
       - collector-objectdata:/data
     ports:
-      - "9000:9000"
       - "9001:9001"
 
-  #collector-redis:
+  collector-imgproxy:
+    environment:
+      IMGPROXY_ONLY_PRESETS: true
+      IMGPROXY_PRESETS: 
+        raw=skip_processing:jpg:png:gif,
+        rs300a=resizing_type:fit/width:300/height:300/format:avif,
+        rs500a=resizing_type:fit/width:500/height:500/format:avif,       
+        rs300j=resizing_type:fit/width:300/height:300/format:jpg,
+        rs500j=resizing_type:fit/width:500/height:500/format:jpg,
+        rs300w=resizing_type:fit/width:300/height:300/format:webp,
+        rs500w=resizing_type:fit/width:500/height:500/format:webp, 
+      IMGPROXY_QUALITY: 80
+      IMGPROXY_BASE_URL: s3://postfile/
+      IMGPROXY_ALLOWED_SOURCES: s3://
+      IMGPROXY_USE_S3: true
+      IMGPROXY_S3_ENDPOINT: http://collector-minio:9000
+      AWS_ACCESS_KEY_ID: minio
+      AWS_SECRET_ACCESS_KEY: minio123    
+    ports:
+      - "30004:8080"
+    depends_on:
+      - collector-minio   
+
+  collector-aria2:
+    environment:
+      - PUID=1026
+      - PGID=100
+      - TZ=Asia/Shanghai
+      - SECRET=ARIA2
+      - CACHE=128M
+      - PORT=6800
+      - WEBUI=true
+      - WEBUI_PORT=8080
+      - UT=false
+      - RUT =false
+      - QUIET=true
+      - SMD=false
+    ports:
+      - 30005:8080
+    volumes:
+      - aria2-config:/config
+      - downloads:/downloads
+
+  collector-rclone:
+    environment:
+      RCLONE_S3_PROVIDER: Minio
+      RCLONE_S3_ACCESS_KEY_ID: minio
+      RCLONE_S3_SECRET_ACCESS_KEY: minio123
+      RCLONE_S3_ENDPOINT: http://collector-minio:9000
+    command: 
+      ["rcd",
+      "--rc-addr",":5572",
+      "--rc-files","/data",
+      "--rc-web-gui-no-open-browser",
+      "--rc-no-auth"]
+    volumes:
+      - downloads:/data/downloads    
+
+  #yandestore:
+  #  environment:
+  #    - ASPNETCORE_ENVIRONMENT=Development
+  #    - ASPNETCORE_URLS=http://+:80
+  #    - DBConnectionString=Host=yandestore-postgres;Database=postgres;Username=root;Password=postgres;
+  #    - HangfireConnectionString=yandestore-redis:6379
+  #    - RetryMigrations=true
+  #    - SeqServerUrl=http://seq
+  #  ports:
+  #    - "30005:80"
+
+  #yandestore-dapr:
+  #  command: ["./daprd",
+  #    "-app-id", "yandestore",
+  #    "-app-port", "80",
+  #    "-components-path", "/components",
+  #    "-config", "/configuration/ashlake-config.yaml"
+  #    ]
   #  volumes:
-  #    - collector-redisdata:/data
+  #    - "./dapr/components/:/components"
+  #    - "./dapr/configuration/:/configuration"
+  #  deploy:
+  #    resources:
+  #       limits:
+  #          cpus: "2.00"
+  #          memory: 500M
+  #       reservations:
+  #          memory: 100M
 
-  compressor:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-      - ImageStorageEndpoint=compressor-minio:9000
-      - ImageStorageAccessKey=minio
-      - ImageStorageSecretKey=minio123
-      - HangfireConnectionString=compressor-redis:6379
-      - SeqServerUrl=http://seq
-    ports:
-      - "30004:80"
+  #yandestore-postgres:
+  #  environment:
+  #    POSTGRES_USER: root 
+  #    POSTGRES_DB: postgres
+  #    POSTGRES_PASSWORD: postgres
+  #  ports:
+  #    - "5432"
+  #  volumes:
+  #    - yandestore-sqldata:/var/lib/postgresql/data
 
-  compressor-dapr:
-    command: ["./daprd",
-      "-app-id", "compressor",
-      "-app-port", "80",
-      "-components-path", "/components",
-      "-config", "/configuration/ashlake-config.yaml"
-      ]
-    volumes:
-      - "./dapr/components/:/components"
-      - "./dapr/configuration/:/configuration"
-    deploy:
-      resources:
-         limits:
-            cpus: "2.00"
-            memory: 500M
-         reservations:
-            memory: 100M
-
-  compressor-minio:
-    environment:
-      MINIO_ACCESS_KEY: minio
-      MINIO_SECRET_KEY: minio123
-    command: server /data --console-address ":9001"
-    volumes:
-      - compressor-objectdata:/data
-    ports:
-      - "19000:9000"
-      - "19001:9001"
-
-  yandestore:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-      - DBConnectionString=Host=yandestore-postgres;Database=postgres;Username=root;Password=postgres;
-      - HangfireConnectionString=yandestore-redis:6379
-      - RetryMigrations=true
-      - SeqServerUrl=http://seq
-    ports:
-      - "30005:80"
-
-  yandestore-dapr:
-    command: ["./daprd",
-      "-app-id", "yandestore",
-      "-app-port", "80",
-      "-components-path", "/components",
-      "-config", "/configuration/ashlake-config.yaml"
-      ]
-    volumes:
-      - "./dapr/components/:/components"
-      - "./dapr/configuration/:/configuration"
-    deploy:
-      resources:
-         limits:
-            cpus: "2.00"
-            memory: 500M
-         reservations:
-            memory: 100M
-
-  yandestore-postgres:
-    environment:
-      POSTGRES_USER: root 
-      POSTGRES_DB: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432"
-    volumes:
-      - yandestore-sqldata:/var/lib/postgresql/data
-
-  yandestore-redis:
-    image: redis:7
+  #yandestore-redis:
+  #  image: redis:7
 
 volumes:
   seq-data:
   archiver-nosqldata:
   collector-objectdata:
-  #collector-redisdata:
-  compressor-objectdata:
-  yandestore-sqldata:
+  aria2-config:
+  downloads:
+  #yandestore-sqldata:

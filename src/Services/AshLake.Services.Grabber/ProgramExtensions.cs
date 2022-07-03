@@ -79,7 +79,7 @@ internal static class ProgramExtensions
                 config.DBConfig.Endpoints.Add(new ServerEndPoint(builder.Configuration["EasycachingRedisHost"], 6379));
                 config.SerializerName = "json";
                 config.DBConfig.Database = 0;
-            },nameof(Yande));
+            },nameof(Yandere));
 
             options.UseRedis(config =>
             {

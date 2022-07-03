@@ -6,6 +6,7 @@ using Serilog;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
 using Hangfire.Dashboard;
+using EasyCaching.Core.Configurations;
 
 namespace AshLake.Services.Archiver;
 
@@ -70,11 +71,31 @@ internal static class ProgramExtensions
         });
     }
 
+    public static void AddCustomEasyCaching(this WebApplicationBuilder builder)
+    {
+        var redisConnArr = builder.Configuration["RedisConnectionString"].Split(':');
+        var redisHost = redisConnArr.First();
+        var redisPort = int.Parse(redisConnArr.Last());
+
+        builder.Services.AddEasyCaching(options =>
+        {
+            options.UseRedis(config =>
+            {
+                config.DBConfig.Endpoints.Add(new ServerEndPoint(redisHost, redisPort));
+                config.SerializerName = "json";
+                config.DBConfig.Database = 0;
+            });
+        });
+    }
+
     public static void AddCustomHangfire(this WebApplicationBuilder builder)
     {
         builder.Services.AddHangfire(c =>
         {
-            c.UseRedisStorage(builder.Configuration["HangfireConnectionString"]);
+            c.UseRedisStorage(builder.Configuration["RedisConnectionString"],new Hangfire.Redis.RedisStorageOptions
+            {
+                Db = 1
+            });
         });
 
         builder.Services.AddHangfireServer(opt =>
@@ -98,7 +119,7 @@ internal static class ProgramExtensions
         builder.Services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddDapr()
-            .AddMongoDb(builder.Configuration["MongoDatabaseConnectionString"],
+            .AddMongoDb(builder.Configuration["MongoConnectionString"],
                         "database",
                         null,
                         new string[] { "mongodb" });
@@ -127,15 +148,6 @@ internal static class ProgramExtensions
         });
         builder.Services.AddSingleton(typeof(IMetadataRepository<,>), typeof(MetadataRepository<,>));
 
-        builder.Services.AddSingleton(_ =>
-        {
-            return new Minio.MinioClient()
-                .WithEndpoint(builder.Configuration["ImageStorageEndpoint"])
-                .WithCredentials(builder.Configuration["ImageStorageAccessKey"],
-                    builder.Configuration["ImageStorageSecretKey"])
-                .Build();
-        });
-
         #endregion
 
         #region Integration
@@ -147,7 +159,11 @@ internal static class ProgramExtensions
             new BooruApiService<Danbooru>(DaprClient.CreateInvokeHttpClient("booru-api")));
         builder.Services.AddSingleton<IBooruApiService<Konachan>>(_ =>
             new BooruApiService<Konachan>(DaprClient.CreateInvokeHttpClient("booru-api")));
-        builder.Services.AddHttpClient<IImgProxyService>(config =>
+
+        builder.Services.AddSingleton<ICollectorService>(_ =>
+            new CollectorService(DaprClient.CreateInvokeHttpClient("collector")));
+
+        builder.Services.AddHttpClient<IImgProxyService, ImgProxyService>(config =>
         {
             config.BaseAddress = new Uri(builder.Configuration["ImgProxyHost"]);
         });

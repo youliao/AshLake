@@ -30,7 +30,7 @@ public class MetadataRepository<TSouceSite, TMetadata> : IMetadataRepository<TSo
         return EntityState.Modified;
     }
 
-    public async Task<AddRangeResult> AddRangeAsync(IEnumerable<TMetadata> metadataList)
+    public async Task<dynamic> AddRangeAsync(IEnumerable<TMetadata> metadataList)
     {
         var ids = metadataList.Select(x => x.Id);
         var exists = await _database.GetEntityCollection<TMetadata>().Find(x => ids.Contains(x.Id)).ToListAsync() ?? new List<TMetadata>();
@@ -65,7 +65,7 @@ public class MetadataRepository<TSouceSite, TMetadata> : IMetadataRepository<TSo
             modifiedIds.Add(item.Id);
         }
 
-        var addRangeResult = new AddRangeResult(addedIds, modifiedIds, unchangedIds);
+        var addRangeResult = new { AddedIds = addedIds, ModifiedIds = modifiedIds, UnchangedIds = unchangedIds };
 
         if (bulkModels.Count == 0) return addRangeResult;
 
@@ -74,9 +74,9 @@ public class MetadataRepository<TSouceSite, TMetadata> : IMetadataRepository<TSo
         return addRangeResult;
     }
 
-    public async Task<ReplaceRangeResult> ReplaceRangeAsync(IEnumerable<TMetadata> metadataList)
+    public async Task<dynamic> ReplaceRangeAsync(IEnumerable<TMetadata> metadataList)
     {
-        if (metadataList == null || metadataList.Count() == 0) return new ReplaceRangeResult(new List<int>(), new List<int>());
+        if (metadataList == null || metadataList.Count() == 0) return new { AddedIds = 0, ModifiedIds = 0 };
 
         var ids = metadataList.Select(x => x.Id);
         var exists = await _database.GetEntityCollection<TMetadata>().Find(x => ids.Contains(x.Id)).ToListAsync() ?? new List<TMetadata>();
@@ -89,7 +89,7 @@ public class MetadataRepository<TSouceSite, TMetadata> : IMetadataRepository<TSo
         var addedIds = bulkWriteResult.Upserts.Select(x => x.Id.AsInt32);
         var modifiedIds = processedIds.Except(addedIds);
 
-        var updateRangeResult = new ReplaceRangeResult(addedIds.ToList(), modifiedIds.ToList());
+        var updateRangeResult = new { AddedIds = addedIds, ModifiedIds = modifiedIds };
 
         return updateRangeResult;
     }
