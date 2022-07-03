@@ -21,7 +21,7 @@ public class BooruApiService<T> : IBooruApiService<T> where T : IBooru
 
     public async Task<IEnumerable<BsonDocument>> GetPostMetadataList(int start, int limit)
     {
-        var json = await _httpClient.GetStringAsync($"/api/boorus/danbooru/posts?start={start}&limit={limit}");
+        var json = await _httpClient.GetStringAsync($"/api/boorus/{_booru}/posts?start={start}&limit={limit}");
         var list = BsonSerializer.Deserialize<BsonArray>(json)
             .Select(x => x.AsBsonDocument);
 
