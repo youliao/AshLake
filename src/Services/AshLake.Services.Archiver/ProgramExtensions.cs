@@ -144,7 +144,7 @@ internal static class ProgramExtensions
 
         builder.Services.AddSingleton(_ =>
         {
-            return new MongoClient(builder.Configuration["MongoDatabaseConnectionString"]);
+            return new MongoClient(builder.Configuration["MongoConnectionString"]);
         });
         builder.Services.AddSingleton(typeof(IMetadataRepository<,>), typeof(MetadataRepository<,>));
 
@@ -155,8 +155,15 @@ internal static class ProgramExtensions
         builder.Services.AddScoped<IEventBus, DaprEventBus>();
         builder.Services.AddSingleton<IBooruApiService<Yandere>>(_ =>
             new BooruApiService<Yandere>(DaprClient.CreateInvokeHttpClient("booru-api")));
-        builder.Services.AddSingleton<IBooruApiService<Danbooru>>(_ =>
-            new BooruApiService<Danbooru>(DaprClient.CreateInvokeHttpClient("booru-api")));
+
+        builder.Services.AddHttpClient<IBooruApiService<Danbooru>, BooruApiService<Danbooru>>(config =>
+        {
+            config.BaseAddress = new Uri(builder.Configuration["BooruApiHost"]);
+        });
+
+        //builder.Services.AddSingleton<IBooruApiService<Danbooru>>(_ =>
+        //    new BooruApiService<Danbooru>(DaprClient.CreateInvokeHttpClient("booru-api")));
+
         builder.Services.AddSingleton<IBooruApiService<Konachan>>(_ =>
             new BooruApiService<Konachan>(DaprClient.CreateInvokeHttpClient("booru-api")));
 

@@ -49,6 +49,8 @@ services:
       - ASPNETCORE_URLS=http://+:80
       - MongoConnectionString=mongodb://mongoadmin:mongoadmin@archiver-mongo:27017?maxPoolSize=500
       - RedisConnectionString=archiver-redis:6379
+      - BooruApiHost=http://booru-api:3000
+      - ImgProxyHost=http://collector-imgproxy:8080
       - SeqServerUrl=http://seq
     ports:
       - "30002:80"

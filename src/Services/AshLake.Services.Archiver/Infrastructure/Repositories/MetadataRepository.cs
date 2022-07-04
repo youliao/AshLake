@@ -30,7 +30,7 @@ public class MetadataRepository<TSouceSite, TMetadata> : IMetadataRepository<TSo
         return EntityState.Modified;
     }
 
-    public async Task<dynamic> AddRangeAsync(IEnumerable<TMetadata> metadataList)
+    public async Task<AddRangeResult> AddRangeAsync(IEnumerable<TMetadata> metadataList)
     {
         var ids = metadataList.Select(x => x.Id);
         var exists = await _database.GetEntityCollection<TMetadata>().Find(x => ids.Contains(x.Id)).ToListAsync() ?? new List<TMetadata>();
@@ -65,7 +65,7 @@ public class MetadataRepository<TSouceSite, TMetadata> : IMetadataRepository<TSo
             modifiedIds.Add(item.Id);
         }
 
-        var addRangeResult = new { AddedIds = addedIds, ModifiedIds = modifiedIds, UnchangedIds = unchangedIds };
+        var addRangeResult = new AddRangeResult(addedIds, modifiedIds, unchangedIds );
 
         if (bulkModels.Count == 0) return addRangeResult;
 
@@ -74,9 +74,9 @@ public class MetadataRepository<TSouceSite, TMetadata> : IMetadataRepository<TSo
         return addRangeResult;
     }
 
-    public async Task<dynamic> ReplaceRangeAsync(IEnumerable<TMetadata> metadataList)
+    public async Task<ReplaceRangeResult> ReplaceRangeAsync(IEnumerable<TMetadata> metadataList)
     {
-        if (metadataList == null || metadataList.Count() == 0) return new { AddedIds = 0, ModifiedIds = 0 };
+        if (metadataList == null || metadataList.Count() == 0) return new ReplaceRangeResult(new List<int>(),new List<int>());
 
         var ids = metadataList.Select(x => x.Id);
         var exists = await _database.GetEntityCollection<TMetadata>().Find(x => ids.Contains(x.Id)).ToListAsync() ?? new List<TMetadata>();
@@ -86,10 +86,10 @@ public class MetadataRepository<TSouceSite, TMetadata> : IMetadataRepository<TSo
         var bulkWriteResult = await _database.GetEntityCollection<TMetadata>().BulkWriteAsync(bulkModels);
 
         var processedIds = bulkWriteResult.ProcessedRequests.Select(x => (x as ReplaceOneModel<TMetadata>)!.Replacement.Id);
-        var addedIds = bulkWriteResult.Upserts.Select(x => x.Id.AsInt32);
-        var modifiedIds = processedIds.Except(addedIds);
+        var addedIds = bulkWriteResult.Upserts.Select(x => x.Id.AsInt32).ToList();
+        var modifiedIds = processedIds.Except(addedIds).ToList();
 
-        var updateRangeResult = new { AddedIds = addedIds, ModifiedIds = modifiedIds };
+        var updateRangeResult = new ReplaceRangeResult(addedIds, modifiedIds);
 
         return updateRangeResult;
     }
