@@ -14,7 +14,7 @@ public PostRelationRepository(MongoClient mongoClient)
         _updateOptions = new UpdateOptions { IsUpsert = true };
     }
 
-    public async Task AddOrUpdateAsync<T>(string id, int postId) where T : IBooru
+    public async Task AddOrUpdateAsync<T>(string md5, int postId) where T : IBooru
     {
         var definition = typeof(T).Name switch 
         {
@@ -24,7 +24,7 @@ public PostRelationRepository(MongoClient mongoClient)
             _ => throw new ArgumentException(typeof(T).Name)
         };
 
-        await _database.GetEntityCollection<PostRelation>().UpdateOneAsync(x => x.Id == id, definition, _updateOptions);
+        await _database.GetEntityCollection<PostRelation>().UpdateOneAsync(x => x.Id == md5, definition, _updateOptions);
 
     }
 

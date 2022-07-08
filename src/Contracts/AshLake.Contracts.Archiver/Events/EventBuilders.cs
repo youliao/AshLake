@@ -2,45 +2,45 @@
 
 public static class EventBuilders<T> where T : IBooru
 {
-    public static IntegrationEvent PostMetadataAddedIntegrationEventBuilder(IReadOnlyList<int> PostIds)
+    public static dynamic PostMetadataAddedIntegrationEventBuilder(IReadOnlyList<int> PostIds)
     {
         var souceSite = typeof(T).Name;
 
-        IntegrationEvent integrationEvent = souceSite switch
+        dynamic integrationEvent = souceSite switch
         {
-            nameof(Yandere) => new YanderePostMetadataAddedIntegrationEvent(PostIds),
-            nameof(Danbooru) => new DanbooruPostMetadataAddedIntegrationEvent(PostIds),
-            nameof(Konachan) => new KonachanPostMetadataAddedIntegrationEvent(PostIds),
+            nameof(Yandere) => new YanderePostMetadataAddedEvent(PostIds),
+            nameof(Danbooru) => new DanbooruPostMetadataAddedEvent(PostIds),
+            nameof(Konachan) => new KonachanPostMetadataAddedEvent(PostIds),
             _ => throw new ArgumentOutOfRangeException(nameof(souceSite))
         };
 
         return integrationEvent;
     }
 
-    public static IntegrationEvent PostMetadataModifiedIntegrationEventBuilder(IReadOnlyList<int> PostIds)
+    public static dynamic PostMetadataModifiedIntegrationEventBuilder(IReadOnlyList<int> PostIds)
     {
         var souceSite = typeof(T).Name;
 
-        IntegrationEvent integrationEvent = souceSite switch
+        dynamic integrationEvent = souceSite switch
         {
-            nameof(Yandere) => new YanderePostMetadataModifiedIntegrationEvent(PostIds),
-            nameof(Danbooru) => new DanbooruPostMetadataModifiedIntegrationEvent(PostIds),
-            nameof(Konachan) => new KonachanPostMetadataModifiedIntegrationEvent(PostIds),
+            nameof(Yandere) => new YanderePostMetadataModifiedEvent(PostIds),
+            nameof(Danbooru) => new DanbooruPostMetadataModifiedEvent(PostIds),
+            nameof(Konachan) => new KonachanPostMetadataModifiedEvent(PostIds),
             _ => throw new ArgumentOutOfRangeException(nameof(souceSite))
         };
 
         return integrationEvent;
     }
 
-    public static IntegrationEvent PostMetadataUnchangedIntegrationEventBuilder(IReadOnlyList<int> PostIds)
+    public static dynamic PostMetadataUnchangedIntegrationEventBuilder(IReadOnlyList<int> PostIds)
     {
         var souceSite = typeof(T).Name;
 
-        IntegrationEvent integrationEvent = souceSite switch
+        dynamic integrationEvent = souceSite switch
         {
-            nameof(Yandere) => new YanderePostMetadataUnchangedIntegrationEvent(PostIds),
-            nameof(Danbooru) => new DanbooruPostMetadataUnchangedIntegrationEvent(PostIds),
-            nameof(Konachan) => new KonachanPostMetadataUnchangedIntegrationEvent(PostIds),
+            nameof(Yandere) => new YanderePostMetadataUnchangedEvent(PostIds),
+            nameof(Danbooru) => new DanbooruPostMetadataUnchangedEvent(PostIds),
+            nameof(Konachan) => new KonachanPostMetadataUnchangedEvent(PostIds),
             _ => throw new ArgumentOutOfRangeException(nameof(souceSite))
         };
 

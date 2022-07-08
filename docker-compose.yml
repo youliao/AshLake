@@ -6,11 +6,8 @@ services:
     depends_on:
       - archiver
 
-  redis-state:
-    image: redis:7
-
-  redis-pubsub:
-    image: redis:7
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
 
   seq:
     image: datalust/seq:latest
@@ -21,12 +18,6 @@ services:
   booru-api:
     image: youliao/booruapi:dev
 
-  booru-api-dapr:
-    image: "daprio/daprd:1.7.4"
-    network_mode: "service:booru-api"
-    depends_on:
-      - booru-api
-
   archiver:
     image: ${DOCKER_REGISTRY-}ashlakeservicesarchiver
     build:
@@ -35,12 +26,6 @@ services:
     depends_on:
       - archiver-mongo
       - archiver-redis
-
-  archiver-dapr:
-    image: "daprio/daprd:1.7.4"
-    network_mode: "service:archiver"
-    depends_on:
-      - archiver
 
   archiver-mongo:
     image: mongo:4
@@ -54,12 +39,6 @@ services:
       - collector-aria2
       - collector-minio
       - collector-rclone
-
-  collector-dapr:
-    image: "daprio/daprd:1.7.4"
-    network_mode: "service:collector"
-    depends_on:
-      - collector
 
   collector-minio:
     image: minio/minio:latest

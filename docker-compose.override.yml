@@ -8,6 +8,12 @@ services:
     ports:
       - "5107:80"
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
   seq:
     environment:
       - ACCEPT_EULA=Y
@@ -25,53 +31,19 @@ services:
     ports:
       - "30001:3000"
 
-  booru-api-dapr:
-    command: ["./daprd",
-      "-app-id", "booru-api",
-      "-app-port", "3000",
-      "-components-path", "/components",
-      "-config", "/configuration/ashlake-config.yaml"
-      ]
-    volumes:
-      - "./dapr/components/:/components"
-      - "./dapr/configuration/:/configuration"
-    deploy:
-      resources:
-         limits:
-            cpus: "2.00"
-            memory: 500M
-         reservations:
-            memory: 100M
-
   archiver:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
       - MongoConnectionString=mongodb://mongoadmin:mongoadmin@archiver-mongo:27017?maxPoolSize=500
       - RedisConnectionString=archiver-redis:6379
+      - RabbitMqHost=rabbitmq://rabbitmq:5672
       - BooruApiHost=http://booru-api:3000
+      - CollectorHost=http://collector:3000
       - ImgProxyHost=http://collector-imgproxy:8080
       - SeqServerUrl=http://seq
     ports:
       - "30002:80"
-
-  archiver-dapr:
-    command: ["./daprd",
-      "-app-id", "archiver",
-      "-app-port", "80",
-      "-components-path", "/components",
-      "-config", "/configuration/ashlake-config.yaml"
-      ]
-    volumes:
-      - "./dapr/components/:/components"
-      - "./dapr/configuration/:/configuration"
-    deploy:
-      resources:
-         limits:
-            cpus: "2.00"
-            memory: 500M
-         reservations:
-            memory: 100M
 
   archiver-mongo:
     environment:
@@ -90,24 +62,6 @@ services:
       RCLONE_HOST: http://collector-rclone:5572
     ports:
       - 30003:3000
-
-  collector-dapr:
-    command: ["./daprd",
-      "-app-id", "collector",
-      "-app-port", "3000",
-      "-components-path", "/components",
-      "-config", "/configuration/ashlake-config.yaml"
-      ]
-    volumes:
-      - "./dapr/components/:/components"
-      - "./dapr/configuration/:/configuration"
-    deploy:
-      resources:
-         limits:
-            cpus: "2.00"
-            memory: 500M
-         reservations:
-            memory: 100M
 
   collector-minio:
     environment:

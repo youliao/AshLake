@@ -7,6 +7,9 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
 using Hangfire.Dashboard;
 using EasyCaching.Core.Configurations;
+using MassTransit;
+using AshLake.Services.Archiver.Application.Consumers;
+using System.Reflection;
 
 namespace AshLake.Services.Archiver;
 
@@ -45,7 +48,6 @@ internal static class ProgramExtensions
     {
         builder.Services
             .AddControllers()
-            .AddDapr()
             .AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -68,6 +70,20 @@ internal static class ProgramExtensions
         app.UseSwagger().UseSwaggerUI(c =>
         {
             c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{AppName} V1");
+        });
+    }
+
+    public static void AddCustomMassTransit(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddMassTransit(x =>
+        {
+            x.AddConsumers(Assembly.GetEntryAssembly());
+
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host(builder.Configuration["RabbitMqHost"]);
+                cfg.ConfigureEndpoints(context);
+            });
         });
     }
 
@@ -147,28 +163,31 @@ internal static class ProgramExtensions
             return new MongoClient(builder.Configuration["MongoConnectionString"]);
         });
         builder.Services.AddSingleton(typeof(IMetadataRepository<,>), typeof(MetadataRepository<,>));
+        builder.Services.AddSingleton(typeof(IPostRelationRepository), typeof(PostRelationRepository));
 
         #endregion
 
         #region Integration
 
-        builder.Services.AddScoped<IEventBus, DaprEventBus>();
-        builder.Services.AddSingleton<IBooruApiService<Yandere>>(_ =>
-            new BooruApiService<Yandere>(DaprClient.CreateInvokeHttpClient("booru-api")));
+        builder.Services.AddHttpClient<IBooruApiService<Yandere>, BooruApiService<Yandere>>(config =>
+        {
+            config.BaseAddress = new Uri(builder.Configuration["BooruApiHost"]);
+        });
 
         builder.Services.AddHttpClient<IBooruApiService<Danbooru>, BooruApiService<Danbooru>>(config =>
         {
             config.BaseAddress = new Uri(builder.Configuration["BooruApiHost"]);
         });
 
-        //builder.Services.AddSingleton<IBooruApiService<Danbooru>>(_ =>
-        //    new BooruApiService<Danbooru>(DaprClient.CreateInvokeHttpClient("booru-api")));
+        builder.Services.AddHttpClient<IBooruApiService<Konachan>, BooruApiService<Konachan>>(config =>
+        {
+            config.BaseAddress = new Uri(builder.Configuration["BooruApiHost"]);
+        });
 
-        builder.Services.AddSingleton<IBooruApiService<Konachan>>(_ =>
-            new BooruApiService<Konachan>(DaprClient.CreateInvokeHttpClient("booru-api")));
-
-        builder.Services.AddSingleton<ICollectorService>(_ =>
-            new CollectorService(DaprClient.CreateInvokeHttpClient("collector")));
+        builder.Services.AddHttpClient<ICollectorService, CollectorService>(config =>
+        {
+            config.BaseAddress = new Uri(builder.Configuration["CollectorHost"]);
+        });
 
         builder.Services.AddHttpClient<IImgProxyService, ImgProxyService>(config =>
         {

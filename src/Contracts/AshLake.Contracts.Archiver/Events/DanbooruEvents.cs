@@ -1,9 +1,9 @@
 ﻿namespace AshLake.Contracts.Archiver.Events;
 
-public record DanbooruPostMetadataAddedIntegrationEvent(IReadOnlyList<int> PostIds) : IntegrationEvent;
+public record DanbooruPostMetadataAddedEvent(IReadOnlyList<int> PostIds);
 
-public record DanbooruPostMetadataModifiedIntegrationEvent(IReadOnlyList<int> PostIds) : IntegrationEvent;
+public record DanbooruPostMetadataModifiedEvent(IReadOnlyList<int> PostIds);
 
-public record DanbooruPostMetadataUnchangedIntegrationEvent(IReadOnlyList<int> PostIds) : IntegrationEvent;
+public record DanbooruPostMetadataUnchangedEvent(IReadOnlyList<int> PostIds);
 
-public record DanbooruTagMetadataChangedIntegrationEvent(int TagType) : IntegrationEvent;
+public record DanbooruTagMetadataChangedEvent(int TagType);

@@ -8,20 +8,16 @@
       "commandVersion": "1.0",
       "serviceActions": {
         "archiver": "StartDebugging",
-        "archiver-dapr": "StartWithoutDebugging",
         "archiver-mongo": "StartWithoutDebugging",
         "archiver-redis": "StartWithoutDebugging",
         "booru-api": "StartWithoutDebugging",
-        "booru-api-dapr": "StartWithoutDebugging",
         "collector": "StartWithoutDebugging",
         "collector-aria2": "StartWithoutDebugging",
-        "collector-dapr": "StartWithoutDebugging",
         "collector-imgproxy": "StartWithoutDebugging",
         "collector-minio": "StartWithoutDebugging",
         "collector-rclone": "StartWithoutDebugging",
         "healthcheck": "StartWithoutDebugging",
-        "redis-pubsub": "StartWithoutDebugging",
-        "redis-state": "StartWithoutDebugging",
+        "rabbitmq": "StartWithoutDebugging",
         "seq": "StartWithoutDebugging",
         "zipkin": "StartWithoutDebugging"
       }
