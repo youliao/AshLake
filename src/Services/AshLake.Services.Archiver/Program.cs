@@ -2,12 +2,11 @@ using Hellang.Middleware.ProblemDetails;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDaprClient();
-
 builder.AddCustomSerilog();
 builder.AddCustomProblemDetails();
 builder.AddCustomControllers();
 builder.AddCustomSwagger();
+builder.AddCustomMassTransit();
 builder.AddCustomHangfire();
 builder.AddCustomHealthChecks();
 builder.AddCustomApplicationServices();
@@ -16,9 +15,7 @@ var app = builder.Build();
 
 app.UseProblemDetails();
 app.UseCustomSwagger();
-app.UseCloudEvents();
 app.MapControllers();
-app.MapSubscribeHandler();
 app.UseCustomHealthChecks();
 app.UseCustomHangfireDashboard();
 

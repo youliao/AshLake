@@ -4,17 +4,10 @@ services:
   healthcheck:
     image: xabarilcoding/healthchecksui:5.0.0
     depends_on:
-      - grabber
       - archiver
-      - collector
-      - compressor
-      - yandestore
 
-  redis-state:
-    image: redis:7
-
-  redis-pubsub:
-    image: redis:7
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
 
   seq:
     image: datalust/seq:latest
@@ -22,17 +15,8 @@ services:
   zipkin:
     image: openzipkin/zipkin-slim
 
-  grabber:
+  booru-api:
     image: youliao/booruapi:dev
-
-  grabber-dapr:
-    image: "daprio/daprd:1.7.4"
-    network_mode: "service:grabber"
-    depends_on:
-      - grabber
-
-  grabber-redis:
-    image: redis:7
 
   archiver:
     image: ${DOCKER_REGISTRY-}ashlakeservicesarchiver
@@ -43,12 +27,6 @@ services:
       - archiver-mongo
       - archiver-redis
 
-  archiver-dapr:
-    image: "daprio/daprd:1.7.4"
-    network_mode: "service:archiver"
-    depends_on:
-      - archiver
-
   archiver-mongo:
     image: mongo:4
 
@@ -56,63 +34,47 @@ services:
     image: redis:7
 
   collector:
-    image: ${DOCKER_REGISTRY-}ashlakeservicescollector
-    build:
-      context: .
-      dockerfile: src/Services/AshLake.Services.Collector/Dockerfile
+    image: youliao/collector:dev
     depends_on:
+      - collector-aria2
       - collector-minio
-      - collector-redis
-
-  collector-dapr:
-    image: "daprio/daprd:1.7.4"
-    network_mode: "service:collector"
-    depends_on:
-      - collector
+      - collector-rclone
 
   collector-minio:
     image: minio/minio:latest
 
-  collector-redis:
-    image: redis:7
-
-  compressor:
-    image: ${DOCKER_REGISTRY-}ashlakeservicescompressor
-    build:
-      context: .
-      dockerfile: src/Services/AshLake.Services.Compressor/Dockerfile
+  collector-imgproxy:
+    image: darthsim/imgproxy:latest
     depends_on:
-      - compressor-minio
+      - collector-minio
 
-  compressor-dapr:
-    image: "daprio/daprd:1.7.4"
-    network_mode: "service:compressor"
+  collector-aria2:
+    image: superng6/aria2:webui-latest
     depends_on:
-      - compressor
+      - collector-rclone
 
-  compressor-minio:
-    image: minio/minio:latest
-
-  compressor-redis:
-    image: redis:7
-
-  yandestore:
-    image: ${DOCKER_REGISTRY-}ashlakeservicesyandestore
-    build:
-      context: .
-      dockerfile: src/Services/AshLake.Services.YandeStore/Dockerfile
+  collector-rclone:
+    image: rclone/rclone:latest
     depends_on:
-      - yandestore-redis
-      - yandestore-postgres
+      - collector-minio
 
-  yandestore-dapr:
-    image: "daprio/daprd:1.7.4"
-    network_mode: "service:yandestore"
-    depends_on:
-      - yandestore
+  #yandestore:
+  #  image: ${DOCKER_REGISTRY-}ashlakeservicesyandestore
+  #  build:
+  #    context: .
+  #    dockerfile: src/Services/AshLake.Services.YandeStore/Dockerfile
+  #  depends_on:
+  #    - yandestore-redis
+  #    - yandestore-postgres
 
-  yandestore-postgres:
-    image: postgres:14
+  #yandestore-dapr:
+  #  image: "daprio/daprd:1.7.4"
+  #  network_mode: "service:yandestore"
+  #  depends_on:
+  #    - yandestore
 
-  yandestore-redis:
-    image: redis:7
+  #yandestore-postgres:
+  #  image: postgres:14
+
+  #yandestore-redis:
+  #  image: redis:7
