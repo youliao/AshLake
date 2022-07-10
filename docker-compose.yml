@@ -12,11 +12,8 @@ services:
   seq:
     image: datalust/seq:latest
 
-  zipkin:
-    image: openzipkin/zipkin-slim
-
   booru-api:
-    image: youliao/booruapi:dev
+    image: youliao/booruapi:220710
 
   archiver:
     image: ${DOCKER_REGISTRY-}ashlakeservicesarchiver

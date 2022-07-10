@@ -23,10 +23,6 @@ services:
     ports:
       - "5340:80"
 
-  zipkin:
-    ports:
-      - "9411:9411"
-
   booru-api:
     ports:
       - "30001:3000"
@@ -82,7 +78,7 @@ services:
 
   collector-imgproxy:
     environment:
-      IMGPROXY_ONLY_PRESETS: true
+      IMGPROXY_ONLY_PRESETS: 1
       IMGPROXY_PRESETS: 
         raw=skip_processing:jpg:png:gif,
         rs300a=resizing_type:fit/width:300/height:300/format:avif,
@@ -94,7 +90,7 @@ services:
       IMGPROXY_QUALITY: 80
       IMGPROXY_BASE_URL: s3://postfile/
       IMGPROXY_ALLOWED_SOURCES: s3://
-      IMGPROXY_USE_S3: true
+      IMGPROXY_USE_S3: 1
       IMGPROXY_S3_ENDPOINT: http://collector-minio:9000
       AWS_ACCESS_KEY_ID: minio
       AWS_SECRET_ACCESS_KEY: minio123    
@@ -114,11 +110,12 @@ services:
       - WEBUI=true
       - WEBUI_PORT=8080
       - UT=false
-      - RUT =false
+      - RUT=false
       - QUIET=true
       - SMD=false
     ports:
       - 30005:8080
+      - 6800:6800
     volumes:
       - aria2-config:/config
       - downloads:/downloads

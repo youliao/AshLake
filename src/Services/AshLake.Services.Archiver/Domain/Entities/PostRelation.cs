@@ -5,7 +5,7 @@ namespace AshLake.Services.Archiver.Domain.Entities;
 public record PostRelation
 {
     /// <summary>
-    /// MD5
+    /// Object key => MD5+EXT
     /// </summary>
     [BsonId]
     public string Id { get; init; } = default!;

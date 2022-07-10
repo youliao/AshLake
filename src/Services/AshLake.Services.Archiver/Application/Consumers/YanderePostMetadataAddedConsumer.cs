@@ -16,8 +16,15 @@ public class YanderePostMetadataAddedEventConsumer : IConsumer<YanderePostMetada
         var message = context.Message;
 
         var addedList = await _postMetadataRepository.FindAsync(x => message.PostIds.Contains(x.Id));
-        var dic = addedList.ToDictionary(k => k.Data.GetValue(YanderePostMetadataKeys.md5).AsString, v => v.Id);
 
-        await _postRelationRepository.AddOrUpdateRangeAsync<Yandere>(dic);
+        var postRelations = addedList
+            .Where(x => x.HasObjectKey<Yandere>())
+            .Select(x => new PostRelation
+            {
+                Id = x.GetObjectKey<Yandere>()!,
+                YandereId = x.Id
+            });
+
+        await _postRelationRepository.AddOrUpdateRangeAsync<Yandere>(postRelations);
     }
 }
