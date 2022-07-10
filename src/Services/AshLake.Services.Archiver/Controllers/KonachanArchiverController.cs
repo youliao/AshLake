@@ -1,9 +1,4 @@
-﻿using System.Linq.Expressions;
-using AshLake.Services.Archiver.Infrastructure.Extensions;
-using AshLake.Services.Archiver.Application.Commands;
-using MongoDB.Driver;
-
-namespace AshLake.Services.Archiver.Controllers;
+﻿namespace AshLake.Services.Archiver.Controllers;
 
 public class KonachanArchiverController : ControllerBase
 {
@@ -31,81 +26,23 @@ public class KonachanArchiverController : ControllerBase
         return Ok(list.Select(x => x.Data));
     }
 
-    //[Route("/api/boorus/konachan/tagmetadata")]
-    //[HttpGet]
-    //[ProducesResponseType(StatusCodes.Status200OK)]
-    //public async Task<ActionResult> GetTagMetadataByTypeAsync(int type,
-    //[FromServices] IMetadataRepository<Konachan, TagMetadata> repository)
-    //{
-    //    var filter = Builders<TagMetadata>.Filter.Eq(KonachanTagMetadataKeys.type, type);
-    //    var list = await repository.FindAsync(filter);
-
-    //    return Ok(list.Select(x => x.Data));
-    //}
-
-    [Route("/api/boorus/konachan/addpostmetadatajobs/batches")]
+    [Route("/api/boorus/konachan/addpostmetadatajobs")]
     [HttpPost]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
-    public ActionResult<List<string>> CreateAddPostMetadataJobsAsync(CreateAddPostMetadataJobsCommand command,
-                [FromServices] IBackgroundJobClient backgroundJobClient)
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    public async Task<ActionResult> CreateAddPostMetadataJobsAsync(CreateAddPostMetadataJobsCommand<Konachan> command,
+        [FromServices] IMediator mediator)
     {
-        var calls = new List<Expression<Func<PostMetadataJob<Konachan>, Task>>>();
-
-        for (int i = command.StartId; i <= command.EndId; i += command.Step)
-        {
-            int startId = i;
-            int endId = i + command.Step - 1;
-            endId = Math.Min(endId, command.EndId);
-            calls.Add(x => x.AddOrUpdatePostMetadata(startId, endId, command.Step));
-        }
-
-        if (calls.Count == 0) return Ok();
-
-        var jobIdList = backgroundJobClient.EnqueueSuccessively(calls);
-        return Ok(jobIdList);
+        await mediator.Send(command);
+        return Accepted();
     }
 
-    [Route("/api/boorus/konachan/updatepostmetadatajobs/batches")]
+    [Route("/api/boorus/konachan/replacepostmetadatajobs")]
     [HttpPost]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
-    public ActionResult<List<string>> CreateUpdatePostMetadataJobsAsync(CreateUpdatePostMetadataJobsCommand command,
-            [FromServices] IBackgroundJobClient backgroundJobClient)
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    public async Task<ActionResult> CreateUpdatePostMetadataJobsAsync(CreateReplacePostMetadataJobsCommand<Konachan> command,
+        [FromServices] IMediator mediator)
     {
-        var calls = new List<Expression<Func<PostMetadataJob<Konachan>, Task>>>();
-
-        for (int i = command.StartId; i <= command.EndId; i += command.Step)
-        {
-            int startId = i;
-            int endId = i + command.Step - 1;
-            endId = Math.Min(endId, command.EndId);
-            calls.Add(x => x.ReplacePostMetadata(startId, endId, command.Step));
-        }
-
-        if (calls.Count == 0) return Ok();
-
-        var jobIdList = backgroundJobClient.EnqueueSuccessively(calls);
-        return Ok(jobIdList);
-    }
-
-    [Route("/api/boorus/konachan/tagmetadatajobs/batches")]
-    [HttpPost]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
-    public ActionResult<List<string>> CreateTagMetadataJobsAsync(CreateTagMetadataJobsCommand command,
-            [FromServices] IBackgroundJobClient backgroundJobClient)
-    {
-        var calls = new List<Expression<Func<TagMetadataJob<Konachan>, Task>>>();
-
-        IEnumerable<int> tagTypes = command.TagTypes ?? new List<int>() { 0, 1, 3, 4, 5, 6 };
-
-        foreach(var item in tagTypes)
-        {
-            var type = item;
-            calls.Add(x => x.AddOrUpdateTagMetadata(type));
-        }
-
-        if (calls.Count == 0) return Ok();
-
-        var jobIdList = backgroundJobClient.EnqueueSuccessively(calls);
-        return Ok(jobIdList);
+        await mediator.Send(command);
+        return Accepted();
     }
 }

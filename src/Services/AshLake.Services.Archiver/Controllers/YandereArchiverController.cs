@@ -1,7 +1,4 @@
-﻿using System.Linq.Expressions;
-using AshLake.Services.Archiver.Infrastructure.Extensions;
-using AshLake.Services.Archiver.Application.Commands;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 
 namespace AshLake.Services.Archiver.Controllers;
 
@@ -44,69 +41,43 @@ public class YandereArchiverController : ControllerBase
         return Ok(list.Select(x => x.Data));
     }
 
-    [Route("/api/boorus/yandere/addpostmetadatajobs/batches")]
+    [Route("/api/boorus/yandere/addpostmetadatajobs")]
     [HttpPost]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
-    public ActionResult<List<string>> CreateAddPostMetadataJobsAsync(CreateAddPostMetadataJobsCommand command,
-                [FromServices] IBackgroundJobClient backgroundJobClient)
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    public async Task<ActionResult> CreateAddPostMetadataJobsAsync(CreateAddPostMetadataJobsCommand<Yandere> command,
+        [FromServices] IMediator mediator)
     {
-        var calls = new List<Expression<Func<PostMetadataJob<Yandere>, Task>>>();
-
-        for (int i = command.StartId; i <= command.EndId; i += command.Step)
-        {
-            int startId = i;
-            int endId = i + command.Step - 1;
-            endId = Math.Min(endId, command.EndId);
-            calls.Add(x => x.AddOrUpdatePostMetadata(startId, endId, command.Step));
-        }
-
-        if (calls.Count == 0) return Ok();
-
-        var jobIdList = backgroundJobClient.EnqueueSuccessively(calls);
-        return Ok(jobIdList);
+        await mediator.Send(command);
+        return Accepted();
     }
 
-    [Route("/api/boorus/yandere/updatepostmetadatajobs/batches")]
+    [Route("/api/boorus/yandere/replacepostmetadatajobs")]
     [HttpPost]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
-    public ActionResult<List<string>> CreateUpdatePostMetadataJobsAsync(CreateUpdatePostMetadataJobsCommand command,
-            [FromServices] IBackgroundJobClient backgroundJobClient)
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    public async Task<ActionResult> CreateUpdatePostMetadataJobsAsync(CreateReplacePostMetadataJobsCommand<Yandere> command,
+        [FromServices] IMediator mediator)
     {
-        var calls = new List<Expression<Func<PostMetadataJob<Yandere>, Task>>>();
-
-        for (int i = command.StartId; i <= command.EndId; i += command.Step)
-        {
-            int startId = i;
-            int endId = i + command.Step - 1;
-            endId = Math.Min(endId, command.EndId);
-            calls.Add(x => x.ReplacePostMetadata(startId, endId, command.Step));
-        }
-
-        if (calls.Count == 0) return Ok();
-
-        var jobIdList = backgroundJobClient.EnqueueSuccessively(calls);
-        return Ok(jobIdList);
+        await mediator.Send(command);
+        return Accepted();
     }
 
-    [Route("/api/boorus/yandere/tagmetadatajobs/batches")]
+    [Route("/api/boorus/yandere/addtagmetadatajobs/batches")]
     [HttpPost]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
-    public ActionResult<List<string>> CreateTagMetadataJobsAsync(CreateTagMetadataJobsCommand command,
-            [FromServices] IBackgroundJobClient backgroundJobClient)
+    public ActionResult<List<string>> CreateTagMetadataJobsAsync(CreateTagMetadataJobsCommand command)
     {
-        var calls = new List<Expression<Func<TagMetadataJob<Yandere>, Task>>>();
+        var jobIdList = new List<string>();
 
         IEnumerable<int> tagTypes = command.TagTypes ?? new List<int>() { 0, 1, 3, 4, 5, 6 };
 
-        foreach(var item in tagTypes)
+        foreach (var item in tagTypes)
         {
-            var type = item;
-            calls.Add(x => x.AddOrUpdateTagMetadata(type));
+            var jobId = BackgroundJob.Enqueue<TagMetadataJob<Yandere>>(
+                x => x.AddOrUpdateTagMetadata(nameof(Yandere).ToLower(), item));
+
+            jobIdList.Add(jobId);
         }
 
-        if (calls.Count == 0) return Ok();
-
-        var jobIdList = backgroundJobClient.EnqueueSuccessively(calls);
         return Ok(jobIdList);
     }
 }

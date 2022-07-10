@@ -2,7 +2,6 @@
 
 namespace AshLake.Services.Archiver.Application.BackgroundJobs;
 
-[Queue("tagmetadata")]
 public class TagMetadataJob<T> where T : IBooru
 {
     private readonly IMetadataRepository<T, TagMetadata> _tagMetadataRepository;
@@ -16,7 +15,9 @@ public class TagMetadataJob<T> where T : IBooru
         _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(publishEndpoint));
     }
 
-    public async Task<dynamic> AddOrUpdateTagMetadata(int type)
+    [Queue("{0}")]
+    [AutomaticRetry(Attempts = 3)]
+    public async Task<dynamic> AddOrUpdateTagMetadata(string queue,int type)
     {
         var bsons = (await _grabberService.GetTagMetadataList(type)).ToList();
 

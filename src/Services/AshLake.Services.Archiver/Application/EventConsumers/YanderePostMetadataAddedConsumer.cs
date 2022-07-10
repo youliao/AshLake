@@ -1,4 +1,4 @@
-﻿namespace AshLake.Services.Archiver.Application.Consumers;
+﻿namespace AshLake.Services.Archiver.Application.EventConsumers;
 
 public class YanderePostMetadataAddedEventConsumer : IConsumer<YanderePostMetadataAddedEvent>
 {

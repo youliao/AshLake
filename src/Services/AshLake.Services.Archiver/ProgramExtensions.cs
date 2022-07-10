@@ -6,9 +6,6 @@ using Serilog;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
 using Hangfire.Dashboard;
-using EasyCaching.Core.Configurations;
-using MassTransit;
-using AshLake.Services.Archiver.Application.Consumers;
 using System.Reflection;
 
 namespace AshLake.Services.Archiver;
@@ -78,6 +75,14 @@ internal static class ProgramExtensions
         builder.Services.AddMediator(cfg =>
         {
             cfg.AddConsumer<CreatePostFileDownloadTaskConsumer>();
+
+            cfg.AddConsumer<CreateAddPostMetadataJobsCommandConsumer<Yandere>>();
+            cfg.AddConsumer<CreateAddPostMetadataJobsCommandConsumer<Danbooru>>();
+            cfg.AddConsumer<CreateAddPostMetadataJobsCommandConsumer<Konachan>>();
+
+            cfg.AddConsumer<CreateReplacePostMetadataJobsCommandConsumer<Yandere>>();
+            cfg.AddConsumer<CreateReplacePostMetadataJobsCommandConsumer<Danbooru>>();
+            cfg.AddConsumer<CreateReplacePostMetadataJobsCommandConsumer<Konachan>>();
         });
 
         builder.Services.AddMassTransit(x =>
@@ -92,38 +97,32 @@ internal static class ProgramExtensions
         });
     }
 
-    public static void AddCustomEasyCaching(this WebApplicationBuilder builder)
-    {
-        var redisConnArr = builder.Configuration["RedisConnectionString"].Split(':');
-        var redisHost = redisConnArr.First();
-        var redisPort = int.Parse(redisConnArr.Last());
-
-        builder.Services.AddEasyCaching(options =>
-        {
-            options.UseRedis(config =>
-            {
-                config.DBConfig.Endpoints.Add(new ServerEndPoint(redisHost, redisPort));
-                config.SerializerName = "json";
-                config.DBConfig.Database = 0;
-            });
-        });
-    }
-
     public static void AddCustomHangfire(this WebApplicationBuilder builder)
     {
         builder.Services.AddHangfire(c =>
         {
-            c.UseRedisStorage(builder.Configuration["RedisConnectionString"],new Hangfire.Redis.RedisStorageOptions
-            {
-                Db = 1
-            });
+            c.UseRedisStorage(builder.Configuration["RedisConnectionString"]);
         });
 
         builder.Services.AddHangfireServer(opt =>
         {
-            opt.ShutdownTimeout = TimeSpan.FromMinutes(30);
-            opt.WorkerCount = 5;
-            opt.Queues = new[] { "postmetadata", "tagmetadata" };
+            opt.ServerName = $"localhost-{nameof(Yandere).ToLower()}";
+            opt.WorkerCount = 1;
+            opt.Queues = new[] { nameof(Yandere).ToLower()};
+        });
+
+        builder.Services.AddHangfireServer(opt =>
+        {
+            opt.ServerName = $"localhost-{nameof(Danbooru).ToLower()}";
+            opt.WorkerCount = 1;
+            opt.Queues = new[] { nameof(Danbooru).ToLower() };
+        });
+
+        builder.Services.AddHangfireServer(opt =>
+        {
+            opt.ServerName = $"localhost-{nameof(Konachan).ToLower()}";
+            opt.WorkerCount = 1;
+            opt.Queues = new[] { nameof(Konachan).ToLower() };
         });
     }
 

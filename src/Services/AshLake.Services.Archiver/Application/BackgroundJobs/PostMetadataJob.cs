@@ -1,10 +1,7 @@
-﻿using AshLake.BuildingBlocks.EventBus.Events;
-using MassTransit;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 
 namespace AshLake.Services.Archiver.Application.BackgroundJobs;
 
-[Queue("postmetadata")]
 public class PostMetadataJob<T> where T : IBooru
 {
     private readonly IMetadataRepository<T, PostMetadata> _postMetadataRepository;
@@ -18,7 +15,9 @@ public class PostMetadataJob<T> where T : IBooru
         _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(publishEndpoint));
     }
 
-    public async Task<dynamic> AddOrUpdatePostMetadata(int startId, int endId, int limit)
+    [Queue("{0}")]
+    [AutomaticRetry(Attempts = 3)]
+    public async Task<dynamic> AddPostMetadata(string queue, int startId, int endId, int limit)
     {
         var bsons = (await _grabberService.GetPostMetadataList(startId, limit)).ToList();
 
@@ -40,7 +39,10 @@ public class PostMetadataJob<T> where T : IBooru
 
         return new { Added = result.AddedIds.Count, Modified = result.ModifiedIds.Count, Unchanged = result.UnchangedIds.Count };
     }
-    public async Task<dynamic> ReplacePostMetadata(int startId, int endId, int limit)
+
+    [Queue("{0}")]
+    [AutomaticRetry(Attempts = 3)]
+    public async Task<dynamic> ReplacePostMetadata(string queue, int startId, int endId, int limit)
     {
         var bsons = (await _grabberService.GetPostMetadataList(startId, limit)).ToList();
 
