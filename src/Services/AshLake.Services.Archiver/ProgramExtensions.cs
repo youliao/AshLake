@@ -75,6 +75,7 @@ internal static class ProgramExtensions
         builder.Services.AddMediator(cfg =>
         {
             cfg.AddConsumer<CreatePostFileDownloadTaskConsumer>();
+            cfg.AddConsumer<SyncPostFileStatusCommandConsumer>();
 
             cfg.AddConsumer<CreateAddPostMetadataJobsCommandConsumer<Yandere>>();
             cfg.AddConsumer<CreateAddPostMetadataJobsCommandConsumer<Danbooru>>();

@@ -18,8 +18,7 @@
         "collector-rclone": "StartWithoutDebugging",
         "healthcheck": "StartWithoutDebugging",
         "rabbitmq": "StartWithoutDebugging",
-        "seq": "StartWithoutDebugging",
-        "zipkin": "StartWithoutDebugging"
+        "seq": "StartWithoutDebugging"
       }
     }
   }

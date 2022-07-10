@@ -25,6 +25,6 @@ public class DanbooruPostMetadataAddedEventConsumer : IConsumer<DanbooruPostMeta
                 DanbooruId = x.Id
             });
 
-        await _postRelationRepository.AddOrUpdateRangeAsync<Danbooru>(postRelations);
+        await _postRelationRepository.AddOrUpdatePostIdAsync<Danbooru>(postRelations);
     }
 }

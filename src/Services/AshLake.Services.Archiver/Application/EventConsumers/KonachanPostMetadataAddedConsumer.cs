@@ -25,6 +25,6 @@ public class KonachanPostMetadataAddedConsumer : IConsumer<KonachanPostMetadataA
                 KonachanId = x.Id
             });
 
-        await _postRelationRepository.AddOrUpdateRangeAsync<Konachan>(postRelations);
+        await _postRelationRepository.AddOrUpdatePostIdAsync<Konachan>(postRelations);
     }
 }

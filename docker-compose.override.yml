@@ -88,6 +88,7 @@ services:
         rs300w=resizing_type:fit/width:300/height:300/format:webp,
         rs500w=resizing_type:fit/width:500/height:500/format:webp, 
       IMGPROXY_QUALITY: 80
+      IMGPROXY_MAX_SRC_RESOLUTION: 200
       IMGPROXY_BASE_URL: s3://postfile/
       IMGPROXY_ALLOWED_SOURCES: s3://
       IMGPROXY_USE_S3: 1

@@ -25,6 +25,6 @@ public class YanderePostMetadataAddedEventConsumer : IConsumer<YanderePostMetada
                 YandereId = x.Id
             });
 
-        await _postRelationRepository.AddOrUpdateRangeAsync<Yandere>(postRelations);
+        await _postRelationRepository.AddOrUpdatePostIdAsync<Yandere>(postRelations);
     }
 }

@@ -4,11 +4,15 @@ namespace AshLake.Services.Archiver.Domain.Repositories;
 
 public interface IPostRelationRepository
 {
-    Task AddOrUpdateAsync<T>(PostRelation postRelation) where T : IBooru;
+    Task AddOrUpdatePostIdAsync<T>(PostRelation postRelation) where T : IBooru;
 
-    Task AddOrUpdateRangeAsync<T>(IEnumerable<PostRelation> postRelations) where T : IBooru;
+    Task AddOrUpdatePostIdAsync<T>(IEnumerable<PostRelation> postRelations) where T : IBooru;
+
+    Task UpdateFileStatus(PostRelation postRelation);
+
+    Task UpdateFileStatus(IEnumerable<PostRelation> postRelations);
 
     Task<PostRelation> SingleAsync(string id);
 
-    Task<IEnumerable<PostRelation>> FindAsync(Expression<Func<PostRelation, bool>> filter);
+    Task<IEnumerable<PostRelation>> FindAsync(Expression<Func<PostRelation, bool>> filter, int limit = 0);
 }
