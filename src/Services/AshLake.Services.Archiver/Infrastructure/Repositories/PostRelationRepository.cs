@@ -1,5 +1,6 @@
 ﻿using AshLake.Services.Archiver.Infrastructure.Extensions;
 using MongoDB.Driver;
+using System.Linq.Expressions;
 
 namespace AshLake.Services.Archiver.Infrastructure.Repositories;
 
@@ -39,6 +40,11 @@ public PostRelationRepository(MongoClient mongoClient)
         };
 
         await _database.GetEntityCollection<PostRelation>().BulkWriteAsync(bulkModels);
+    }
+
+    public async Task<IEnumerable<PostRelation>> FindAsync(Expression<Func<PostRelation, bool>> filter)
+    {
+        return await _database.GetEntityCollection<PostRelation>().Find(filter).ToListAsync();
     }
 
     public async Task<PostRelation> SingleAsync(string objectKey)

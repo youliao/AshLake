@@ -1,4 +1,6 @@
-﻿namespace AshLake.Services.Archiver.Domain.Repositories;
+﻿using System.Linq.Expressions;
+
+namespace AshLake.Services.Archiver.Domain.Repositories;
 
 public interface IPostRelationRepository
 {
@@ -7,4 +9,6 @@ public interface IPostRelationRepository
     Task AddOrUpdateRangeAsync<T>(IEnumerable<PostRelation> postRelations) where T : IBooru;
 
     Task<PostRelation> SingleAsync(string id);
+
+    Task<IEnumerable<PostRelation>> FindAsync(Expression<Func<PostRelation, bool>> filter);
 }
