@@ -7,6 +7,13 @@ public interface IBooruApiService<T> where T : IBooru
     Task<IEnumerable<BsonDocument>> GetPostMetadataList(int startId, int limit);
 
     Task<IEnumerable<BsonDocument>> GetTagMetadataList(int type);
+
+    string GetPostFileLink(string objectKey);
+}
+
+public interface IBooruApiService
+{
+    Dictionary<string, string> GetPostFileLinks(string objectKey);
 }
 
 public class BooruApiService<T> : IBooruApiService<T> where T : IBooru
@@ -28,26 +35,6 @@ public class BooruApiService<T> : IBooruApiService<T> where T : IBooru
         return list ?? new List<BsonDocument>();
     }
 
-    public async Task<string?> GetPostObjectKey(int postId)
-    {
-        using var response = await _httpClient.GetAsync($"/api/boorus/{_booru}/postmetadata/{postId}");
-        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-        {
-            return null;
-        }
-        response.EnsureSuccessStatusCode();
-
-        var postmetadata = BsonSerializer.Deserialize<BsonDocument>(await response.Content.ReadAsStringAsync());
-
-        var postmd5 = postmetadata[YanderePostMetadataKeys.md5].AsString;
-        Guard.Against.NullOrWhiteSpace(postmd5);
-
-        var fileExt = postmetadata[YanderePostMetadataKeys.file_ext].AsString;
-        Guard.Against.NullOrWhiteSpace(fileExt);
-
-        return $"{postmd5}.{fileExt}";
-    }
-
     public async Task<IEnumerable<BsonDocument>> GetTagMetadataList(int type)
     {
         var json = await _httpClient.GetStringAsync($"/api/boorus/{_booru}/tagmetadata?Type={type}&Page=1&Limit=0");
@@ -55,5 +42,40 @@ public class BooruApiService<T> : IBooruApiService<T> where T : IBooru
             .Select(x => x.AsBsonDocument);
 
         return list ?? new List<BsonDocument>();
+    }
+
+    public string GetPostFileLink(string objectKey)
+    {
+        var link = new Uri(_httpClient.BaseAddress!, $"api/boorus/{_booru}/postfilelinks/{objectKey}");
+
+        return link.ToString();
+    }
+}
+
+public class BooruApiService : IBooruApiService
+{
+    private readonly HttpClient _httpClient;
+
+    public BooruApiService(HttpClient httpClient)
+    {
+        _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+    }
+
+    public Dictionary<string,string> GetPostFileLinks(string objectKey)
+    {
+        var baseAddress = _httpClient.BaseAddress!;
+
+        var yandereUri = new Uri(baseAddress, $"api/boorus/{nameof(Yandere).ToLower()}/postfilelinks/{objectKey}");
+        var danbooruUri = new Uri(baseAddress, $"api/boorus/{nameof(Danbooru).ToLower()}/postfilelinks/{objectKey}");
+        var konachanUri = new Uri(baseAddress, $"api/boorus/{nameof(Konachan).ToLower()}/postfilelinks/{objectKey}");
+        var gelbooruUri = new Uri(baseAddress, $"api/boorus/{nameof(Gelbooru).ToLower()}/postfilelinks/{objectKey}");
+
+        return new Dictionary<string, string>
+        {
+            {nameof(Yandere),yandereUri.ToString()},
+            {nameof(Danbooru),danbooruUri.ToString()},
+            {nameof(Konachan),konachanUri.ToString()},
+            {nameof(Gelbooru),gelbooruUri.ToString()},
+        };
     }
 }

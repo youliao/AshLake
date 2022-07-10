@@ -75,6 +75,11 @@ internal static class ProgramExtensions
 
     public static void AddCustomMassTransit(this WebApplicationBuilder builder)
     {
+        builder.Services.AddMediator(cfg =>
+        {
+            cfg.AddConsumer<CreatePostFileDownloadTaskConsumer>();
+        });
+
         builder.Services.AddMassTransit(x =>
         {
             x.AddConsumers(Assembly.GetEntryAssembly());
@@ -168,6 +173,11 @@ internal static class ProgramExtensions
         #endregion
 
         #region Integration
+
+        builder.Services.AddHttpClient<IBooruApiService, BooruApiService>(config =>
+        {
+            config.BaseAddress = new Uri(builder.Configuration["BooruApiHost"]);
+        });
 
         builder.Services.AddHttpClient<IBooruApiService<Yandere>, BooruApiService<Yandere>>(config =>
         {

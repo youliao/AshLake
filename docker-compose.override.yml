@@ -53,7 +53,7 @@ services:
   collector:
     environment:
       S3_BUCKET_NAME: postfile
-      ARIA2_HOST: aria2
+      ARIA2_HOST: collector-aria2
       ARIA2_SECRET: ARIA2
       RCLONE_HOST: http://collector-rclone:5572
     ports:

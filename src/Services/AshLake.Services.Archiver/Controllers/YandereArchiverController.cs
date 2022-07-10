@@ -31,26 +31,6 @@ public class YandereArchiverController : ControllerBase
         return Ok(list.Select(x => x.Data));
     }
 
-    [Route("/api/boorus/yandere/postobjectkeys/{id:int}")]
-    [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult> GetPostobjectKeyAsync(int id,
-        [FromServices] IMetadataRepository<Yandere, PostMetadata> repository)
-    {
-        var metadata = await repository.SingleAsync(id);
-        if (metadata is null) return NotFound();
-
-        var postmd5 = metadata.Data[YanderePostMetadataKeys.md5].AsString;
-        Guard.Against.NullOrWhiteSpace(postmd5);
-
-        var fileExt = metadata.Data[YanderePostMetadataKeys.file_ext].AsString;
-        Guard.Against.NullOrWhiteSpace(fileExt);
-
-        var objectKey = $"{postmd5}.{fileExt}";
-
-        return Ok(objectKey);
-    }
-
 
     [Route("/api/boorus/yandere/tagmetadata")]
     [HttpGet]

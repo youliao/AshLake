@@ -31,31 +31,6 @@ public class KonachanArchiverController : ControllerBase
         return Ok(list.Select(x => x.Data));
     }
 
-    [Route("/api/boorus/konachan/postobjectkeys/{id:int}")]
-    [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult> GetPostobjectKeyAsync(int id,
-        [FromServices] IMetadataRepository<Konachan, PostMetadata> repository)
-    {
-        var metadata = await repository.SingleAsync(id);
-        if (metadata is null) return NotFound();
-
-        var postmd5 = metadata.Data[KonachanPostMetadataKeys.md5].AsString;
-        Guard.Against.NullOrWhiteSpace(postmd5);
-
-
-        if(!metadata.Data.TryGetValue(KonachanPostMetadataKeys.file_url,out var fileUrl)){
-            return NotFound();
-        }
-
-        var fileExt = Path.GetExtension(fileUrl.AsString);
-        Guard.Against.NullOrWhiteSpace(fileExt);
-
-        var objectKey = $"{postmd5}{fileExt}";
-
-        return Ok(objectKey);
-    }
-
     //[Route("/api/boorus/konachan/tagmetadata")]
     //[HttpGet]
     //[ProducesResponseType(StatusCodes.Status200OK)]

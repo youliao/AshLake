@@ -8,3 +8,5 @@ public class Yandere : IBooru { }
 public class Danbooru : IBooru { }
 
 public class Konachan : IBooru { }
+
+public class Gelbooru : IBooru { }
