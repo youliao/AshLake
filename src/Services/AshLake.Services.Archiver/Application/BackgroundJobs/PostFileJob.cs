@@ -20,7 +20,7 @@ public class PostFileJob
         if (postRelations.Count() == 0) return;
 
         var updateList = new List<PostRelation>();
-        var validExtList = new List<string>() { ".jpg", ".png", "gif" };
+        var validExtList = new List<string>() { ".jpg", ".png", ".gif" };
 
         foreach (var item in postRelations)
         {
