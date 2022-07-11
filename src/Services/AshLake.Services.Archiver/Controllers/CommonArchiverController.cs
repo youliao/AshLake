@@ -13,11 +13,22 @@ public class CommonArchiverController : ControllerBase
         return Accepted();
     }
 
-    [Route("/api/postfilestatus/sync")]
+    [Route("/api/postfilestatus/initialize")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<ActionResult> SyncPostFileStatusAsync(SyncPostFileStatusCommand command,
+    public async Task<ActionResult> InitializePostFileStatusAsync(InitializePostFileStatusCommand command,
     [FromServices] IMediator mediator)
+    {
+        await mediator.Send(command);
+
+        return Accepted();
+    }
+
+    [Route("/api/postfilestatus/stopinitializing")]
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    public async Task<ActionResult> StopInitializingPostFileStatusAsync(StopInitializingPostFileStatusCommand command,
+        [FromServices] IMediator mediator)
     {
         await mediator.Send(command);
 

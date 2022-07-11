@@ -74,9 +74,6 @@ internal static class ProgramExtensions
     {
         builder.Services.AddMediator(cfg =>
         {
-            cfg.AddConsumer<CreatePostFileDownloadTaskConsumer>();
-            cfg.AddConsumer<SyncPostFileStatusCommandConsumer>();
-
             cfg.AddConsumer<CreateAddPostMetadataJobsCommandConsumer<Yandere>>();
             cfg.AddConsumer<CreateAddPostMetadataJobsCommandConsumer<Danbooru>>();
             cfg.AddConsumer<CreateAddPostMetadataJobsCommandConsumer<Konachan>>();
@@ -84,6 +81,8 @@ internal static class ProgramExtensions
             cfg.AddConsumer<CreateReplacePostMetadataJobsCommandConsumer<Yandere>>();
             cfg.AddConsumer<CreateReplacePostMetadataJobsCommandConsumer<Danbooru>>();
             cfg.AddConsumer<CreateReplacePostMetadataJobsCommandConsumer<Konachan>>();
+
+            cfg.AddConsumers(Assembly.GetEntryAssembly());
         });
 
         builder.Services.AddMassTransit(x =>
@@ -103,6 +102,13 @@ internal static class ProgramExtensions
         builder.Services.AddHangfire(c =>
         {
             c.UseRedisStorage(builder.Configuration["RedisConnectionString"]);
+        });
+
+        builder.Services.AddHangfireServer(opt =>
+        {
+            opt.ServerName = $"localhost-common";
+            opt.WorkerCount = 10;
+            opt.Queues = new[] { "common" };
         });
 
         builder.Services.AddHangfireServer(opt =>
@@ -139,7 +145,6 @@ internal static class ProgramExtensions
     {
         builder.Services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
-            .AddDapr()
             .AddMongoDb(builder.Configuration["MongoConnectionString"],
                         "database",
                         null,
