@@ -20,8 +20,16 @@ public class PostFileJob
         if (postRelations.Count() == 0) return;
 
         var updateList = new List<PostRelation>();
+        var validExtList = new List<string>() { ".jpg", ".png", "gif" };
+
         foreach (var item in postRelations)
         {
+            if (!validExtList.Contains(Path.GetExtension(item.Id)))
+            {
+                updateList.Add(item with { FileStatus = PostFileStatus.Invalid });
+                continue;
+            }
+
             var exists = await _imgProxyService.Exists(item.Id);
 
             if (exists)
