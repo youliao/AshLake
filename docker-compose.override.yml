@@ -36,7 +36,6 @@ services:
       - RabbitMqHost=rabbitmq://rabbitmq:5672
       - BooruApiHost=http://booru-api:3000
       - CollectorHost=http://collector:3000
-      - ImgProxyHost=http://collector-imgproxy:8080
       - SeqServerUrl=http://seq
     ports:
       - "30002:80"
