@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\BuildingBlocks\AshLake.BuildingBlocks.EventBus\AshLake.BuildingBlocks.EventBus.csproj" />
     <ProjectReference Include="..\AshLake.Contracts.Seedwork\AshLake.Contracts.Seedwork.csproj" />
   </ItemGroup>
 

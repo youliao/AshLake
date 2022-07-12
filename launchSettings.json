@@ -15,7 +15,6 @@
         "collector-aria2": "StartWithoutDebugging",
         "collector-imgproxy": "StartWithoutDebugging",
         "collector-minio": "StartWithoutDebugging",
-        "collector-rclone": "StartWithoutDebugging",
         "healthcheck": "StartWithoutDebugging",
         "rabbitmq": "StartWithoutDebugging",
         "seq": "StartWithoutDebugging"

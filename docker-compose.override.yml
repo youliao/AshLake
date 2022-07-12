@@ -36,7 +36,6 @@ services:
       - RabbitMqHost=rabbitmq://rabbitmq:5672
       - BooruApiHost=http://booru-api:3000
       - CollectorHost=http://collector:3000
-      - ImgProxyHost=http://collector-imgproxy:8080
       - SeqServerUrl=http://seq
     ports:
       - "30002:80"
@@ -52,10 +51,14 @@ services:
 
   collector:
     environment:
-      S3_BUCKET_NAME: postfile
+      MINIO_HOST: collector-minio
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+      MINIO_BUCKET_NAME: postfile
       ARIA2_HOST: collector-aria2
       ARIA2_SECRET: ARIA2
-      RCLONE_HOST: http://collector-rclone:5572
+    volumes:
+      - downloads:/downloads
     ports:
       - 30003:3000
 
@@ -119,22 +122,7 @@ services:
       - 6800:6800
     volumes:
       - aria2-config:/config
-      - downloads:/downloads
-
-  collector-rclone:
-    environment:
-      RCLONE_S3_PROVIDER: Minio
-      RCLONE_S3_ACCESS_KEY_ID: minio
-      RCLONE_S3_SECRET_ACCESS_KEY: minio123
-      RCLONE_S3_ENDPOINT: http://collector-minio:9000
-    command: 
-      ["rcd",
-      "--rc-addr",":5572",
-      "--rc-files","/data",
-      "--rc-web-gui-no-open-browser",
-      "--rc-no-auth"]
-    volumes:
-      - downloads:/data/downloads    
+      - downloads:/downloads  
 
   #yandestore:
   #  environment:
