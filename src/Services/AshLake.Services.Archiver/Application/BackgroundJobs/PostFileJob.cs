@@ -23,7 +23,7 @@ public class PostFileJob
     [AutomaticRetry(Attempts = 3)]
     public async Task SyncPostFileStatus(int limit)
     {
-        var command = new InitializePostFileStatusCommand(limit);
+        var command = new SyncPostFileStatusCommand(limit);
         await _mediator.Send(command);
     }
 

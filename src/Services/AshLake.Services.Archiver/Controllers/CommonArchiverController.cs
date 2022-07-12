@@ -24,8 +24,8 @@ public class CommonArchiverController : ControllerBase
         return Accepted();
     }
 
-    [Route("/api/postfilestatus/stopinitializing")]
-    [HttpPost]
+    [Route("/api/postfilestatus/initialize")]
+    [HttpDelete]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<ActionResult> StopInitializingPostFileStatusAsync(StopInitializingPostFileStatusCommand command,
         [FromServices] IMediator mediator)
@@ -40,6 +40,17 @@ public class CommonArchiverController : ControllerBase
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<ActionResult> StartDownloadingManyPostFilesAsync(StartDownloadingManyPostFilesCommand command,
         [FromServices] IMediator mediator)
+    {
+        await mediator.Send(command);
+
+        return Accepted();
+    }
+
+    [Route("/api/postfiles/download")]
+    [HttpDelete]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    public async Task<ActionResult> StopDownloadingManyPostFilesAsync(StopDownloadingManyPostFilesCommand command,
+    [FromServices] IMediator mediator)
     {
         await mediator.Send(command);
 
