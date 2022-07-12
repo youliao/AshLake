@@ -15,4 +15,6 @@ public interface IPostRelationRepository
     Task<PostRelation> SingleAsync(string id);
 
     Task<IEnumerable<PostRelation>> FindAsync(Expression<Func<PostRelation, bool>> filter, int limit = 0);
+
+    Task<long> CountAsync(Expression<Func<PostRelation, bool>> filter);
 }

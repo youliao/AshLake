@@ -5,7 +5,7 @@ public class CommonArchiverController : ControllerBase
     [Route("/api/postfiledownloadtasks/")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<ActionResult> AddPostFileDownloadTaskAsync(CreatePostFileDownloadTask command,
+    public async Task<ActionResult> AddPostFileDownloadTaskAsync(CreatePostFileDownloadTaskCommand command,
         [FromServices] IMediator mediator)
     {
         await mediator.Send(command);
@@ -16,7 +16,7 @@ public class CommonArchiverController : ControllerBase
     [Route("/api/postfilestatus/initialize")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<ActionResult> InitializePostFileStatusAsync(InitializePostFileStatusCommand command,
+    public async Task<ActionResult> InitializePostFileStatusAsync(StartInitializingPostFileStatusCommand command,
     [FromServices] IMediator mediator)
     {
         await mediator.Send(command);
@@ -28,6 +28,17 @@ public class CommonArchiverController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<ActionResult> StopInitializingPostFileStatusAsync(StopInitializingPostFileStatusCommand command,
+        [FromServices] IMediator mediator)
+    {
+        await mediator.Send(command);
+
+        return Accepted();
+    }
+
+    [Route("/api/postfiles/download")]
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    public async Task<ActionResult> StartDownloadingManyPostFilesAsync(StartDownloadingManyPostFilesCommand command,
         [FromServices] IMediator mediator)
     {
         await mediator.Send(command);

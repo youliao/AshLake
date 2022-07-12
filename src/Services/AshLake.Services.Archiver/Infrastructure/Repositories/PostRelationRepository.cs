@@ -84,6 +84,11 @@ public class PostRelationRepository : IPostRelationRepository
             .SingleOrDefaultAsync();
     }
 
+    public async Task<long> CountAsync(Expression<Func<PostRelation, bool>> filter)
+    {
+        return await _database.GetEntityCollection<PostRelation>().Find(filter).CountDocumentsAsync();
+    }
+
     private async Task CreateIndex()
     {
         string indexName = "FILESTATUS_INDEX";

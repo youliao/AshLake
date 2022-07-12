@@ -3,47 +3,46 @@
 public class PostFileJob
 {
     private readonly IPostRelationRepository _postRelationRepository;
-    private readonly ICollectorService _collectorService;
+    private readonly IMediator _mediator;
 
-    public PostFileJob(IPostRelationRepository postRelationRepository, ICollectorService collectorService)
+    public PostFileJob(IPostRelationRepository postRelationRepository, IMediator mediator)
     {
         _postRelationRepository = postRelationRepository ?? throw new ArgumentNullException(nameof(postRelationRepository));
-        _collectorService = collectorService ?? throw new ArgumentNullException(nameof(collectorService));
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
     [Queue("common")]
     [AutomaticRetry(Attempts = 3)]
-    public async Task<int> InitializePostFileStatus(int limit)
+    public async Task InitializePostFileStatus(int limit)
     {
-        var postRelations = await _postRelationRepository.FindAsync(x => x.FileStatus == null, limit);
+        var command = new InitializePostFileStatusCommand(limit);
+        await _mediator.Send(command);
+    }
 
-        if (postRelations.Count() == 0) return 0;
+    [Queue("common")]
+    [AutomaticRetry(Attempts = 3)]
+    public async Task SyncPostFileStatus(int limit)
+    {
+        var command = new InitializePostFileStatusCommand(limit);
+        await _mediator.Send(command);
+    }
 
-        var updateList = new List<PostRelation>();
-        var validExtList = new List<string>() { ".jpg", ".png", ".gif" };
+    [Queue("common")]
+    [AutomaticRetry(Attempts = 3)]
+    public async Task<int> DownloadManyPostFiles(int limit,int max = 1000)
+    {
+        var downloadingQueueLength = await _postRelationRepository.CountAsync(x => x.FileStatus == PostFileStatus.Downloading);
 
-        foreach (var item in postRelations)
-        {
-            if (!validExtList.Contains(Path.GetExtension(item.Id)))
-            {
-                updateList.Add(item with { FileStatus = PostFileStatus.Invalid });
-                continue;
-            }
+        if (downloadingQueueLength > max) return 0;
 
-            var exists = await _collectorService.ObjectExists(item.Id);
+        var postRelations = await _postRelationRepository.FindAsync(x => x.FileStatus == PostFileStatus.None, limit);
 
-            if (exists)
-            {
-                updateList.Add(item with { FileStatus = PostFileStatus.InStock });
-            }
-            else
-            {
-                updateList.Add(item with { FileStatus = PostFileStatus.None });
-            }
-        }
+        if(postRelations.Count() == 0) return 0;
 
-        await _postRelationRepository.UpdateFileStatus(updateList);
+        var command = new CreateManyPostFileDownloadTasksCommnad(postRelations.Select(x=>x.Id));
+        await _mediator.Send(command);
 
-        return updateList.Count;
+        return postRelations.Count();
+
     }
 }

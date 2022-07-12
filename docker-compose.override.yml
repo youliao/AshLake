@@ -66,13 +66,13 @@ services:
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio123
-      #MINIO_NOTIFY_AMQP_ENABLE: on
-      #MINIO_NOTIFY_AMQP_URL: amqp://rabbitmq:5672
-      #MINIO_NOTIFY_AMQP_EXCHANGE: collector.minio.events
-      #MINIO_NOTIFY_AMQP_EXCHANGE_TYPE: fanout
-      #MINIO_NOTIFY_AMQP_DELIVERY_MODE: 2
-      #MINIO_NOTIFY_AMQP_AUTO_DELETED: "off"
-      #MINIO_NOTIFY_AMQP_DURABLE: "on"
+      MINIO_NOTIFY_AMQP_ENABLE: on
+      MINIO_NOTIFY_AMQP_URL: amqp://rabbitmq:5672
+      MINIO_NOTIFY_AMQP_EXCHANGE: collector.minio.events
+      MINIO_NOTIFY_AMQP_EXCHANGE_TYPE: fanout
+      MINIO_NOTIFY_AMQP_DELIVERY_MODE: 2
+      MINIO_NOTIFY_AMQP_AUTO_DELETED: "off"
+      MINIO_NOTIFY_AMQP_DURABLE: "on"
     command: server /data --console-address ":9001"
     volumes:
       - collector-objectdata:/data
