@@ -9,9 +9,11 @@ public class PostRelationRepository : IPostRelationRepository
     private readonly IMongoDatabase _database;
     private readonly UpdateOptions _updateOptions;
 
-public PostRelationRepository(MongoClient mongoClient)
+    public PostRelationRepository(MongoClient mongoClient)
     {
         _database = mongoClient.GetDatabase("Common");
+        CreateIndex().Wait();
+
         _updateOptions = new UpdateOptions { IsUpsert = true };
     }
 
@@ -80,5 +82,23 @@ public PostRelationRepository(MongoClient mongoClient)
             .Find(x => x.Id == objectKey)
             .Limit(1)
             .SingleOrDefaultAsync();
+    }
+
+    private async Task CreateIndex()
+    {
+        string indexName = "FILESTATUS_INDEX";
+        using (var cursor = await _database.GetEntityCollection<PostRelation>().Indexes.ListAsync())
+        {
+            await cursor.ForEachAsync(document =>
+            {
+                if (document.GetValue("name").AsString == indexName) return;
+            });
+        }
+
+        var indexKeysDefinition = Builders<PostRelation>.IndexKeys.Ascending(x => x.FileStatus);
+
+        var indexModel = new CreateIndexModel<PostRelation>(indexKeysDefinition,
+                                                            new CreateIndexOptions { Background = true, Name = indexName });
+        await _database.GetEntityCollection<PostRelation>().Indexes.CreateOneAsync(indexModel);
     }
 }
