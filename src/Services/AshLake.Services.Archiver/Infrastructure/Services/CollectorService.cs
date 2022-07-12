@@ -3,6 +3,8 @@
 public interface ICollectorService
 {
     Task<string> AddDownloadTask(IEnumerable<string> urls, string filename, string md5);
+
+    Task<bool> ObjectExists(string objectKey);
 }
 
 public class CollectorService : ICollectorService
@@ -21,5 +23,16 @@ public class CollectorService : ICollectorService
         var taskId = await res.Content.ReadAsStringAsync();
 
         return taskId;
+    }
+
+    public async Task<bool> ObjectExists(string objectKey)
+    {
+        using var res = await _httpClient.GetAsync($"api/s3/objects/{objectKey}");
+
+        if (res.StatusCode is System.Net.HttpStatusCode.NotFound) return false;
+
+        res.EnsureSuccessStatusCode();
+
+        return true;
     }
 }

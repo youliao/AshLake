@@ -1,6 +1,6 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
-public record InitializePostFileStatusCommand(int Limit);
+public record InitializePostFileStatusCommand(int Limit,string CronExpression);
 
 public class InitializePostFileStatusCommandConsumer : IConsumer<InitializePostFileStatusCommand>
 {
@@ -9,7 +9,9 @@ public class InitializePostFileStatusCommandConsumer : IConsumer<InitializePostF
     {
         var command = context.Message;
 
-        RecurringJob.AddOrUpdate<PostFileJob>("initializepostfilestatus", x=>x.InitializePostFileStatus(command.Limit), Cron.Minutely);
+        RecurringJob.AddOrUpdate<PostFileJob>("initializepostfilestatus",
+                                              x => x.InitializePostFileStatus(command.Limit),
+                                              command.CronExpression ?? "0 0/1 * * * ?");
 
         return Task.CompletedTask;
     }

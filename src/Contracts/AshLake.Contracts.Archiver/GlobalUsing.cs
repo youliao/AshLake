@@ -1,2 +1,1 @@
-﻿global using AshLake.BuildingBlocks.EventBus.Events;
-global using AshLake.Contracts.Seedwork.Boorus;
+﻿global using AshLake.Contracts.Seedwork.Boorus;

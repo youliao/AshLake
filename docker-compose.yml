@@ -31,11 +31,10 @@ services:
     image: redis:7
 
   collector:
-    image: youliao/collector:220710
+    image: youliao/collector:220712
     depends_on:
       - collector-aria2
       - collector-minio
-      - collector-rclone
 
   collector-minio:
     image: minio/minio:latest
@@ -47,11 +46,6 @@ services:
 
   collector-aria2:
     image: superng6/aria2:webui-latest
-    depends_on:
-      - collector-rclone
-
-  collector-rclone:
-    image: rclone/rclone:latest
     depends_on:
       - collector-minio
 

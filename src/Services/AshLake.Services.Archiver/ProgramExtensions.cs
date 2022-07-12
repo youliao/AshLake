@@ -204,11 +204,6 @@ internal static class ProgramExtensions
             config.BaseAddress = new Uri(builder.Configuration["CollectorHost"]);
         });
 
-        builder.Services.AddHttpClient<IImgProxyService, ImgProxyService>(config =>
-        {
-            config.BaseAddress = new Uri(builder.Configuration["ImgProxyHost"]);
-        });
-
         #endregion
 
         #region BackgroundJobs

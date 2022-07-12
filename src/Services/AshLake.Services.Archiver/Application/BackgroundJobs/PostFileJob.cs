@@ -3,21 +3,21 @@
 public class PostFileJob
 {
     private readonly IPostRelationRepository _postRelationRepository;
-    private readonly IImgProxyService _imgProxyService;
+    private readonly ICollectorService _collectorService;
 
-    public PostFileJob(IPostRelationRepository postRelationRepository, IImgProxyService imgProxyService)
+    public PostFileJob(IPostRelationRepository postRelationRepository, ICollectorService collectorService)
     {
         _postRelationRepository = postRelationRepository ?? throw new ArgumentNullException(nameof(postRelationRepository));
-        _imgProxyService = imgProxyService ?? throw new ArgumentNullException(nameof(imgProxyService));
+        _collectorService = collectorService ?? throw new ArgumentNullException(nameof(collectorService));
     }
 
     [Queue("common")]
     [AutomaticRetry(Attempts = 3)]
-    public async Task InitializePostFileStatus(int limit)
+    public async Task<int> InitializePostFileStatus(int limit)
     {
         var postRelations = await _postRelationRepository.FindAsync(x => x.FileStatus == null, limit);
 
-        if (postRelations.Count() == 0) return;
+        if (postRelations.Count() == 0) return 0;
 
         var updateList = new List<PostRelation>();
         var validExtList = new List<string>() { ".jpg", ".png", "gif" };
@@ -30,7 +30,7 @@ public class PostFileJob
                 continue;
             }
 
-            var exists = await _imgProxyService.Exists(item.Id);
+            var exists = await _collectorService.ObjectExists(item.Id);
 
             if (exists)
             {
@@ -44,5 +44,6 @@ public class PostFileJob
 
         await _postRelationRepository.UpdateFileStatus(updateList);
 
+        return updateList.Count;
     }
 }
