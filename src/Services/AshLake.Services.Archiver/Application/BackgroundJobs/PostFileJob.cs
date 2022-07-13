@@ -3,11 +3,13 @@
 public class PostFileJob
 {
     private readonly IPostRelationRepository _postRelationRepository;
+    private readonly ICollectorService _collectorService;
     private readonly IMediator _mediator;
 
-    public PostFileJob(IPostRelationRepository postRelationRepository, IMediator mediator)
+    public PostFileJob(IPostRelationRepository postRelationRepository, ICollectorService collectorService, IMediator mediator)
     {
         _postRelationRepository = postRelationRepository ?? throw new ArgumentNullException(nameof(postRelationRepository));
+        _collectorService = collectorService ?? throw new ArgumentNullException(nameof(collectorService));
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
@@ -31,9 +33,9 @@ public class PostFileJob
     [AutomaticRetry(Attempts = 3)]
     public async Task<int> DownloadManyPostFiles(int limit,int max = 1000)
     {
-        var downloadingQueueLength = await _postRelationRepository.CountAsync(x => x.FileStatus == PostFileStatus.Downloading);
+        var aria2Stat = await _collectorService.GetAria2GlobalStat();
 
-        if (downloadingQueueLength > max) return 0;
+        if (aria2Stat!.NumWaiting > max) return 0;
 
         var postRelations = await _postRelationRepository.FindAsync(x => x.FileStatus == PostFileStatus.None, limit);
 
