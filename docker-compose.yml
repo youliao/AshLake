@@ -13,7 +13,7 @@ services:
     image: datalust/seq:latest
 
   booru-api:
-    image: youliao/booruapi:220711
+    image: youliao/booruapi:220713
 
   archiver:
     image: ${DOCKER_REGISTRY-}ashlakeservicesarchiver
