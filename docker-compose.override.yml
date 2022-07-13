@@ -51,12 +51,14 @@ services:
 
   collector:
     environment:
-      MINIO_HOST: collector-minio
-      MINIO_ACCESS_KEY: minio
-      MINIO_SECRET_KEY: minio123
-      MINIO_BUCKET_NAME: postfile
-      ARIA2_HOST: collector-aria2
-      ARIA2_SECRET: ARIA2
+      - PUID=1000
+      - PGID=101
+      - MINIO_HOST=collector-minio
+      - MINIO_ACCESS_KEY=minio
+      - MINIO_SECRET_KEY=minio123
+      - MINIO_BUCKET_NAME=postfile
+      - ARIA2_HOST=collector-aria2
+      - ARIA2_SECRET=ARIA2
     volumes:
       - downloads:/downloads
     ports:
@@ -64,15 +66,15 @@ services:
 
   collector-minio:
     environment:
-      MINIO_ACCESS_KEY: minio
-      MINIO_SECRET_KEY: minio123
-      MINIO_NOTIFY_AMQP_ENABLE: on
-      MINIO_NOTIFY_AMQP_URL: amqp://rabbitmq:5672
-      MINIO_NOTIFY_AMQP_EXCHANGE: collector.minio.events
-      MINIO_NOTIFY_AMQP_EXCHANGE_TYPE: fanout
-      MINIO_NOTIFY_AMQP_DELIVERY_MODE: 2
-      MINIO_NOTIFY_AMQP_AUTO_DELETED: "off"
-      MINIO_NOTIFY_AMQP_DURABLE: "on"
+      - MINIO_ACCESS_KEY=minio
+      - MINIO_SECRET_KEY=minio123
+      - MINIO_NOTIFY_AMQP_ENABLE=on
+      - MINIO_NOTIFY_AMQP_URL=amqp://rabbitmq:5672
+      - MINIO_NOTIFY_AMQP_EXCHANGE=collector.minio.events
+      - MINIO_NOTIFY_AMQP_EXCHANGE_TYPE=fanout
+      - MINIO_NOTIFY_AMQP_DELIVERY_MODE=2
+      - MINIO_NOTIFY_AMQP_AUTO_DELETED=off
+      - MINIO_NOTIFY_AMQP_DURABLE=on
     command: server /data --console-address ":9001"
     volumes:
       - collector-objectdata:/data
@@ -81,23 +83,23 @@ services:
 
   collector-imgproxy:
     environment:
-      IMGPROXY_ONLY_PRESETS: 1
-      IMGPROXY_PRESETS: 
-        raw=skip_processing:jpg:png:gif,
-        rs300a=resizing_type:fit/width:300/height:300/format:avif,
-        rs500a=resizing_type:fit/width:500/height:500/format:avif,       
-        rs300j=resizing_type:fit/width:300/height:300/format:jpg,
-        rs500j=resizing_type:fit/width:500/height:500/format:jpg,
-        rs300w=resizing_type:fit/width:300/height:300/format:webp,
-        rs500w=resizing_type:fit/width:500/height:500/format:webp, 
-      IMGPROXY_QUALITY: 80
-      IMGPROXY_MAX_SRC_RESOLUTION: 200
-      IMGPROXY_BASE_URL: s3://postfile/
-      IMGPROXY_ALLOWED_SOURCES: s3://
-      IMGPROXY_USE_S3: 1
-      IMGPROXY_S3_ENDPOINT: http://collector-minio:9000
-      AWS_ACCESS_KEY_ID: minio
-      AWS_SECRET_ACCESS_KEY: minio123    
+      - IMGPROXY_ONLY_PRESETS=true
+      - IMGPROXY_PRESETS=
+            raw=skip_processing:jpg:png:gif,
+            rs300a=resizing_type:fit/width:300/height:300/format:avif,
+            rs500a=resizing_type:fit/width:500/height:500/format:avif,       
+            rs300j=resizing_type:fit/width:300/height:300/format:jpg,
+            rs500j=resizing_type:fit/width:500/height:500/format:jpg,
+            rs300w=resizing_type:fit/width:300/height:300/format:webp,
+            rs500w=resizing_type:fit/width:500/height:500/format:webp
+      - IMGPROXY_QUALITY=80
+      - IMGPROXY_MAX_SRC_RESOLUTION=200
+      - IMGPROXY_BASE_URL=s3://postfile/
+      - IMGPROXY_ALLOWED_SOURCES=s3://
+      - IMGPROXY_USE_S3=true
+      - IMGPROXY_S3_ENDPOINT=http://collector-minio:9000
+      - AWS_ACCESS_KEY_ID=minio
+      - AWS_SECRET_ACCESS_KEY=minio123    
     ports:
       - "30004:8080"
     depends_on:
@@ -105,8 +107,8 @@ services:
 
   collector-aria2:
     environment:
-      - PUID=1026
-      - PGID=100
+      - PUID=1000
+      - PGID=101
       - TZ=Asia/Shanghai
       - SECRET=ARIA2
       - CACHE=128M
