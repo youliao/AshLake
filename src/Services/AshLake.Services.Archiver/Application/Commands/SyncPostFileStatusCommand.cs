@@ -31,6 +31,8 @@ public class SyncPostFileStatusCommandConsumer : IConsumer<SyncPostFileStatusCom
             updateList.Add(item with { FileStatus = PostFileStatus.InStock });
         }
 
+        if (updateList.Count() == 0) return;
+
         await _postRelationRepository.UpdateFileStatus(updateList);
     }
 }
