@@ -19,19 +19,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AshLake.Services.Archiver",
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{196204FF-D793-48FD-B8CA-3396CEF8D9E1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dapr", "dapr", "{E56D89F2-B072-4D89-B061-9FD40300D986}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "components", "components", "{34B56E0F-7C5F-420E-8E7F-F1DC9C9BE334}"
-	ProjectSection(SolutionItems) = preProject
-		dapr\components\ashlake-pubsub.yaml = dapr\components\ashlake-pubsub.yaml
-		dapr\components\ashlake-statestore.yaml = dapr\components\ashlake-statestore.yaml
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "configuration", "configuration", "{E7B2573E-B82E-4DE7-AB6E-BE1CDB64CE6B}"
-	ProjectSection(SolutionItems) = preProject
-		dapr\configuration\ashlake-config.yaml = dapr\configuration\ashlake-config.yaml
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AshLake.Contracts.Archiver", "src\Contracts\AshLake.Contracts.Archiver\AshLake.Contracts.Archiver.csproj", "{8A9372E5-3EFF-4273-A9E5-CEE814938E0C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AshLake.BuildingBlocks.Pagination", "src\BuildingBlocks\AshLake.BuildingBlocks.Pagination\AshLake.BuildingBlocks.Pagination.csproj", "{4626DC8B-751A-4ED9-B9D7-BFD158A6F9DB}"
@@ -77,8 +64,6 @@ Global
 		{D83940CC-43BB-4625-9A66-204C15AFCB55} = {DFC6E2A2-DD70-435E-9F2B-DA2CD363A072}
 		{9F1F82C9-F382-4DEF-9220-CA234F777CDC} = {D83940CC-43BB-4625-9A66-204C15AFCB55}
 		{735979A3-C62D-479B-BD96-C6A756263DDA} = {D573494F-6826-48D0-A95A-D6BEEDCA2B63}
-		{34B56E0F-7C5F-420E-8E7F-F1DC9C9BE334} = {E56D89F2-B072-4D89-B061-9FD40300D986}
-		{E7B2573E-B82E-4DE7-AB6E-BE1CDB64CE6B} = {E56D89F2-B072-4D89-B061-9FD40300D986}
 		{8A9372E5-3EFF-4273-A9E5-CEE814938E0C} = {D83940CC-43BB-4625-9A66-204C15AFCB55}
 		{4626DC8B-751A-4ED9-B9D7-BFD158A6F9DB} = {26B3D76D-6E9A-478C-AA0D-1F993C8746B9}
 	EndGlobalSection
