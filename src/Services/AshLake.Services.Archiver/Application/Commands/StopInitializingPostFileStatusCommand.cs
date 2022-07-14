@@ -1,14 +1,13 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
-public record StopInitializingPostFileStatusCommand();
+public record StopInitializingPostFileStatusCommand():IRequest;
 
-public class StopInitializingPostFileStatusCommandConsumer : IConsumer<StopInitializingPostFileStatusCommand>
+public class StopInitializingPostFileStatusCommandHandler : IRequestHandler<StopInitializingPostFileStatusCommand>
 {
-
-    public Task Consume(ConsumeContext<StopInitializingPostFileStatusCommand> context)
+    public Task<Unit> Handle(StopInitializingPostFileStatusCommand request, CancellationToken cancellationToken)
     {
         RecurringJob.RemoveIfExists("initializepostfilestatus");
 
-        return Task.CompletedTask;
+        return Task.FromResult(Unit.Value);
     }
 }

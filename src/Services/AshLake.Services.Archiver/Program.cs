@@ -6,6 +6,7 @@ builder.AddCustomSerilog();
 builder.AddCustomProblemDetails();
 builder.AddCustomControllers();
 builder.AddCustomSwagger();
+builder.AddCustomMediatR();
 builder.AddCustomMassTransit();
 builder.AddCustomHangfire();
 builder.AddCustomHealthChecks();

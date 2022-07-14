@@ -1,21 +1,20 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
-public record StartDownloadingManyPostFilesCommand(int Limit,string CronExpression);
+public record StartDownloadingManyPostFilesCommand(int Limit,string CronExpression):IRequest;
 
-public class StartDownloadingManyPostFilesCommandConsumer : IConsumer<StartDownloadingManyPostFilesCommand>
+public class StartDownloadingManyPostFilesCommandHandler : IRequestHandler<StartDownloadingManyPostFilesCommand>
 {
 
-    public Task Consume(ConsumeContext<StartDownloadingManyPostFilesCommand> context)
+    public Task<Unit> Handle(StartDownloadingManyPostFilesCommand command, CancellationToken cancellationToken)
     {
-        var command = context.Message;
-
         RecurringJob.AddOrUpdate<PostFileJob>("downloadmanypostfiles",
-                                              x => x.DownloadManyPostFiles(command.Limit,1000),
+                                              x => x.DownloadManyPostFiles(command.Limit),
                                               command.CronExpression ?? "0 0/10 * * * ?");
 
         RecurringJob.AddOrUpdate<PostFileJob>("syncpostfilestatus",
                                       x => x.SyncPostFileStatus(command.Limit),
-                                      command.CronExpression ?? "0 0/5 * * * ?");
-        return Task.CompletedTask;
+                                      "0 0/10 * * * ?");
+
+        return Task.FromResult(Unit.Value);
     }
 }

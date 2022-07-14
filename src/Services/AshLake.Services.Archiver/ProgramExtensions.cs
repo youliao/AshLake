@@ -70,21 +70,14 @@ internal static class ProgramExtensions
         });
     }
 
+    public static void AddCustomMediatR(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
+        builder.Services.AddTransient<IRequestHandler<CreateAddPostMetadataJobsCommand<Konachan>>, CreateAddPostMetadataJobsCommandHandler<Konachan>>();
+    }
+
     public static void AddCustomMassTransit(this WebApplicationBuilder builder)
     {
-        builder.Services.AddMediator(cfg =>
-        {
-            cfg.AddConsumer<CreateAddPostMetadataJobsCommandConsumer<Yandere>>();
-            cfg.AddConsumer<CreateAddPostMetadataJobsCommandConsumer<Danbooru>>();
-            cfg.AddConsumer<CreateAddPostMetadataJobsCommandConsumer<Konachan>>();
-
-            cfg.AddConsumer<CreateReplacePostMetadataJobsCommandConsumer<Yandere>>();
-            cfg.AddConsumer<CreateReplacePostMetadataJobsCommandConsumer<Danbooru>>();
-            cfg.AddConsumer<CreateReplacePostMetadataJobsCommandConsumer<Konachan>>();
-
-            cfg.AddConsumers(Assembly.GetEntryAssembly());
-        });
-
         builder.Services.AddMassTransit(x =>
         {
             x.AddConsumers(Assembly.GetEntryAssembly());
