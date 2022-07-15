@@ -1,27 +1,31 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
-public record CreateManyPostFileDownloadTasksCommnad(IEnumerable<string> ObjectKeys);
+public record CreateManyPostFileDownloadTasksCommnad(int Limit) : IRequest;
 
-public class CreateManyPostFileDownloadTasksCommnadConsumer : IConsumer<CreateManyPostFileDownloadTasksCommnad>
+public class CreateManyPostFileDownloadTasksCommnadHandler : IRequestHandler<CreateManyPostFileDownloadTasksCommnad>
 {
     private readonly IBooruApiService _booruApiService;
     private readonly ICollectorService _collectorService;
     private readonly IPostRelationRepository _postRelationRepository;
 
-    public CreateManyPostFileDownloadTasksCommnadConsumer(IBooruApiService booruApiService, ICollectorService collectorService, IPostRelationRepository postRelationRepository)
+    public CreateManyPostFileDownloadTasksCommnadHandler(IBooruApiService booruApiService, ICollectorService collectorService, IPostRelationRepository postRelationRepository)
     {
         _booruApiService = booruApiService ?? throw new ArgumentNullException(nameof(booruApiService));
         _collectorService = collectorService ?? throw new ArgumentNullException(nameof(collectorService));
         _postRelationRepository = postRelationRepository ?? throw new ArgumentNullException(nameof(postRelationRepository));
     }
 
-    public async Task Consume(ConsumeContext<CreateManyPostFileDownloadTasksCommnad> context)
+    public async Task<Unit> Handle(CreateManyPostFileDownloadTasksCommnad commnad, CancellationToken cancellationToken)
     {
-        var objectKeys = context.Message.ObjectKeys;
+        var aria2Stat = await _collectorService.GetAria2GlobalStat();
 
-        var postRelations = await _postRelationRepository.FindAsync(x=> objectKeys.Contains(x.Id));
+        if (aria2Stat!.NumWaiting > 1000) return Unit.Value;
 
-        foreach(var item in postRelations)
+        var postRelations = await _postRelationRepository.FindAsync(x => x.FileStatus == PostFileStatus.None, commnad.Limit);
+
+        if (postRelations.Count() == 0) return Unit.Value;
+
+        foreach (var item in postRelations)
         {
             if (item.FileStatus != PostFileStatus.None) continue;
 
@@ -37,7 +41,7 @@ public class CreateManyPostFileDownloadTasksCommnadConsumer : IConsumer<CreateMa
             if (item.YandereId != null)
                 urls.Add(linksdic[nameof(Yandere)]);
 
-            if (urls.Count == 0) return;
+            if (urls.Count == 0) return Unit.Value;
 
             urls.Add(linksdic[nameof(Gelbooru)]);
 
@@ -47,5 +51,7 @@ public class CreateManyPostFileDownloadTasksCommnadConsumer : IConsumer<CreateMa
 
             await _postRelationRepository.UpdateFileStatus(item with { FileStatus = PostFileStatus.Downloading });
         }
+
+        return Unit.Value;
     }
 }

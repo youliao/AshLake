@@ -31,20 +31,9 @@ public class PostFileJob
 
     [Queue("common")]
     [AutomaticRetry(Attempts = 3)]
-    public async Task<int> DownloadManyPostFiles(int limit,int max = 1000)
+    public async Task DownloadManyPostFiles(int limit)
     {
-        var aria2Stat = await _collectorService.GetAria2GlobalStat();
-
-        if (aria2Stat!.NumWaiting > max) return 0;
-
-        var postRelations = await _postRelationRepository.FindAsync(x => x.FileStatus == PostFileStatus.None, limit);
-
-        if(postRelations.Count() == 0) return 0;
-
-        var command = new CreateManyPostFileDownloadTasksCommnad(postRelations.Select(x=>x.Id));
+        var command = new CreateManyPostFileDownloadTasksCommnad(limit);
         await _mediator.Send(command);
-
-        return postRelations.Count();
-
     }
 }

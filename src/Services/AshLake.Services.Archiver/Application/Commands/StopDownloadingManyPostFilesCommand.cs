@@ -1,15 +1,14 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
-public record StopDownloadingManyPostFilesCommand();
+public record StopDownloadingManyPostFilesCommand():IRequest;
 
-public class StopDownloadingManyPostFilesCommandConsumer : IConsumer<StopDownloadingManyPostFilesCommand>
+public class StopDownloadingManyPostFilesCommandHandler : IRequestHandler<StopDownloadingManyPostFilesCommand>
 {
-
-    public Task Consume(ConsumeContext<StopDownloadingManyPostFilesCommand> context)
+    public Task<Unit> Handle(StopDownloadingManyPostFilesCommand command, CancellationToken cancellationToken)
     {
         RecurringJob.RemoveIfExists("downloadmanypostfiles");
         RecurringJob.RemoveIfExists("syncpostfilestatus");
 
-        return Task.CompletedTask;
+        return Task.FromResult(Unit.Value);
     }
 }

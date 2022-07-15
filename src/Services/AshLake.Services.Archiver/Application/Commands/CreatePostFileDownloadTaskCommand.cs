@@ -1,8 +1,8 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
-public record CreatePostFileDownloadTaskCommand(string ObjectKey);
+public record CreatePostFileDownloadTaskCommand(string ObjectKey) : IRequest;
 
-public class CreatePostFileDownloadTaskConsumer : IConsumer<CreatePostFileDownloadTaskCommand>
+public class CreatePostFileDownloadTaskConsumer : IRequestHandler<CreatePostFileDownloadTaskCommand>
 {
     private readonly IBooruApiService _booruApiService;
     private readonly ICollectorService _collectorService;
@@ -15,12 +15,12 @@ public class CreatePostFileDownloadTaskConsumer : IConsumer<CreatePostFileDownlo
         _postRelationRepository = postRelationRepository ?? throw new ArgumentNullException(nameof(postRelationRepository));
     }
 
-    public async Task Consume(ConsumeContext<CreatePostFileDownloadTaskCommand> context)
+    public async Task<Unit> Handle(CreatePostFileDownloadTaskCommand command, CancellationToken cancellationToken)
     {
-        string objectKey = context.Message.ObjectKey;
+        string objectKey = command.ObjectKey;
 
         var postRelation = await _postRelationRepository.SingleAsync(objectKey);
-        if (postRelation is null || postRelation.FileStatus != PostFileStatus.None) return;
+        if (postRelation is null || postRelation.FileStatus != PostFileStatus.None) return Unit.Value;
 
         var linksdic = _booruApiService.GetPostFileLinks(objectKey);
         var urls = new List<string>();
@@ -34,11 +34,13 @@ public class CreatePostFileDownloadTaskConsumer : IConsumer<CreatePostFileDownlo
         if (postRelation.YandereId != null)
             urls.Add(linksdic[nameof(Yandere)]);
 
-        if (urls.Count == 0) return;
+        if (urls.Count == 0) return Unit.Value;
         var md5 = Path.GetFileNameWithoutExtension(objectKey);
 
         await _collectorService.AddDownloadTask(urls, objectKey, md5);
 
         await _postRelationRepository.UpdateFileStatus(postRelation with { FileStatus = PostFileStatus.Downloading });
+
+        return Unit.Value;
     }
 }

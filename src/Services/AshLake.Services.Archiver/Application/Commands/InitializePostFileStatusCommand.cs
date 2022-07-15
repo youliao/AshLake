@@ -1,24 +1,23 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
-public record InitializePostFileStatusCommand(int Limit);
+public record InitializePostFileStatusCommand(int Limit):IRequest;
 
-public class InitializePostFileStatusCommandConsumer : IConsumer<InitializePostFileStatusCommand>
+public class InitializePostFileStatusCommandHandler : IRequestHandler<InitializePostFileStatusCommand>
 {
     private readonly ICollectorService _collectorService;
     private readonly IPostRelationRepository _postRelationRepository;
 
-    public InitializePostFileStatusCommandConsumer(ICollectorService collectorService, IPostRelationRepository postRelationRepository)
+    public InitializePostFileStatusCommandHandler(ICollectorService collectorService, IPostRelationRepository postRelationRepository)
     {
         _collectorService = collectorService ?? throw new ArgumentNullException(nameof(collectorService));
         _postRelationRepository = postRelationRepository ?? throw new ArgumentNullException(nameof(postRelationRepository));
     }
 
-    public async Task Consume(ConsumeContext<InitializePostFileStatusCommand> context)
+    public async Task<Unit> Handle(InitializePostFileStatusCommand command, CancellationToken cancellationToken)
     {
-        var command = context.Message;
         var postRelations = await _postRelationRepository.FindAsync(x => x.FileStatus == null, command.Limit);
 
-        if (postRelations.Count() == 0) return;
+        if (postRelations.Count() == 0) return Unit.Value;
 
         var updateList = new List<PostRelation>();
         var validExtList = new List<string>() { ".jpg", ".jpeg", ".png", ".gif" };
@@ -44,5 +43,7 @@ public class InitializePostFileStatusCommandConsumer : IConsumer<InitializePostF
         }
 
         await _postRelationRepository.UpdateFileStatus(updateList);
+
+        return Unit.Value;
     }
 }
