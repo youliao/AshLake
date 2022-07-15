@@ -4,15 +4,15 @@ using System.Linq.Expressions;
 
 namespace AshLake.Services.Archiver.Infrastructure.Repositories;
 
-public class MetadataRepository<TSouceSite, TMetadata> : IMetadataRepository<TSouceSite, TMetadata>
-    where TSouceSite : IBooru
+public class MetadataRepository<TBooru, TMetadata> : IMetadataRepository<TBooru, TMetadata>
+    where TBooru : Booru
     where TMetadata : Metadata
 {
     private readonly IMongoDatabase _database;
 
     public MetadataRepository(MongoClient mongoClient)
     {
-        var databaseName = typeof(TSouceSite).Name;
+        var databaseName = typeof(TBooru).Name;
         _database = mongoClient.GetDatabase(databaseName);
     }
 

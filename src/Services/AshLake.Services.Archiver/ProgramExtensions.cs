@@ -113,21 +113,21 @@ internal static class ProgramExtensions
 
         builder.Services.AddHangfireServer(opt =>
         {
-            opt.ServerName = $"localhost-{nameof(Yandere).ToLower()}";
+            opt.ServerName = $"localhost-{Yandere.Alias}";
             opt.WorkerCount = 1;
             opt.Queues = new[] { nameof(Yandere).ToLower()};
         });
 
         builder.Services.AddHangfireServer(opt =>
         {
-            opt.ServerName = $"localhost-{nameof(Danbooru).ToLower()}";
+            opt.ServerName = $"localhost-{Danbooru.Alias}";
             opt.WorkerCount = 1;
             opt.Queues = new[] { nameof(Danbooru).ToLower() };
         });
 
         builder.Services.AddHangfireServer(opt =>
         {
-            opt.ServerName = $"localhost-{nameof(Konachan).ToLower()}";
+            opt.ServerName = $"localhost-{Konachan.Alias}";
             opt.WorkerCount = 1;
             opt.Queues = new[] { nameof(Konachan).ToLower() };
         });

@@ -17,7 +17,7 @@ public class PostRelationRepository : IPostRelationRepository
         _updateOptions = new UpdateOptions { IsUpsert = true };
     }
 
-    public async Task AddOrUpdatePostIdAsync<T>(PostRelation postRelation) where T : IBooru
+    public async Task AddOrUpdatePostIdAsync<T>(PostRelation postRelation) where T : Booru
     {
         var definition = typeof(T).Name switch 
         {
@@ -31,7 +31,7 @@ public class PostRelationRepository : IPostRelationRepository
 
     }
 
-    public async Task AddOrUpdatePostIdAsync<T>(IEnumerable<PostRelation> postRelations) where T : IBooru
+    public async Task AddOrUpdatePostIdAsync<T>(IEnumerable<PostRelation> postRelations) where T : Booru
     {
         var bulkModels = typeof(T).Name switch
         {

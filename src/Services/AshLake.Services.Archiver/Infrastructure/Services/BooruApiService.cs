@@ -2,7 +2,7 @@
 
 namespace AshLake.Services.Archiver.Infrastructure.Services;
 
-public interface IBooruApiService<T> where T : IBooru
+public interface IBooruApiService<T> where T : Booru
 {
     Task<IEnumerable<BsonDocument>> GetPostMetadataList(int startId, int limit);
 
@@ -16,7 +16,7 @@ public interface IBooruApiService
     Dictionary<string, string> GetPostFileLinks(string objectKey);
 }
 
-public class BooruApiService<T> : IBooruApiService<T> where T : IBooru
+public class BooruApiService<T> : IBooruApiService<T> where T : Booru
 {
     private readonly HttpClient _httpClient;
     private readonly string _booru = typeof(T).Name.ToLower();
@@ -65,10 +65,10 @@ public class BooruApiService : IBooruApiService
     {
         var baseAddress = _httpClient.BaseAddress!;
 
-        var yandereUri = new Uri(baseAddress, $"api/boorus/{nameof(Yandere).ToLower()}/postfilelinks/{objectKey}");
-        var danbooruUri = new Uri(baseAddress, $"api/boorus/{nameof(Danbooru).ToLower()}/postfilelinks/{objectKey}");
-        var konachanUri = new Uri(baseAddress, $"api/boorus/{nameof(Konachan).ToLower()}/postfilelinks/{objectKey}");
-        var gelbooruUri = new Uri(baseAddress, $"api/boorus/{nameof(Gelbooru).ToLower()}/postfilelinks/{objectKey}");
+        var yandereUri = new Uri(baseAddress, $"api/boorus/{Yandere.Alias}/postfilelinks/{objectKey}");
+        var danbooruUri = new Uri(baseAddress, $"api/boorus/{Danbooru.Alias}/postfilelinks/{objectKey}");
+        var konachanUri = new Uri(baseAddress, $"api/boorus/{Konachan.Alias}/postfilelinks/{objectKey}");
+        var gelbooruUri = new Uri(baseAddress, $"api/boorus/{Gelbooru.Alias}/postfilelinks/{objectKey}");
 
         return new Dictionary<string, string>
         {

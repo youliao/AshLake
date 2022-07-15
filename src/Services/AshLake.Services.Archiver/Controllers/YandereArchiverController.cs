@@ -35,7 +35,7 @@ public class YandereArchiverController : ControllerBase
     public async Task<ActionResult> GetTagMetadataByTypeAsync(int type,
     [FromServices] IMetadataRepository<Yandere, TagMetadata> repository)
     {
-        var filter = Builders<TagMetadata>.Filter.Eq(YandereTagMetadataKeys.type, type);
+        var filter = Builders<TagMetadata>.Filter.Eq(Yandere.TagMetadataKeys.type, type);
         var list = await repository.FindAsync(filter);
 
         return Ok(list.Select(x => x.Data));

@@ -4,9 +4,9 @@ namespace AshLake.Services.Archiver.Domain.Repositories;
 
 public interface IPostRelationRepository
 {
-    Task AddOrUpdatePostIdAsync<T>(PostRelation postRelation) where T : IBooru;
+    Task AddOrUpdatePostIdAsync<T>(PostRelation postRelation) where T : Booru;
 
-    Task AddOrUpdatePostIdAsync<T>(IEnumerable<PostRelation> postRelations) where T : IBooru;
+    Task AddOrUpdatePostIdAsync<T>(IEnumerable<PostRelation> postRelations) where T : Booru;
 
     Task UpdateFileStatus(PostRelation postRelation);
 

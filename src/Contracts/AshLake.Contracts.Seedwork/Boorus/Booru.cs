@@ -1,12 +1,4 @@
 ﻿namespace AshLake.Contracts.Seedwork.Boorus;
-public interface IBooru
+public abstract class Booru
 {
 }
-
-public class Yandere : IBooru { }
-
-public class Danbooru : IBooru { }
-
-public class Konachan : IBooru { }
-
-public class Gelbooru : IBooru { }

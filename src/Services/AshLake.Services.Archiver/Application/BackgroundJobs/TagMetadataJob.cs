@@ -2,7 +2,7 @@
 
 namespace AshLake.Services.Archiver.Application.BackgroundJobs;
 
-public class TagMetadataJob<T> where T : IBooru
+public class TagMetadataJob<T> where T : Booru
 {
     private readonly IMetadataRepository<T, TagMetadata> _tagMetadataRepository;
     private readonly IBooruApiService<T> _grabberService;

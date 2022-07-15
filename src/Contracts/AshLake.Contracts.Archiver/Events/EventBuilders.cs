@@ -1,6 +1,6 @@
 ﻿namespace AshLake.Contracts.Archiver.Events;
 
-public static class EventBuilders<T> where T : IBooru
+public static class EventBuilders<T> where T : Booru
 {
     public static dynamic PostMetadataAddedIntegrationEventBuilder(IReadOnlyList<int> PostIds)
     {

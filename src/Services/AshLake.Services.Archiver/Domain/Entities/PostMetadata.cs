@@ -8,13 +8,13 @@ public record PostMetadata : Metadata
 
 public static class PostMetadataExtensions
 {
-    public static string? GetMd5<T>(this PostMetadata metadata) where T : IBooru
+    public static string? GetMd5<T>(this PostMetadata metadata) where T : Booru
     {
         var md5Key = typeof(T).Name switch
         {
-            nameof(Yandere)=> YanderePostMetadataKeys.md5,
-            nameof(Danbooru) => DanbooruPostMetadataKeys.md5,
-            nameof(Konachan) => KonachanPostMetadataKeys.md5,
+            nameof(Yandere)=> Yandere.PostMetadataKeys.md5,
+            nameof(Danbooru) => Danbooru.PostMetadataKeys.md5,
+            nameof(Konachan) => Konachan.PostMetadataKeys.md5,
             _ => throw new ArgumentException(typeof(T).Name)
         };
 
@@ -28,17 +28,17 @@ public static class PostMetadataExtensions
         }
     }
 
-    public static string? GetExt<T>(this PostMetadata metadata) where T : IBooru
+    public static string? GetExt<T>(this PostMetadata metadata) where T : Booru
     {
         var extKey = typeof(T).Name switch
         {
-            nameof(Yandere) => YanderePostMetadataKeys.file_ext,
-            nameof(Danbooru) => DanbooruPostMetadataKeys.file_ext,
+            nameof(Yandere) => Yandere.PostMetadataKeys.file_ext,
+            nameof(Danbooru) => Danbooru.PostMetadataKeys.file_ext,
             nameof(Konachan) => null,
             _ => throw new ArgumentException(typeof(T).Name)
         };
 
-        if (extKey is null & metadata.Data.TryGetValue(KonachanPostMetadataKeys.file_url, out var urlBsonValue))
+        if (extKey is null & metadata.Data.TryGetValue(Konachan.PostMetadataKeys.file_url, out var urlBsonValue))
         {
             return Path.GetExtension(urlBsonValue.AsString)?.TrimStart('.');
         }
@@ -51,7 +51,7 @@ public static class PostMetadataExtensions
         return null;
     }
 
-    public static string? GetObjectKey<T>(this PostMetadata metadata) where T : IBooru
+    public static string? GetObjectKey<T>(this PostMetadata metadata) where T : Booru
     {
         var md5 = metadata.GetMd5<T>();
         if (md5 is null) return null;
@@ -62,7 +62,7 @@ public static class PostMetadataExtensions
         return $"{md5}.{ext}";
     }
 
-    public static bool HasObjectKey<T>(this PostMetadata metadata) where T : IBooru
+    public static bool HasObjectKey<T>(this PostMetadata metadata) where T : Booru
     {
         var md5 = metadata.GetMd5<T>();
         if (md5 is null) return false;

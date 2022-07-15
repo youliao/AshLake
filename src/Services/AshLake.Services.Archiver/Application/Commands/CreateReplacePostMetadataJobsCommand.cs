@@ -1,8 +1,8 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
-public record CreateReplacePostMetadataJobsCommand<T>(int StartId, int EndId, int Step) where T : IBooru;
+public record CreateReplacePostMetadataJobsCommand<T>(int StartId, int EndId, int Step) where T : Booru;
 
-public class CreateReplacePostMetadataJobsCommandConsumer<T> : IConsumer<CreateReplacePostMetadataJobsCommand<T>> where T : IBooru
+public class CreateReplacePostMetadataJobsCommandConsumer<T> : IConsumer<CreateReplacePostMetadataJobsCommand<T>> where T : Booru
 {
     public Task Consume(ConsumeContext<CreateReplacePostMetadataJobsCommand<T>> context)
     {
