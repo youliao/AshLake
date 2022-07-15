@@ -1,19 +1,19 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
-public record InitializePostFileStatusCommand(int Limit):IRequest;
+public record InitializePostRelationCommand(int Limit):IRequest;
 
-public class InitializePostFileStatusCommandHandler : IRequestHandler<InitializePostFileStatusCommand>
+public class InitializePostRelationCommandHandler : IRequestHandler<InitializePostRelationCommand>
 {
     private readonly ICollectorService _collectorService;
     private readonly IPostRelationRepository _postRelationRepository;
 
-    public InitializePostFileStatusCommandHandler(ICollectorService collectorService, IPostRelationRepository postRelationRepository)
+    public InitializePostRelationCommandHandler(ICollectorService collectorService, IPostRelationRepository postRelationRepository)
     {
         _collectorService = collectorService ?? throw new ArgumentNullException(nameof(collectorService));
         _postRelationRepository = postRelationRepository ?? throw new ArgumentNullException(nameof(postRelationRepository));
     }
 
-    public async Task<Unit> Handle(InitializePostFileStatusCommand command, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(InitializePostRelationCommand command, CancellationToken cancellationToken)
     {
         var postRelations = await _postRelationRepository.FindAsync(x => x.FileStatus == null, command.Limit);
 

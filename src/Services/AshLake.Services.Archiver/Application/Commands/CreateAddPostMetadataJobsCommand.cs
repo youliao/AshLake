@@ -22,3 +22,8 @@ public class CreateAddPostMetadataJobsCommandHandler<T> : IRequestHandler<Create
         return Task.FromResult(Unit.Value);
     }
 }
+
+
+//public class CreateYandereAddPostMetadataJobsCommandHandler : CreateAddPostMetadataJobsCommandHandler<Yandere> { };
+//public class CreateDanbooruAddPostMetadataJobsCommandHandler : CreateAddPostMetadataJobsCommandHandler<Danbooru> { };
+//public class CreateKonachanAddPostMetadataJobsCommandHandler : CreateAddPostMetadataJobsCommandHandler<Konachan> { };

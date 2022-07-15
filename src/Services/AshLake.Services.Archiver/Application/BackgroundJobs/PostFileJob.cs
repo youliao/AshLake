@@ -2,30 +2,26 @@
 
 public class PostFileJob
 {
-    private readonly IPostRelationRepository _postRelationRepository;
-    private readonly ICollectorService _collectorService;
     private readonly IMediator _mediator;
 
-    public PostFileJob(IPostRelationRepository postRelationRepository, ICollectorService collectorService, IMediator mediator)
+    public PostFileJob(IMediator mediator)
     {
-        _postRelationRepository = postRelationRepository ?? throw new ArgumentNullException(nameof(postRelationRepository));
-        _collectorService = collectorService ?? throw new ArgumentNullException(nameof(collectorService));
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
     [Queue("common")]
     [AutomaticRetry(Attempts = 3)]
-    public async Task InitializePostFileStatus(int limit)
+    public async Task InitializePostRelation(int limit)
     {
-        var command = new InitializePostFileStatusCommand(limit);
+        var command = new InitializePostRelationCommand(limit);
         await _mediator.Send(command);
     }
 
     [Queue("common")]
     [AutomaticRetry(Attempts = 3)]
-    public async Task SyncPostFileStatus(int limit)
+    public async Task RecheckDownloadingStatus(int limit)
     {
-        var command = new SyncPostFileStatusCommand(limit);
+        var command = new RecheckDownloadingStatusCommand(limit);
         await _mediator.Send(command);
     }
 

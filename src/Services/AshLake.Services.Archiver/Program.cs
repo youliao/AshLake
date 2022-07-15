@@ -2,23 +2,26 @@ using Hellang.Middleware.ProblemDetails;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddCustomSerilog();
-builder.AddCustomProblemDetails();
-builder.AddCustomControllers();
-builder.AddCustomSwagger();
-builder.AddCustomMediatR();
-builder.AddCustomMassTransit();
-builder.AddCustomHangfire();
-builder.AddCustomHealthChecks();
-builder.AddCustomApplicationServices();
+builder.UseSerilog();
+
+builder.AddProblemDetails();
+builder.AddControllers();
+builder.AddSwagger();
+builder.AddMediatR();
+builder.AddMassTransit();
+builder.AddHangfire();
+builder.AddHealthChecks();
+builder.AddApplicationServices();
+
+builder.UseAutofac();
 
 var app = builder.Build();
 
 app.UseProblemDetails();
-app.UseCustomSwagger();
+app.UseSwagger();
 app.MapControllers();
-app.UseCustomHealthChecks();
-app.UseCustomHangfireDashboard();
+app.UseHealthChecks();
+app.UseHangfireDashboard();
 
 app.MapGet("/", () => Results.Redirect("/swagger"));
 

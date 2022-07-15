@@ -11,10 +11,6 @@ public class StartDownloadingManyPostFilesCommandHandler : IRequestHandler<Start
                                               x => x.DownloadManyPostFiles(command.Limit),
                                               command.CronExpression ?? "0 0/10 * * * ?");
 
-        RecurringJob.AddOrUpdate<PostFileJob>("syncpostfilestatus",
-                                      x => x.SyncPostFileStatus(command.Limit),
-                                      "0 0/10 * * * ?");
-
         return Task.FromResult(Unit.Value);
     }
 }

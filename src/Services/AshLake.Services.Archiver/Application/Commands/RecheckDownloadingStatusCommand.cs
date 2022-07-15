@@ -1,20 +1,20 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
-public record SyncPostFileStatusCommand(int Limit) : IRequest<int>;
+public record RecheckDownloadingStatusCommand(int Limit) : IRequest<int>;
 
-public class SyncPostFileStatusCommandHandler : IRequestHandler<SyncPostFileStatusCommand, int>
+public class RecheckDownloadingStatusCommandHandler : IRequestHandler<RecheckDownloadingStatusCommand, int>
 {
     private readonly ICollectorService _collectorService;
     private readonly IPostRelationRepository _postRelationRepository;
 
-    public SyncPostFileStatusCommandHandler(ICollectorService collectorService, IPostRelationRepository postRelationRepository)
+    public RecheckDownloadingStatusCommandHandler(ICollectorService collectorService, IPostRelationRepository postRelationRepository)
     {
         _collectorService = collectorService ?? throw new ArgumentNullException(nameof(collectorService));
         _postRelationRepository = postRelationRepository ?? throw new ArgumentNullException(nameof(postRelationRepository));
     }
 
 
-    public async Task<int> Handle(SyncPostFileStatusCommand command, CancellationToken cancellationToken)
+    public async Task<int> Handle(RecheckDownloadingStatusCommand command, CancellationToken cancellationToken)
     {
         var postRelations = await _postRelationRepository.FindAsync(x => x.FileStatus == PostFileStatus.Downloading, command.Limit);
 

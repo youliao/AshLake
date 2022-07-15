@@ -6,7 +6,7 @@ public class StopInitializingPostFileStatusCommandHandler : IRequestHandler<Stop
 {
     public Task<Unit> Handle(StopInitializingPostFileStatusCommand request, CancellationToken cancellationToken)
     {
-        RecurringJob.RemoveIfExists("initializepostfilestatus");
+        RecurringJob.RemoveIfExists("initializepostrelation");
 
         return Task.FromResult(Unit.Value);
     }

@@ -1,14 +1,14 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
-public record StartInitializingPostFileStatusCommand(int Limit,string CronExpression) : IRequest;
+public record StartInitializingPostRelationCommand(int Limit,string CronExpression) : IRequest;
 
-public class StartInitializingPostFileStatusCommandHandler : IRequestHandler<StartInitializingPostFileStatusCommand>
+public class StartInitializingPostRelationCommandCommandHandler : IRequestHandler<StartInitializingPostRelationCommand>
 {
 
-    public Task<Unit> Handle(StartInitializingPostFileStatusCommand command, CancellationToken cancellationToken)
+    public Task<Unit> Handle(StartInitializingPostRelationCommand command, CancellationToken cancellationToken)
     {
-        RecurringJob.AddOrUpdate<PostFileJob>("initializepostfilestatus",
-                                              x => x.InitializePostFileStatus(command.Limit),
+        RecurringJob.AddOrUpdate<PostFileJob>("initializepostrelation",
+                                              x => x.InitializePostRelation(command.Limit),
                                               command.CronExpression ?? "0 0/1 * * * ?");
 
         return Task.FromResult(Unit.Value);

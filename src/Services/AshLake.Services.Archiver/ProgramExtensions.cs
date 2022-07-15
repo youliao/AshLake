@@ -7,6 +7,8 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
 using Hangfire.Dashboard;
 using System.Reflection;
+using Autofac.Extensions.DependencyInjection;
+using Autofac;
 
 namespace AshLake.Services.Archiver;
 
@@ -14,7 +16,7 @@ internal static class ProgramExtensions
 {
     public const string AppName = "Archiver API";
 
-    public static void AddCustomSerilog(this WebApplicationBuilder builder)
+    public static void UseSerilog(this WebApplicationBuilder builder)
     {
         var seqServerUrl = builder.Configuration["SeqServerUrl"];
 
@@ -28,7 +30,7 @@ internal static class ProgramExtensions
         builder.Host.UseSerilog();
     }
 
-    public static void AddCustomProblemDetails(this WebApplicationBuilder builder)
+    public static void AddProblemDetails(this WebApplicationBuilder builder)
     {
         builder.Services.AddProblemDetails(c =>
         {
@@ -41,7 +43,7 @@ internal static class ProgramExtensions
         });
     }
 
-    public static void AddCustomControllers(this WebApplicationBuilder builder)
+    public static void AddControllers(this WebApplicationBuilder builder)
     {
         builder.Services
             .AddControllers()
@@ -54,7 +56,7 @@ internal static class ProgramExtensions
         builder.Services.AddEndpointsApiExplorer();
     }
 
-    public static void AddCustomSwagger(this WebApplicationBuilder builder)
+    public static void AddSwagger(this WebApplicationBuilder builder)
     {
         builder.Services.AddSwaggerGen(c =>
         {
@@ -62,21 +64,20 @@ internal static class ProgramExtensions
         });
     }
 
-    public static void UseCustomSwagger(this WebApplication app)
+    public static void UseSwagger(this WebApplication app)
     {
-        app.UseSwagger().UseSwaggerUI(c =>
+        SwaggerBuilderExtensions.UseSwagger(app).UseSwaggerUI(c =>
         {
             c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{AppName} V1");
         });
     }
 
-    public static void AddCustomMediatR(this WebApplicationBuilder builder)
+    public static void AddMediatR(this WebApplicationBuilder builder)
     {
         builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
-        builder.Services.AddTransient<IRequestHandler<CreateAddPostMetadataJobsCommand<Konachan>>, CreateAddPostMetadataJobsCommandHandler<Konachan>>();
     }
 
-    public static void AddCustomMassTransit(this WebApplicationBuilder builder)
+    public static void AddMassTransit(this WebApplicationBuilder builder)
     {
         builder.Services.AddMassTransit(x =>
         {
@@ -90,7 +91,7 @@ internal static class ProgramExtensions
         });
     }
 
-    public static void AddCustomHangfire(this WebApplicationBuilder builder)
+    public static void AddHangfire(this WebApplicationBuilder builder)
     {
         builder.Services.AddHangfire(c =>
         {
@@ -126,7 +127,7 @@ internal static class ProgramExtensions
         });
     }
 
-    public static void UseCustomHangfireDashboard(this WebApplication app)
+    public static void UseHangfireDashboard(this WebApplication app)
     {
         app.UseHangfireDashboard("/hangfire", new DashboardOptions
         {
@@ -134,7 +135,7 @@ internal static class ProgramExtensions
         });
     }
 
-    public static void AddCustomHealthChecks(this WebApplicationBuilder builder)
+    public static void AddHealthChecks(this WebApplicationBuilder builder)
     {
         builder.Services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
@@ -144,7 +145,7 @@ internal static class ProgramExtensions
                         new string[] { "mongodb" });
     }
 
-    public static void UseCustomHealthChecks(this WebApplication app)
+    public static void UseHealthChecks(this WebApplication app)
     {
         app.MapHealthChecks("/hc", new HealthCheckOptions()
         {
@@ -157,7 +158,7 @@ internal static class ProgramExtensions
         });
     }
 
-    public static void AddCustomApplicationServices(this WebApplicationBuilder builder)
+    public static void AddApplicationServices(this WebApplicationBuilder builder)
     {
         #region Repositories
 
@@ -205,5 +206,15 @@ internal static class ProgramExtensions
         builder.Services.AddScoped(typeof(TagMetadataJob<>));
 
         #endregion
+    }
+
+    public static void UseAutofac(this WebApplicationBuilder builder)
+    {
+        builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+        builder.Host.ConfigureContainer<ContainerBuilder>(builder =>
+        {
+            builder.RegisterGeneric(typeof(CreateAddPostMetadataJobsCommandHandler<>)).AsImplementedInterfaces();
+            builder.RegisterGeneric(typeof(BooruApiService<>)).AsImplementedInterfaces();
+        });
     }
 }
