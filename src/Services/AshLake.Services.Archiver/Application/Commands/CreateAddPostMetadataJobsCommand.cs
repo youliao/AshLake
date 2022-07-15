@@ -1,9 +1,9 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
 public record CreateAddPostMetadataJobsCommand<T>(int StartId, int EndId, int Step) : IRequest 
-    where T : IBooru;
+    where T : Booru;
 
-public class CreateAddPostMetadataJobsCommandHandler<T> : IRequestHandler<CreateAddPostMetadataJobsCommand<T>> where T : IBooru
+public class CreateAddPostMetadataJobsCommandHandler<T> : IRequestHandler<CreateAddPostMetadataJobsCommand<T>> where T : Booru
 {
     public Task<Unit> Handle(CreateAddPostMetadataJobsCommand<T> command, CancellationToken cancellationToken)
     {
