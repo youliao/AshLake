@@ -1,7 +1,7 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
-public record RecheckDownloadingStatusCommand(int Limit);
-
+public record RecheckDownloadingStatusCommand(int Limit):Request<RecheckDownloadingStatusResult>;
+public record RecheckDownloadingStatusResult(int AffectedRows);
 public class RecheckDownloadingStatusCommandHandler : IConsumer<RecheckDownloadingStatusCommand>
 {
     private readonly ICollectorService _collectorService;
@@ -21,7 +21,7 @@ public class RecheckDownloadingStatusCommandHandler : IConsumer<RecheckDownloadi
 
         if (postRelations.Count() == 0)
         {
-            await context.RespondAsync(0);
+            await context.RespondAsync(new RecheckDownloadingStatusResult(0));
             return;
         }
 
@@ -38,12 +38,12 @@ public class RecheckDownloadingStatusCommandHandler : IConsumer<RecheckDownloadi
 
         if (updateList.Count() == 0)
         {
-            await context.RespondAsync(0);
+            await context.RespondAsync(new RecheckDownloadingStatusResult(0));
             return;
         }
 
         await _postRelationRepository.UpdateFileStatus(updateList);
 
-        await context.RespondAsync(updateList.Count);
+        await context.RespondAsync(new RecheckDownloadingStatusResult(updateList.Count));
     }
 }

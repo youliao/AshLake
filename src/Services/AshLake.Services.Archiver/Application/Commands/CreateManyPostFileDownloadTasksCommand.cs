@@ -1,21 +1,22 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
-public record CreateManyPostFileDownloadTasksCommnad(int Limit);
+public record CreateManyPostFileDownloadTasksCommand(int Limit):Request<CreateManyPostFileDownloadTasksResult>;
+public record CreateManyPostFileDownloadTasksResult(IEnumerable<string> taskIds);
 
-public class CreateManyPostFileDownloadTasksCommnadHandler : IConsumer<CreateManyPostFileDownloadTasksCommnad>
+public class CreateManyPostFileDownloadTasksCommandHandler : IConsumer<CreateManyPostFileDownloadTasksCommand>
 {
     private readonly IBooruApiService _booruApiService;
     private readonly ICollectorService _collectorService;
     private readonly IPostRelationRepository _postRelationRepository;
 
-    public CreateManyPostFileDownloadTasksCommnadHandler(IBooruApiService booruApiService, ICollectorService collectorService, IPostRelationRepository postRelationRepository)
+    public CreateManyPostFileDownloadTasksCommandHandler(IBooruApiService booruApiService, ICollectorService collectorService, IPostRelationRepository postRelationRepository)
     {
         _booruApiService = booruApiService ?? throw new ArgumentNullException(nameof(booruApiService));
         _collectorService = collectorService ?? throw new ArgumentNullException(nameof(collectorService));
         _postRelationRepository = postRelationRepository ?? throw new ArgumentNullException(nameof(postRelationRepository));
     }
 
-    public async Task Consume(ConsumeContext<CreateManyPostFileDownloadTasksCommnad> context)
+    public async Task Consume(ConsumeContext<CreateManyPostFileDownloadTasksCommand> context)
     {
         var command = context.Message;
 
@@ -53,6 +54,6 @@ public class CreateManyPostFileDownloadTasksCommnadHandler : IConsumer<CreateMan
 
         await _postRelationRepository.UpdateFileStatus(postRelations.Select(x => x with { FileStatus = PostFileStatus.Downloading }));
 
-        await context.RespondAsync<IEnumerable<string>>(taskIds);
+        await context.RespondAsync(new CreateManyPostFileDownloadTasksResult(taskIds));
     }
 }

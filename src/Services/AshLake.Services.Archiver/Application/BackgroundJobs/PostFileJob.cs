@@ -19,17 +19,19 @@ public class PostFileJob
 
     [Queue("common")]
     [AutomaticRetry(Attempts = 3)]
-    public async Task RecheckDownloadingStatus(int limit)
+    public async Task<dynamic> RecheckDownloadingStatus(int limit)
     {
         var command = new RecheckDownloadingStatusCommand(limit);
-        await _mediator.Send(command);
+        var result = await _mediator.SendRequest(command);
+
+        return result;
     }
 
     [Queue("common")]
     [AutomaticRetry(Attempts = 3)]
     public async Task DownloadManyPostFiles(int limit)
     {
-        var command = new CreateManyPostFileDownloadTasksCommnad(limit);
+        var command = new CreateManyPostFileDownloadTasksCommand(limit);
         await _mediator.Send(command);
     }
 }

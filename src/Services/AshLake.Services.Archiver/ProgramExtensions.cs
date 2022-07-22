@@ -73,6 +73,18 @@ internal static class ProgramExtensions
 
     public static void AddMassTransit(this WebApplicationBuilder builder)
     {
+        builder.Services.AddMassTransit(x =>
+        {
+            x.SetKebabCaseEndpointNameFormatter();
+            x.AddConsumers(Assembly.GetEntryAssembly());
+
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host(builder.Configuration["RabbitMqHost"]);
+                cfg.ConfigureEndpoints(context);
+            });
+        });
+
         builder.Services.AddMediator(cfg =>
         {
             cfg.AddConsumer<CreateAddPostMetadataJobsCommnadHandler<Yandere>>();
@@ -84,17 +96,6 @@ internal static class ProgramExtensions
             cfg.AddConsumer<CreateReplacePostMetadataJobsCommandHandler<Konachan>>();
 
             cfg.AddConsumers(Assembly.GetEntryAssembly());
-        });
-
-        builder.Services.AddMassTransit(x =>
-        {
-            x.AddConsumers(Assembly.GetEntryAssembly());
-
-            x.UsingRabbitMq((context, cfg) =>
-            {
-                cfg.Host(builder.Configuration["RabbitMqHost"]);
-                cfg.ConfigureEndpoints(context);
-            });
         });
     }
 
