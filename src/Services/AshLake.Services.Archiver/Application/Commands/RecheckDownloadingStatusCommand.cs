@@ -1,8 +1,8 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
-public record RecheckDownloadingStatusCommand(int Limit) : IRequest<int>;
+public record RecheckDownloadingStatusCommand(int Limit);
 
-public class RecheckDownloadingStatusCommandHandler : IRequestHandler<RecheckDownloadingStatusCommand, int>
+public class RecheckDownloadingStatusCommandHandler : IConsumer<RecheckDownloadingStatusCommand>
 {
     private readonly ICollectorService _collectorService;
     private readonly IPostRelationRepository _postRelationRepository;
@@ -13,12 +13,17 @@ public class RecheckDownloadingStatusCommandHandler : IRequestHandler<RecheckDow
         _postRelationRepository = postRelationRepository ?? throw new ArgumentNullException(nameof(postRelationRepository));
     }
 
-
-    public async Task<int> Handle(RecheckDownloadingStatusCommand command, CancellationToken cancellationToken)
+    public async Task Consume(ConsumeContext<RecheckDownloadingStatusCommand> context)
     {
+        var command = context.Message;
+
         var postRelations = await _postRelationRepository.FindAsync(x => x.FileStatus == PostFileStatus.Downloading, command.Limit);
 
-        if (postRelations.Count() == 0) return 0;
+        if (postRelations.Count() == 0)
+        {
+            await context.RespondAsync(0);
+            return;
+        }
 
         var updateList = new List<PostRelation>();
 
@@ -31,10 +36,14 @@ public class RecheckDownloadingStatusCommandHandler : IRequestHandler<RecheckDow
             updateList.Add(item with { FileStatus = PostFileStatus.InStock });
         }
 
-        if (updateList.Count() == 0) return 0;
+        if (updateList.Count() == 0)
+        {
+            await context.RespondAsync(0);
+            return;
+        }
 
         await _postRelationRepository.UpdateFileStatus(updateList);
 
-        return updateList.Count;
+        await context.RespondAsync(updateList.Count);
     }
 }

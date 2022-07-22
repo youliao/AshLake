@@ -7,13 +7,10 @@ builder.UseSerilog();
 builder.AddProblemDetails();
 builder.AddControllers();
 builder.AddSwagger();
-builder.AddMediatR();
 builder.AddMassTransit();
 builder.AddHangfire();
 builder.AddHealthChecks();
 builder.AddApplicationServices();
-
-builder.UseAutofac();
 
 var app = builder.Build();
 

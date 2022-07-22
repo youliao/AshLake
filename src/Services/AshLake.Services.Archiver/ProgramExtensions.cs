@@ -7,8 +7,6 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
 using Hangfire.Dashboard;
 using System.Reflection;
-using Autofac.Extensions.DependencyInjection;
-using Autofac;
 
 namespace AshLake.Services.Archiver;
 
@@ -38,6 +36,7 @@ internal static class ProgramExtensions
             // This is useful if you have upstream middleware that needs to do additional handling of exceptions.
             c.Rethrow<NotSupportedException>();
             c.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
+            c.MapToStatusCode<RequestFaultException>(StatusCodes.Status400BadRequest);
             c.MapToStatusCode<HttpRequestException>(StatusCodes.Status503ServiceUnavailable);
             c.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
         });
@@ -72,13 +71,21 @@ internal static class ProgramExtensions
         });
     }
 
-    public static void AddMediatR(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
-    }
-
     public static void AddMassTransit(this WebApplicationBuilder builder)
     {
+        builder.Services.AddMediator(cfg =>
+        {
+            cfg.AddConsumer<CreateAddPostMetadataJobsCommnadHandler<Yandere>>();
+            cfg.AddConsumer<CreateAddPostMetadataJobsCommnadHandler<Danbooru>>();
+            cfg.AddConsumer<CreateAddPostMetadataJobsCommnadHandler<Konachan>>();
+
+            cfg.AddConsumer<CreateReplacePostMetadataJobsCommandHandler<Yandere>>();
+            cfg.AddConsumer<CreateReplacePostMetadataJobsCommandHandler<Danbooru>>();
+            cfg.AddConsumer<CreateReplacePostMetadataJobsCommandHandler<Konachan>>();
+
+            cfg.AddConsumers(Assembly.GetEntryAssembly());
+        });
+
         builder.Services.AddMassTransit(x =>
         {
             x.AddConsumers(Assembly.GetEntryAssembly());
@@ -206,15 +213,5 @@ internal static class ProgramExtensions
         builder.Services.AddScoped(typeof(TagMetadataJob<>));
 
         #endregion
-    }
-
-    public static void UseAutofac(this WebApplicationBuilder builder)
-    {
-        builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
-        builder.Host.ConfigureContainer<ContainerBuilder>(builder =>
-        {
-            builder.RegisterGeneric(typeof(CreateAddPostMetadataJobsCommandHandler<>)).AsImplementedInterfaces();
-            builder.RegisterGeneric(typeof(BooruApiService<>)).AsImplementedInterfaces();
-        });
     }
 }

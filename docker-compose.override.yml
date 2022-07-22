@@ -59,6 +59,7 @@ services:
       - MINIO_BUCKET_NAME=postfile
       - ARIA2_HOST=collector-aria2
       - ARIA2_SECRET=ARIA2
+      - AMQP_HOST=rabbitmq
     volumes:
       - downloads:/downloads
     ports:
@@ -68,13 +69,13 @@ services:
     environment:
       - MINIO_ACCESS_KEY=minio
       - MINIO_SECRET_KEY=minio123
-      - MINIO_NOTIFY_AMQP_ENABLE=on
-      - MINIO_NOTIFY_AMQP_URL=amqp://rabbitmq:5672
-      - MINIO_NOTIFY_AMQP_EXCHANGE=collector.minio.events
-      - MINIO_NOTIFY_AMQP_EXCHANGE_TYPE=fanout
-      - MINIO_NOTIFY_AMQP_DELIVERY_MODE=2
-      - MINIO_NOTIFY_AMQP_AUTO_DELETED=off
-      - MINIO_NOTIFY_AMQP_DURABLE=on
+      #- MINIO_NOTIFY_AMQP_ENABLE=on
+      #- MINIO_NOTIFY_AMQP_URL=amqp://rabbitmq:5672
+      #- MINIO_NOTIFY_AMQP_EXCHANGE=collector.minio.events
+      #- MINIO_NOTIFY_AMQP_EXCHANGE_TYPE=fanout
+      #- MINIO_NOTIFY_AMQP_DELIVERY_MODE=2
+      #- MINIO_NOTIFY_AMQP_AUTO_DELETED=off
+      #- MINIO_NOTIFY_AMQP_DURABLE=on
     command: server /data{1...3} --console-address ":9001"
     volumes:
       - collector-miniodata1:/data1

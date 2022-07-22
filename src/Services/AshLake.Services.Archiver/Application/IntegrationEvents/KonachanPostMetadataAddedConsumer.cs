@@ -1,4 +1,4 @@
-﻿namespace AshLake.Services.Archiver.Application.EventConsumers;
+﻿namespace AshLake.Services.Archiver.Application.IntegrationEvents;
 
 public class KonachanPostMetadataAddedConsumer : IConsumer<KonachanPostMetadataAddedEvent>
 {

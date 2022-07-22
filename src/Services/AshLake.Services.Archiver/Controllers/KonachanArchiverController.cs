@@ -6,7 +6,7 @@ public class KonachanArchiverController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> GetPostMetadataAsync(int id,
+    public async Task<ActionResult> GetPostMetadata(int id,
         [FromServices] IMetadataRepository<Konachan,PostMetadata> repository)
     {
         var metadata = await repository.SingleAsync(id);
@@ -18,7 +18,7 @@ public class KonachanArchiverController : ControllerBase
     [Route("/api/boorus/konachan/postmetadata")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult> GetPostMetadataByRangeAsync(int rangeFrom, int rangeTo,
+    public async Task<ActionResult> GetPostMetadataByRange(int rangeFrom, int rangeTo,
     [FromServices] IMetadataRepository<Konachan, PostMetadata> repository)
     {
         var list = await repository.FindAsync(x => x.Id>=rangeFrom && x.Id<= rangeTo) ?? new List<PostMetadata>();
@@ -29,7 +29,7 @@ public class KonachanArchiverController : ControllerBase
     [Route("/api/boorus/konachan/addpostmetadatajobs")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<ActionResult> CreateAddPostMetadataJobsAsync(CreateAddPostMetadataJobsCommand<Konachan> command,
+    public async Task<ActionResult> CreateAddPostMetadataJobs(CreateAddPostMetadataJobsCommand<Konachan> command,
         [FromServices] IMediator mediator)
     {
         await mediator.Send(command);
@@ -39,7 +39,7 @@ public class KonachanArchiverController : ControllerBase
     [Route("/api/boorus/konachan/replacepostmetadatajobs")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<ActionResult> CreateUpdatePostMetadataJobsAsync(CreateReplacePostMetadataJobsCommand<Konachan> command,
+    public async Task<ActionResult> CreateReplacePostMetadataJobs(CreateReplacePostMetadataJobsCommand<Konachan> command,
         [FromServices] IMediator mediator)
     {
         await mediator.Send(command);

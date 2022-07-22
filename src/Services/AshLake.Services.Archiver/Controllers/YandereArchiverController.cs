@@ -8,7 +8,7 @@ public class YandereArchiverController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> GetPostMetadataAsync(int id,
+    public async Task<ActionResult> GetPostMetadata(int id,
         [FromServices] IMetadataRepository<Yandere,PostMetadata> repository)
     {
         var metadata = await repository.SingleAsync(id);
@@ -32,7 +32,7 @@ public class YandereArchiverController : ControllerBase
     [Route("/api/boorus/yandere/tagmetadata")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult> GetTagMetadataByTypeAsync(int type,
+    public async Task<ActionResult> GetTagMetadataByType(int type,
     [FromServices] IMetadataRepository<Yandere, TagMetadata> repository)
     {
         var filter = Builders<TagMetadata>.Filter.Eq(Yandere.TagMetadataKeys.type, type);
@@ -44,40 +44,20 @@ public class YandereArchiverController : ControllerBase
     [Route("/api/boorus/yandere/addpostmetadatajobs")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<ActionResult> CreateAddPostMetadataJobsAsync(CreateAddPostMetadataJobsCommand<Yandere> command,
+    public async Task<ActionResult> CreateAddPostMetadataJobs(CreateAddPostMetadataJobsCommand<Yandere> command,
         [FromServices] IMediator mediator)
     {
-        await mediator.Send(command);
-        return Accepted();
+        var result = await mediator.SendRequest(command);
+        return Accepted(result);
     }
 
     [Route("/api/boorus/yandere/replacepostmetadatajobs")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<ActionResult> CreateUpdatePostMetadataJobsAsync(CreateReplacePostMetadataJobsCommand<Yandere> command,
+    public async Task<ActionResult> CreateReplacePostMetadataJobs(CreateReplacePostMetadataJobsCommand<Yandere> command,
         [FromServices] IMediator mediator)
     {
-        await mediator.Send(command);
-        return Accepted();
-    }
-
-    [Route("/api/boorus/yandere/addtagmetadatajobs/batches")]
-    [HttpPost]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status202Accepted)]
-    public ActionResult<List<string>> CreateTagMetadataJobsAsync(CreateTagMetadataJobsCommand command)
-    {
-        var jobIdList = new List<string>();
-
-        IEnumerable<int> tagTypes = command.TagTypes ?? new List<int>() { 0, 1, 3, 4, 5, 6 };
-
-        foreach (var item in tagTypes)
-        {
-            var jobId = BackgroundJob.Enqueue<TagMetadataJob<Yandere>>(
-                x => x.AddOrUpdateTagMetadata(nameof(Yandere).ToLower(), item));
-
-            jobIdList.Add(jobId);
-        }
-
-        return Ok(jobIdList);
+        var result = await mediator.SendRequest(command);
+        return Accepted(result);
     }
 }

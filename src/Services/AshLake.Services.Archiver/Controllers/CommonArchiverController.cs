@@ -8,9 +8,9 @@ public class CommonArchiverController : ControllerBase
     public async Task<ActionResult> AddPostFileDownloadTaskAsync(CreatePostFileDownloadTaskCommand command,
         [FromServices] IMediator mediator)
     {
-        await mediator.Send(command);
+        var taskId = await mediator.SendRequest(command);
 
-        return Accepted();
+        return Accepted(taskId);
     }
 
     [Route("/api/recurringjobs/initializepostrelation")]

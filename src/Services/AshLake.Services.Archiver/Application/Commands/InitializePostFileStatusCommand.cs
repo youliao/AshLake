@@ -1,8 +1,8 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
-public record InitializePostRelationCommand(int Limit):IRequest;
+public record InitializePostRelationCommand(int Limit);
 
-public class InitializePostRelationCommandHandler : IRequestHandler<InitializePostRelationCommand>
+public class InitializePostRelationCommandHandler : IConsumer<InitializePostRelationCommand>
 {
     private readonly ICollectorService _collectorService;
     private readonly IPostRelationRepository _postRelationRepository;
@@ -13,11 +13,12 @@ public class InitializePostRelationCommandHandler : IRequestHandler<InitializePo
         _postRelationRepository = postRelationRepository ?? throw new ArgumentNullException(nameof(postRelationRepository));
     }
 
-    public async Task<Unit> Handle(InitializePostRelationCommand command, CancellationToken cancellationToken)
+    public async Task Consume(ConsumeContext<InitializePostRelationCommand> context)
     {
+        var command = context.Message;
         var postRelations = await _postRelationRepository.FindAsync(x => x.FileStatus == null, command.Limit);
 
-        if (postRelations.Count() == 0) return Unit.Value;
+        if (postRelations.Count() == 0) return;
 
         var updateList = new List<PostRelation>();
         var validExtList = new List<string>() { ".jpg", ".jpeg", ".png", ".gif" };
@@ -43,7 +44,5 @@ public class InitializePostRelationCommandHandler : IRequestHandler<InitializePo
         }
 
         await _postRelationRepository.UpdateFileStatus(updateList);
-
-        return Unit.Value;
     }
 }

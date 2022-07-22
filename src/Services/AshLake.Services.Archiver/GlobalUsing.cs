@@ -15,4 +15,4 @@ global using AshLake.Contracts.Archiver.Events;
 global using AshLake.Contracts.Seedwork;
 global using MassTransit;
 global using AshLake.Services.Archiver.Application.Commands;
-global using MediatR;
+global using MassTransit.Mediator;

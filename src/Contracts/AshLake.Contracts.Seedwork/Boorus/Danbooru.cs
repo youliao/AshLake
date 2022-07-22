@@ -3,7 +3,6 @@
 public class Danbooru : Booru
 {
     public const string Alias = "danbooru";
-
     public class PostMetadataKeys
     {
         public const string id = "id";

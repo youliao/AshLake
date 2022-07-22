@@ -1,46 +1,49 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
-public record CreatePostFileDownloadTaskCommand(string ObjectKey) : IRequest;
+public record CreatePostFileDownloadTaskCommand(string ObjectKey):Request<CreatePostFileDownloadTaskResult>;
 
-public class CreatePostFileDownloadTaskConsumer : IRequestHandler<CreatePostFileDownloadTaskCommand>
+public record CreatePostFileDownloadTaskResult(string TaskId);
+
+public class CreatePostFileDownloadTaskCommnadHandler : IConsumer<CreatePostFileDownloadTaskCommand>
 {
     private readonly IBooruApiService _booruApiService;
     private readonly ICollectorService _collectorService;
     private readonly IPostRelationRepository _postRelationRepository;
 
-    public CreatePostFileDownloadTaskConsumer(IBooruApiService booruApiService, ICollectorService collectorService, IPostRelationRepository postRelationRepository)
+    public CreatePostFileDownloadTaskCommnadHandler(IBooruApiService booruApiService, ICollectorService collectorService, IPostRelationRepository postRelationRepository)
     {
         _booruApiService = booruApiService ?? throw new ArgumentNullException(nameof(booruApiService));
         _collectorService = collectorService ?? throw new ArgumentNullException(nameof(collectorService));
         _postRelationRepository = postRelationRepository ?? throw new ArgumentNullException(nameof(postRelationRepository));
     }
 
-    public async Task<Unit> Handle(CreatePostFileDownloadTaskCommand command, CancellationToken cancellationToken)
+    public async Task Consume(ConsumeContext<CreatePostFileDownloadTaskCommand> context)
     {
-        string objectKey = command.ObjectKey;
+        string objectKey = context.Message.ObjectKey;
 
         var postRelation = await _postRelationRepository.SingleAsync(objectKey);
-        if (postRelation is null || postRelation.FileStatus != PostFileStatus.None) return Unit.Value;
+        if (postRelation is null) throw new Exception();
 
-        var linksdic = _booruApiService.GetPostFileLinks(objectKey);
         var urls = new List<string>();
 
         if (postRelation.DanbooruId != null)
-            urls.Add(linksdic[nameof(Danbooru)]);
+            urls.Add(_booruApiService.GetPostFileDownloadLink<Danbooru>(objectKey));
 
         if (postRelation.KonachanId != null)
-            urls.Add(linksdic[nameof(Konachan)]);
+            urls.Add(_booruApiService.GetPostFileDownloadLink<Konachan>(objectKey));
 
         if (postRelation.YandereId != null)
-            urls.Add(linksdic[nameof(Yandere)]);
+            urls.Add(_booruApiService.GetPostFileDownloadLink<Yandere>(objectKey));
 
-        if (urls.Count == 0) return Unit.Value;
+        if (urls.Count == 0) return;
+
+        urls.Add(_booruApiService.GetPostFileDownloadLink<Gelbooru>(objectKey));
+
         var md5 = Path.GetFileNameWithoutExtension(objectKey);
 
-        await _collectorService.AddDownloadTask(urls, objectKey, md5);
-
+        var taskId = await _collectorService.AddDownloadTask(urls, objectKey, md5);
         await _postRelationRepository.UpdateFileStatus(postRelation with { FileStatus = PostFileStatus.Downloading });
 
-        return Unit.Value;
+        await context.RespondAsync(new CreatePostFileDownloadTaskResult(taskId));
     }
 }

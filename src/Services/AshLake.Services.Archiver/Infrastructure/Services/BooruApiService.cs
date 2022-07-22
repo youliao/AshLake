@@ -8,13 +8,9 @@ public interface IBooruApiService<T> where T : Booru
 
     Task<IEnumerable<BsonDocument>> GetTagMetadataList(int type);
 
-    string GetPostFileLink(string objectKey);
+    string GetPostFileDownloadLink(string objectKey);
 }
 
-public interface IBooruApiService
-{
-    Dictionary<string, string> GetPostFileLinks(string objectKey);
-}
 
 public class BooruApiService<T> : IBooruApiService<T> where T : Booru
 {
@@ -44,12 +40,17 @@ public class BooruApiService<T> : IBooruApiService<T> where T : Booru
         return list ?? new List<BsonDocument>();
     }
 
-    public string GetPostFileLink(string objectKey)
+    public string GetPostFileDownloadLink(string objectKey)
     {
         var link = new Uri(_httpClient.BaseAddress!, $"api/boorus/{_booru}/postfilelinks/{objectKey}");
 
         return link.ToString();
     }
+}
+
+public interface IBooruApiService
+{
+    string GetPostFileDownloadLink<T>(string objectKey) where T : Booru;
 }
 
 public class BooruApiService : IBooruApiService
@@ -61,21 +62,11 @@ public class BooruApiService : IBooruApiService
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     }
 
-    public Dictionary<string,string> GetPostFileLinks(string objectKey)
+    public string GetPostFileDownloadLink<T>(string objectKey) where T : Booru
     {
-        var baseAddress = _httpClient.BaseAddress!;
+        var _booru = typeof(T).Name.ToLower();
+        var link = new Uri(_httpClient.BaseAddress!, $"api/boorus/{_booru}/postfilelinks/{objectKey}");
 
-        var yandereUri = new Uri(baseAddress, $"api/boorus/{Yandere.Alias}/postfilelinks/{objectKey}");
-        var danbooruUri = new Uri(baseAddress, $"api/boorus/{Danbooru.Alias}/postfilelinks/{objectKey}");
-        var konachanUri = new Uri(baseAddress, $"api/boorus/{Konachan.Alias}/postfilelinks/{objectKey}");
-        var gelbooruUri = new Uri(baseAddress, $"api/boorus/{Gelbooru.Alias}/postfilelinks/{objectKey}");
-
-        return new Dictionary<string, string>
-        {
-            {nameof(Yandere),yandereUri.ToString()},
-            {nameof(Danbooru),danbooruUri.ToString()},
-            {nameof(Konachan),konachanUri.ToString()},
-            {nameof(Gelbooru),gelbooruUri.ToString()},
-        };
+        return link.ToString();
     }
 }
