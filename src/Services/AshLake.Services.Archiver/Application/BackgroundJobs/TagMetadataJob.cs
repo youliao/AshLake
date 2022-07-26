@@ -25,7 +25,7 @@ public class TagMetadataJob<T> where T : Booru
         var result = await _tagMetadataRepository.AddRangeAsync(dataList);
 
         if (result.AddedIds.Count > 0 || result.ModifiedIds.Count > 0)
-            await _publishEndpoint.Publish(new DanbooruTagMetadataChangedEvent(type));
+            await _publishEndpoint.Publish(new DanbooruTagMetadataChanged(type));
 
         return new { Added = result.AddedIds.Count, Modified = result.ModifiedIds.Count, Unchanged = result.UnchangedIds.Count };
     }

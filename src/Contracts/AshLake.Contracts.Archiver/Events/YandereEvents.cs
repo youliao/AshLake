@@ -1,9 +1,9 @@
 ﻿namespace AshLake.Contracts.Archiver.Events;
 
-public record YanderePostMetadataAddedEvent(IReadOnlyList<int> PostIds);
+public record YanderePostMetadataAdded(IReadOnlyList<int> PostIds);
 
-public record YanderePostMetadataModifiedEvent(IReadOnlyList<int> PostIds);
+public record YanderePostMetadataModified(IReadOnlyList<int> PostIds);
 
-public record YanderePostMetadataUnchangedEvent(IReadOnlyList<int> PostIds);
+public record YanderePostMetadataUnchanged(IReadOnlyList<int> PostIds);
 
-public record YandereTagMetadataChangedEvent(int TagType);
+public record YandereTagMetadataChanged(int TagType);

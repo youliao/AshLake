@@ -1,6 +1,6 @@
 ﻿namespace AshLake.Services.Archiver.Application.IntegrationEvents;
 
-public class KonachanPostMetadataAddedConsumer : IConsumer<KonachanPostMetadataAddedEvent>
+public class KonachanPostMetadataAddedConsumer : IConsumer<KonachanPostMetadataAdded>
 {
     private readonly IPostRelationRepository _postRelationRepository;
     private readonly IMetadataRepository<Konachan, PostMetadata> _postMetadataRepository;
@@ -11,7 +11,7 @@ public class KonachanPostMetadataAddedConsumer : IConsumer<KonachanPostMetadataA
         _postMetadataRepository = postMetadataRepository ?? throw new ArgumentNullException(nameof(postMetadataRepository));
     }
 
-    public async Task Consume(ConsumeContext<KonachanPostMetadataAddedEvent> context)
+    public async Task Consume(ConsumeContext<KonachanPostMetadataAdded> context)
     {
         var message = context.Message;
 

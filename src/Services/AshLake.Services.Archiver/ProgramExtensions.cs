@@ -75,8 +75,9 @@ internal static class ProgramExtensions
     {
         builder.Services.AddMassTransit(x =>
         {
-            x.SetKebabCaseEndpointNameFormatter();
             x.AddConsumers(Assembly.GetEntryAssembly());
+
+            //x.SetKebabCaseEndpointNameFormatter();
 
             x.UsingRabbitMq((context, cfg) =>
             {
@@ -87,13 +88,13 @@ internal static class ProgramExtensions
 
         builder.Services.AddMediator(cfg =>
         {
-            cfg.AddConsumer<CreateAddPostMetadataJobsCommnadHandler<Yandere>>();
-            cfg.AddConsumer<CreateAddPostMetadataJobsCommnadHandler<Danbooru>>();
-            cfg.AddConsumer<CreateAddPostMetadataJobsCommnadHandler<Konachan>>();
+            cfg.AddConsumer<CreateAddPostMetadataJobsHandler<Yandere>>();
+            cfg.AddConsumer<CreateAddPostMetadataJobsHandler<Danbooru>>();
+            cfg.AddConsumer<CreateAddPostMetadataJobsHandler<Konachan>>();
 
-            cfg.AddConsumer<CreateReplacePostMetadataJobsCommandHandler<Yandere>>();
-            cfg.AddConsumer<CreateReplacePostMetadataJobsCommandHandler<Danbooru>>();
-            cfg.AddConsumer<CreateReplacePostMetadataJobsCommandHandler<Konachan>>();
+            cfg.AddConsumer<CreateReplacePostMetadataJobsHandler<Yandere>>();
+            cfg.AddConsumer<CreateReplacePostMetadataJobsHandler<Danbooru>>();
+            cfg.AddConsumer<CreateReplacePostMetadataJobsHandler<Konachan>>();
 
             cfg.AddConsumers(Assembly.GetEntryAssembly());
         });

@@ -1,11 +1,11 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
-public record CreateAddPostMetadataJobsCommand<T>(int StartId, int EndId, int Step):Request<CreateAddPostMetadataJobsResult> where T : Booru;
+public record CreateAddPostMetadataJobs<T>(int StartId, int EndId, int Step):Request<CreateAddPostMetadataJobsResult> where T : Booru;
 public record CreateAddPostMetadataJobsResult(IEnumerable<string> JobIds);
 
-public class CreateAddPostMetadataJobsCommnadHandler<T> : IConsumer<CreateAddPostMetadataJobsCommand<T>> where T : Booru
+public class CreateAddPostMetadataJobsHandler<T> : IConsumer<CreateAddPostMetadataJobs<T>> where T : Booru
 {
-    public async Task Consume(ConsumeContext<CreateAddPostMetadataJobsCommand<T>> context)
+    public async Task Consume(ConsumeContext<CreateAddPostMetadataJobs<T>> context)
     {
         var command = context.Message;
         var queue = typeof(T).Name.ToLower();

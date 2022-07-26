@@ -1,13 +1,24 @@
-﻿namespace AshLake.Services.Archiver.Application.EventConsumers;
+﻿using AshLake.Contracts.Collector.Events;
 
-[EntityName("s3:ObjectCreated")]
-public record S3ObjectCreatedEvent(string ObjectKey);
-public class S3ObjectCreatedConsumer : IConsumer<S3ObjectCreatedEvent>
+public class S3ObjectCreatedConsumer : IConsumer<S3ObjectCreated>
 {
-    public async Task Consume(ConsumeContext<S3ObjectCreatedEvent> context)
-    {
-        var message = context.Message;
+    private readonly IPostRelationRepository _postRelationRepository;
 
-        Console.WriteLine(message.ObjectKey);
+    public S3ObjectCreatedConsumer(IPostRelationRepository postRelationRepository)
+    {
+        _postRelationRepository = postRelationRepository ?? throw new ArgumentNullException(nameof(postRelationRepository));
+    }
+
+    public async Task Consume(ConsumeContext<S3ObjectCreated> context)
+    {
+        var objectKey = context.Message.ObjectKey;
+
+        var postRelation = new PostRelation()
+        {
+            Id = objectKey,
+            FileStatus = PostFileStatus.InStock
+        };
+
+        await _postRelationRepository.UpdateFileStatus(postRelation);
     }
 }

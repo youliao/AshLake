@@ -1,23 +1,23 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
-public record CreatePostFileDownloadTaskCommand(string ObjectKey):Request<CreatePostFileDownloadTaskResult>;
+public record CreatePostFileDownloadTask(string ObjectKey):Request<CreatePostFileDownloadTaskResult>;
 
 public record CreatePostFileDownloadTaskResult(string TaskId);
 
-public class CreatePostFileDownloadTaskCommnadHandler : IConsumer<CreatePostFileDownloadTaskCommand>
+public class CreatePostFileDownloadTaskHandler : IConsumer<CreatePostFileDownloadTask>
 {
     private readonly IBooruApiService _booruApiService;
     private readonly ICollectorService _collectorService;
     private readonly IPostRelationRepository _postRelationRepository;
 
-    public CreatePostFileDownloadTaskCommnadHandler(IBooruApiService booruApiService, ICollectorService collectorService, IPostRelationRepository postRelationRepository)
+    public CreatePostFileDownloadTaskHandler(IBooruApiService booruApiService, ICollectorService collectorService, IPostRelationRepository postRelationRepository)
     {
         _booruApiService = booruApiService ?? throw new ArgumentNullException(nameof(booruApiService));
         _collectorService = collectorService ?? throw new ArgumentNullException(nameof(collectorService));
         _postRelationRepository = postRelationRepository ?? throw new ArgumentNullException(nameof(postRelationRepository));
     }
 
-    public async Task Consume(ConsumeContext<CreatePostFileDownloadTaskCommand> context)
+    public async Task Consume(ConsumeContext<CreatePostFileDownloadTask> context)
     {
         string objectKey = context.Message.ObjectKey;
 

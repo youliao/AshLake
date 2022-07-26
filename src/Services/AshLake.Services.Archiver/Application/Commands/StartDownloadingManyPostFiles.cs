@@ -1,10 +1,10 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
-public record StartDownloadingManyPostFilesCommand(int Limit,string CronExpression);
+public record StartDownloadingManyPostFiles(int Limit,string CronExpression);
 
-public class StartDownloadingManyPostFilesCommandHandler : IConsumer<StartDownloadingManyPostFilesCommand>
+public class StartDownloadingManyPostFilesHandler : IConsumer<StartDownloadingManyPostFiles>
 {
-    public Task Consume(ConsumeContext<StartDownloadingManyPostFilesCommand> context)
+    public Task Consume(ConsumeContext<StartDownloadingManyPostFiles> context)
     {
         var command = context.Message;
 

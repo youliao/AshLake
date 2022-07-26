@@ -1,11 +1,11 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
-public record CreateTagMetadataJobsCommand<T>(IEnumerable<int> TagTypes) where T : Booru;
+public record CreateTagMetadataJobs<T>(IEnumerable<int> TagTypes) where T : Booru;
 public record CreateTagMetadataJobsResult(IEnumerable<string> JobIds);
 
-public class CreateTagMetadataJobsCommandHandler<T> : IConsumer<CreateTagMetadataJobsCommand<T>> where T : Booru
+public class CreateTagMetadataJobsHandler<T> : IConsumer<CreateTagMetadataJobs<T>> where T : Booru
 {
-    public async Task Consume(ConsumeContext<CreateTagMetadataJobsCommand<T>> context)
+    public async Task Consume(ConsumeContext<CreateTagMetadataJobs<T>> context)
     {
         var command = context.Message;
         var queue = typeof(T).Name.ToLower();

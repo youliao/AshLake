@@ -1,22 +1,22 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
-public record CreateManyPostFileDownloadTasksCommand(int Limit):Request<CreateManyPostFileDownloadTasksResult>;
+public record CreateManyPostFileDownloadTasks(int Limit):Request<CreateManyPostFileDownloadTasksResult>;
 public record CreateManyPostFileDownloadTasksResult(IEnumerable<string> taskIds);
 
-public class CreateManyPostFileDownloadTasksCommandHandler : IConsumer<CreateManyPostFileDownloadTasksCommand>
+public class CreateManyPostFileDownloadTasksHandler : IConsumer<CreateManyPostFileDownloadTasks>
 {
     private readonly IBooruApiService _booruApiService;
     private readonly ICollectorService _collectorService;
     private readonly IPostRelationRepository _postRelationRepository;
 
-    public CreateManyPostFileDownloadTasksCommandHandler(IBooruApiService booruApiService, ICollectorService collectorService, IPostRelationRepository postRelationRepository)
+    public CreateManyPostFileDownloadTasksHandler(IBooruApiService booruApiService, ICollectorService collectorService, IPostRelationRepository postRelationRepository)
     {
         _booruApiService = booruApiService ?? throw new ArgumentNullException(nameof(booruApiService));
         _collectorService = collectorService ?? throw new ArgumentNullException(nameof(collectorService));
         _postRelationRepository = postRelationRepository ?? throw new ArgumentNullException(nameof(postRelationRepository));
     }
 
-    public async Task Consume(ConsumeContext<CreateManyPostFileDownloadTasksCommand> context)
+    public async Task Consume(ConsumeContext<CreateManyPostFileDownloadTasks> context)
     {
         var command = context.Message;
 

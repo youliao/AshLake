@@ -29,7 +29,7 @@ public class KonachanArchiverController : ControllerBase
     [Route("/api/boorus/konachan/addpostmetadatajobs")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<ActionResult> CreateAddPostMetadataJobs(CreateAddPostMetadataJobsCommand<Konachan> command,
+    public async Task<ActionResult> CreateAddPostMetadataJobs(CreateAddPostMetadataJobs<Konachan> command,
         [FromServices] IMediator mediator)
     {
         await mediator.Send(command);
@@ -39,7 +39,7 @@ public class KonachanArchiverController : ControllerBase
     [Route("/api/boorus/konachan/replacepostmetadatajobs")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<ActionResult> CreateReplacePostMetadataJobs(CreateReplacePostMetadataJobsCommand<Konachan> command,
+    public async Task<ActionResult> CreateReplacePostMetadataJobs(CreateReplacePostMetadataJobs<Konachan> command,
         [FromServices] IMediator mediator)
     {
         await mediator.Send(command);

@@ -44,7 +44,7 @@ public class YandereArchiverController : ControllerBase
     [Route("/api/boorus/yandere/addpostmetadatajobs")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<ActionResult> CreateAddPostMetadataJobs(CreateAddPostMetadataJobsCommand<Yandere> command,
+    public async Task<ActionResult> CreateAddPostMetadataJobs(CreateAddPostMetadataJobs<Yandere> command,
         [FromServices] IMediator mediator)
     {
         var result = await mediator.SendRequest(command);
@@ -54,7 +54,7 @@ public class YandereArchiverController : ControllerBase
     [Route("/api/boorus/yandere/replacepostmetadatajobs")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<ActionResult> CreateReplacePostMetadataJobs(CreateReplacePostMetadataJobsCommand<Yandere> command,
+    public async Task<ActionResult> CreateReplacePostMetadataJobs(CreateReplacePostMetadataJobs<Yandere> command,
         [FromServices] IMediator mediator)
     {
         var result = await mediator.SendRequest(command);

@@ -1,10 +1,10 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
-public record StartInitializingPostRelationCommand(int Limit,string CronExpression);
+public record StartInitializingPostRelation(int Limit,string CronExpression);
 
-public class StartInitializingPostRelationCommandCommandHandler : IConsumer<StartInitializingPostRelationCommand>
+public class StartInitializingPostRelationHandler : IConsumer<StartInitializingPostRelation>
 {
-    public Task Consume(ConsumeContext<StartInitializingPostRelationCommand> context)
+    public Task Consume(ConsumeContext<StartInitializingPostRelation> context)
     {
         var command = context.Message;
 

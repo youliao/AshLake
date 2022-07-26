@@ -8,9 +8,9 @@ public static class EventBuilders<T> where T : Booru
 
         dynamic integrationEvent = souceSite switch
         {
-            nameof(Yandere) => new YanderePostMetadataAddedEvent(PostIds),
-            nameof(Danbooru) => new DanbooruPostMetadataAddedEvent(PostIds),
-            nameof(Konachan) => new KonachanPostMetadataAddedEvent(PostIds),
+            nameof(Yandere) => new YanderePostMetadataAdded(PostIds),
+            nameof(Danbooru) => new DanbooruPostMetadataAdded(PostIds),
+            nameof(Konachan) => new KonachanPostMetadataAdded(PostIds),
             _ => throw new ArgumentOutOfRangeException(nameof(souceSite))
         };
 
@@ -23,9 +23,9 @@ public static class EventBuilders<T> where T : Booru
 
         dynamic integrationEvent = souceSite switch
         {
-            nameof(Yandere) => new YanderePostMetadataModifiedEvent(PostIds),
-            nameof(Danbooru) => new DanbooruPostMetadataModifiedEvent(PostIds),
-            nameof(Konachan) => new KonachanPostMetadataModifiedEvent(PostIds),
+            nameof(Yandere) => new YanderePostMetadataModified(PostIds),
+            nameof(Danbooru) => new DanbooruPostMetadataModified(PostIds),
+            nameof(Konachan) => new KonachanPostMetadataModified(PostIds),
             _ => throw new ArgumentOutOfRangeException(nameof(souceSite))
         };
 
@@ -38,9 +38,9 @@ public static class EventBuilders<T> where T : Booru
 
         dynamic integrationEvent = souceSite switch
         {
-            nameof(Yandere) => new YanderePostMetadataUnchangedEvent(PostIds),
-            nameof(Danbooru) => new DanbooruPostMetadataUnchangedEvent(PostIds),
-            nameof(Konachan) => new KonachanPostMetadataUnchangedEvent(PostIds),
+            nameof(Yandere) => new YanderePostMetadataUnchanged(PostIds),
+            nameof(Danbooru) => new DanbooruPostMetadataUnchanged(PostIds),
+            nameof(Konachan) => new KonachanPostMetadataUnchanged(PostIds),
             _ => throw new ArgumentOutOfRangeException(nameof(souceSite))
         };
 

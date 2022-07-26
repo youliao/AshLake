@@ -13,7 +13,7 @@ public class PostFileJob
     [AutomaticRetry(Attempts = 3)]
     public async Task InitializePostRelation(int limit)
     {
-        var command = new InitializePostRelationCommand(limit);
+        var command = new InitializePostRelation(limit);
         await _mediator.Send(command);
     }
 
@@ -21,7 +21,7 @@ public class PostFileJob
     [AutomaticRetry(Attempts = 3)]
     public async Task<dynamic> RecheckDownloadingStatus(int limit)
     {
-        var command = new RecheckDownloadingStatusCommand(limit);
+        var command = new RecheckDownloadingTasks(limit);
         var result = await _mediator.SendRequest(command);
 
         return result;
@@ -31,7 +31,7 @@ public class PostFileJob
     [AutomaticRetry(Attempts = 3)]
     public async Task DownloadManyPostFiles(int limit)
     {
-        var command = new CreateManyPostFileDownloadTasksCommand(limit);
+        var command = new CreateManyPostFileDownloadTasks(limit);
         await _mediator.Send(command);
     }
 }

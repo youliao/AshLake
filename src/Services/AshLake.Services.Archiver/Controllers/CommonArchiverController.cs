@@ -5,7 +5,7 @@ public class CommonArchiverController : ControllerBase
     [Route("/api/postfiledownloadtasks/")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<ActionResult> AddPostFileDownloadTaskAsync(CreatePostFileDownloadTaskCommand command,
+    public async Task<ActionResult> AddPostFileDownloadTaskAsync(CreatePostFileDownloadTask command,
         [FromServices] IMediator mediator)
     {
         var taskId = await mediator.SendRequest(command);
@@ -16,7 +16,7 @@ public class CommonArchiverController : ControllerBase
     [Route("/api/recurringjobs/initializepostrelation")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<ActionResult> InitializePostFileStatusAsync(StartInitializingPostRelationCommand command,
+    public async Task<ActionResult> InitializePostFileStatusAsync(StartInitializingPostRelation command,
     [FromServices] IMediator mediator)
     {
         await mediator.Send(command);
@@ -27,7 +27,7 @@ public class CommonArchiverController : ControllerBase
     [Route("/api/recurringjobs/initializepostrelation")]
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<ActionResult> StopInitializingPostFileStatusAsync(StopInitializingPostFileStatusCommand command,
+    public async Task<ActionResult> StopInitializingPostFileStatusAsync(StopInitializingPostRelation command,
         [FromServices] IMediator mediator)
     {
         await mediator.Send(command);
@@ -38,7 +38,7 @@ public class CommonArchiverController : ControllerBase
     [Route("/api/recurringjobs/downloadmanypostfiles")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<ActionResult> StartDownloadingManyPostFilesAsync(StartDownloadingManyPostFilesCommand command,
+    public async Task<ActionResult> StartDownloadingManyPostFilesAsync(StartDownloadingManyPostFiles command,
         [FromServices] IMediator mediator)
     {
         await mediator.Send(command);
@@ -49,7 +49,7 @@ public class CommonArchiverController : ControllerBase
     [Route("/api/recurringjobs/downloadmanypostfiles")]
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<ActionResult> StopDownloadingManyPostFilesAsync(StopDownloadingManyPostFilesCommand command,
+    public async Task<ActionResult> StopDownloadingManyPostFilesAsync(StopDownloadingManyPostFiles command,
         [FromServices] IMediator mediator)
     {
         await mediator.Send(command);
