@@ -1,6 +1,6 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
-public record CreateManyPostFileDownloadTasks(int Limit):Request<CreateManyPostFileDownloadTasksResult>;
+public record CreateManyPostFileDownloadTasks(PostFileStatus Status ,int Limit):Request<CreateManyPostFileDownloadTasksResult>;
 public record CreateManyPostFileDownloadTasksResult(IEnumerable<string> taskIds);
 
 public class CreateManyPostFileDownloadTasksHandler : IConsumer<CreateManyPostFileDownloadTasks>
@@ -24,7 +24,7 @@ public class CreateManyPostFileDownloadTasksHandler : IConsumer<CreateManyPostFi
 
         if (aria2Stat!.NumWaiting > 1000) return;
 
-        var postRelations = await _postRelationRepository.FindAsync(x => x.FileStatus == PostFileStatus.None, command.Limit);
+        var postRelations = await _postRelationRepository.FindAsync(x => x.FileStatus == command.Status, command.Limit);
 
         if (postRelations.Count() == 0) return;
 

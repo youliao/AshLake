@@ -51,8 +51,6 @@ services:
 
   collector:
     environment:
-      - PUID=1000
-      - PGID=101
       - MINIO_HOST=collector-minio
       - MINIO_ACCESS_KEY=minio
       - MINIO_SECRET_KEY=minio123
@@ -61,7 +59,7 @@ services:
       - ARIA2_SECRET=ARIA2
       - AMQP_HOST=rabbitmq
     volumes:
-      - downloads:/downloads
+      - aria2-downloads:/downloads
     ports:
       - 30003:3000
 
@@ -76,11 +74,12 @@ services:
       #- MINIO_NOTIFY_AMQP_DELIVERY_MODE=2
       #- MINIO_NOTIFY_AMQP_AUTO_DELETED=off
       #- MINIO_NOTIFY_AMQP_DURABLE=on
-    command: server /data{1...3} --console-address ":9001"
+    command: server /data{1...4} --console-address ":9001"
     volumes:
       - collector-miniodata1:/data1
       - collector-miniodata2:/data2
       - collector-miniodata3:/data3
+      - collector-miniodata4:/data4
     ports:
       - "9001:9001"
 
@@ -110,24 +109,12 @@ services:
 
   collector-aria2:
     environment:
-      - PUID=1000
-      - PGID=101
-      - TZ=Asia/Shanghai
-      - SECRET=ARIA2
-      - CACHE=128M
-      - PORT=6800
-      - WEBUI=true
-      - WEBUI_PORT=8080
-      - UT=false
-      - RUT=false
-      - QUIET=true
-      - SMD=false
-    ports:
-      - 30005:8080
-      - 6800:6800
+      - RPC_SECRET=ARIA2
+      - SPLIT=5
+      - CONCURRENT_DOWNLOADS=10
+      - CONNECTIONS_PER_SERVER=8
     volumes:
-      - aria2-config:/config
-      - downloads:/downloads  
+      - aria2-downloads:/downloads
 
   #yandestore:
   #  environment:
@@ -178,8 +165,5 @@ volumes:
   collector-miniodata2:
   collector-miniodata3:
   collector-miniodata4:
-  collector-miniodata5:
-  collector-miniodata6:
-  aria2-config:
-  downloads:
+  aria2-downloads:
   #yandestore-sqldata:

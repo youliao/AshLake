@@ -6,11 +6,13 @@ public class StartInitializingPostRelationHandler : IConsumer<StartInitializingP
 {
     public Task Consume(ConsumeContext<StartInitializingPostRelation> context)
     {
-        var command = context.Message;
+        var message = context.Message;
 
-        RecurringJob.AddOrUpdate<PostFileJob>("initializepostrelation",
-                                              x => x.InitializePostRelation(command.Limit),
-                                              command.CronExpression ?? "0 0/1 * * * ?");
+        var command = new InitializePostRelation(message.Limit);
+
+        RecurringJob.AddOrUpdate<PostFileJobs>("initializepostrelation",
+                                              x => x.InitializePostRelationJob(command),
+                                              message.CronExpression ?? "0 0/1 * * * ?");
 
         return Task.CompletedTask;
     }

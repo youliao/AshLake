@@ -32,6 +32,7 @@ services:
 
   collector:
     image: youliao/collector:220726
+    user: "1000"
     depends_on:
       - collector-aria2
       - collector-minio
@@ -45,7 +46,7 @@ services:
       - collector-minio
 
   collector-aria2:
-    image: superng6/aria2:webui-latest
+    image: bgmidocker/aria2:latest
     depends_on:
       - collector-minio
 
