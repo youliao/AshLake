@@ -24,11 +24,4 @@ public class PostFileJobs
 
         return result.TaskIds.Count();
     }
-
-    [Queue("common")]
-    [AutomaticRetry(Attempts = 3)]
-    public async Task<ReputManyPostFilesResult> ReputManyPostFilesJob(ReputManyPostFiles command)
-    {
-        return await _mediator.SendRequest(command);
-    }
 }

@@ -9,8 +9,6 @@ public interface ICollectorService
     Task<CollectorService.Aria2GlobalStat?> GetAria2GlobalStat();
 
     Task<bool> ObjectExists(string objectKey);
-
-    Task<bool> ReputObject(string objectKey);
 }
 
 public class CollectorService : ICollectorService
@@ -46,13 +44,6 @@ public class CollectorService : ICollectorService
         res.EnsureSuccessStatusCode();
 
         return true;
-    }
-
-    public async Task<bool> ReputObject(string objectKey)
-    {
-        using var res = await _httpClient.PutAsync($"api/s3/objects/{objectKey}",null);
-
-        return res.IsSuccessStatusCode;
     }
 
     public record Aria2GlobalStat(int DownloadSpeed,int NumActive,int NumStopped,int NumStoppedTotal,int NumWaiting, int UploadSpeed);
