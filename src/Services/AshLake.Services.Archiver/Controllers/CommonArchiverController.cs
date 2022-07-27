@@ -57,6 +57,28 @@ public class CommonArchiverController : ControllerBase
         return Accepted();
     }
 
+    [Route("/api/recurringjobs/reputmanypostfiles")]
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    public async Task<ActionResult> ReputManyPostFilesAsync(StartReputtingManyPostFiles command,
+    [FromServices] IMediator mediator)
+    {
+        await mediator.Send(command);
+
+        return Accepted();
+    }
+
+    [Route("/api/recurringjobs/reputmanypostfiles")]
+    [HttpDelete]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    public async Task<ActionResult> ReputManyPostFilesAsync(StopReputtingManyPostFiles command,
+        [FromServices] IMediator mediator)
+    {
+        await mediator.Send(command);
+
+        return Accepted();
+    }
+
     [Route("/api/postrelations/{objectKey}")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]

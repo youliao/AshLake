@@ -31,7 +31,7 @@ services:
     image: redis:7
 
   collector:
-    image: youliao/collector:220726
+    image: youliao/collector:220727
     user: "1000"
     depends_on:
       - collector-aria2

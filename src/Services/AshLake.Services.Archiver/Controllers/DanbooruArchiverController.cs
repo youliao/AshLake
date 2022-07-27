@@ -31,7 +31,7 @@ public class DanbooruArchiverController : ControllerBase
     [Route("/api/boorus/danbooru/addpostmetadatajobs")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<ActionResult> CreateAddPostMetadataJobs(CreateAddPostMetadataJobs<Konachan> command,
+    public async Task<ActionResult> CreateAddPostMetadataJobs(CreateAddPostMetadataJobs<Danbooru> command,
         [FromServices] IMediator mediator)
     {
         var result = await mediator.SendRequest(command);

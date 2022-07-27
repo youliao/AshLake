@@ -1,7 +1,7 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
 public record CreateManyPostFileDownloadTasks(PostFileStatus Status ,int Limit):Request<CreateManyPostFileDownloadTasksResult>;
-public record CreateManyPostFileDownloadTasksResult(IEnumerable<string> taskIds);
+public record CreateManyPostFileDownloadTasksResult(IEnumerable<string> TaskIds);
 
 public class CreateManyPostFileDownloadTasksHandler : IConsumer<CreateManyPostFileDownloadTasks>
 {
@@ -22,11 +22,18 @@ public class CreateManyPostFileDownloadTasksHandler : IConsumer<CreateManyPostFi
 
         var aria2Stat = await _collectorService.GetAria2GlobalStat();
 
-        if (aria2Stat!.NumWaiting > 1000) return;
+        if (aria2Stat!.NumWaiting > 1000)
+        {
+            await context.RespondAsync(new CreateManyPostFileDownloadTasksResult(new List<string>()));
+            return;
+        }
 
         var postRelations = await _postRelationRepository.FindAsync(x => x.FileStatus == command.Status, command.Limit);
 
-        if (postRelations.Count() == 0) return;
+        if (postRelations.Count() == 0) {
+            await context.RespondAsync(new CreateManyPostFileDownloadTasksResult(new List<string>()));
+            return;
+        }
 
         var taskIds = new List<string>();
         foreach (var item in postRelations)
@@ -34,7 +41,7 @@ public class CreateManyPostFileDownloadTasksHandler : IConsumer<CreateManyPostFi
             var urls = new List<string>();
 
             if (item.DanbooruId != null)
-                urls.Add( _booruApiService.GetPostFileDownloadLink<Danbooru>(item.Id));
+                urls.Add(_booruApiService.GetPostFileDownloadLink<Danbooru>(item.Id));
 
             if (item.KonachanId != null)
                 urls.Add(_booruApiService.GetPostFileDownloadLink<Konachan>(item.Id));
@@ -49,10 +56,15 @@ public class CreateManyPostFileDownloadTasksHandler : IConsumer<CreateManyPostFi
             var md5 = Path.GetFileNameWithoutExtension(item.Id);
 
             var taskId = await _collectorService.AddDownloadTask(urls, item.Id, md5);
+            if (item.FileStatus != PostFileStatus.Downloading)
+            {
+                await _postRelationRepository.UpdateFileStatus(item with { FileStatus = PostFileStatus.Downloading });
+            }
+
             taskIds.Add(taskId);
         }
 
-        await _postRelationRepository.UpdateFileStatus(postRelations.Select(x => x with { FileStatus = PostFileStatus.Downloading }));
+        //await _postRelationRepository.UpdateFileStatus(postRelations.Select(x => x with { FileStatus = PostFileStatus.Downloading }));
 
         await context.RespondAsync(new CreateManyPostFileDownloadTasksResult(taskIds));
     }

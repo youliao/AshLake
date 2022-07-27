@@ -18,8 +18,17 @@ public class PostFileJobs
 
     [Queue("common")]
     [AutomaticRetry(Attempts = 3)]
-    public async Task DownloadManyPostFilesJob(CreateManyPostFileDownloadTasks command)
+    public async Task<int> DownloadManyPostFilesJob(CreateManyPostFileDownloadTasks command)
     {
-        await _mediator.Send(command);
+        var result = await _mediator.SendRequest(command);
+
+        return result.TaskIds.Count();
+    }
+
+    [Queue("common")]
+    [AutomaticRetry(Attempts = 3)]
+    public async Task<ReputManyPostFilesResult> ReputManyPostFilesJob(ReputManyPostFiles command)
+    {
+        return await _mediator.SendRequest(command);
     }
 }

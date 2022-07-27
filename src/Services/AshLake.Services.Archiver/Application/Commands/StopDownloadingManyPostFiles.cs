@@ -7,7 +7,6 @@ public class StopDownloadingManyPostFilesHandler : IConsumer<StopDownloadingMany
     public Task Consume(ConsumeContext<StopDownloadingManyPostFiles> context)
     {
         RecurringJob.RemoveIfExists("downloadmanypostfiles");
-        RecurringJob.RemoveIfExists("syncpostfilestatus");
 
         return Task.CompletedTask;
     }
