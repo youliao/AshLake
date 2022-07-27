@@ -79,6 +79,17 @@ public class CommonArchiverController : ControllerBase
         return Accepted();
     }
 
+    [Route("/api/postrelations/recheckpostrelationdownloadingstatus")]
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    public async Task<ActionResult> RecheckPostRelationDownloadingStatusAsync(RecheckPostRelationDownloadingStatus command,
+        [FromServices] IMediator mediator)
+    {
+        var result = await mediator.SendRequest(command);
+
+        return Accepted(result);
+    }
+
     [Route("/api/postrelations/{objectKey}")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]

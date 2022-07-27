@@ -1,7 +1,7 @@
 ﻿namespace AshLake.Services.Archiver.Application.Commands;
 
 public record ReputManyPostFiles(int Limit):Request<ReputManyPostFilesResult>;
-public record ReputManyPostFilesResult(int AffectedCount);
+public record ReputManyPostFilesResult(int InstockTotal,int NoneTotal);
 
 public class ReputManyPostFilesHandler : IConsumer<ReputManyPostFiles>
 {
@@ -22,7 +22,7 @@ public class ReputManyPostFilesHandler : IConsumer<ReputManyPostFiles>
 
         if (aria2Stat!.NumWaiting > 0 || aria2Stat.NumActive > 0)
         {
-            await context.RespondAsync(new ReputManyPostFilesResult(0));
+            await context.RespondAsync(new ReputManyPostFilesResult(0,0));
             return;
         }
 
@@ -30,21 +30,26 @@ public class ReputManyPostFilesHandler : IConsumer<ReputManyPostFiles>
 
         if (postRelations.Count() == 0)
         {
-            await context.RespondAsync(new ReputManyPostFilesResult(0));
+            await context.RespondAsync(new ReputManyPostFilesResult(0, 0));
             return;
         }
 
-        var affectedCount = 0;
+        var instockTotal = 0;
+        var noneTotal = 0;
         foreach (var item in postRelations)
         {
             var sucessed = await _collectorService.ReputObject(item.Id);
             if(sucessed)
             {
-                await _postRelationRepository.UpdateFileStatus(item with { FileStatus = PostFileStatus.InStock });
-                affectedCount++;
+                instockTotal++;
+            }
+            else
+            {
+                await _postRelationRepository.UpdateFileStatus(item with { FileStatus = PostFileStatus.None });
+                noneTotal++;
             }
         }
 
-        await context.RespondAsync(new ReputManyPostFilesResult(affectedCount));
+        await context.RespondAsync(new ReputManyPostFilesResult(instockTotal, noneTotal));
     }
 }
