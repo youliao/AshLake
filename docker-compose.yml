@@ -46,7 +46,7 @@ services:
       - collector-minio
 
   collector-aria2:
-    image: youliao/aria2:dev
+    image: youliao/aria2:220728
     depends_on:
       - collector-minio
 
