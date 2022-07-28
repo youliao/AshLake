@@ -46,7 +46,7 @@ services:
       - collector-minio
 
   collector-aria2:
-    image: bgmidocker/aria2:latest
+    image: youliao/aria2:dev
     depends_on:
       - collector-minio
 
