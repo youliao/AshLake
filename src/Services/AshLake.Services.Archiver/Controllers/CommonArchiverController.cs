@@ -96,7 +96,7 @@ public class CommonArchiverController : ControllerBase
     [Route("/api/aria2globalstat")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<CollectorService.Aria2GlobalStat>> GetAria2GlobalStatAsync([FromServices] ICollectorService collectorService)
+    public async Task<ActionResult<Aria2NET.GlobalStatResult>> GetAria2GlobalStatAsync([FromServices] ICollectorAria2Service collectorService)
     {
         var stat = await collectorService.GetAria2GlobalStat();
 

@@ -16,12 +16,12 @@ internal static class ProgramExtensions
 
     public static void UseSerilog(this WebApplicationBuilder builder)
     {
-        var seqServerUrl = builder.Configuration["SeqServerUrl"];
+        var SeqServerHost = builder.Configuration["SEQ_SERVER_HOST"];
 
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(builder.Configuration)
             .WriteTo.Console(Serilog.Events.LogEventLevel.Warning)
-            .WriteTo.Seq(seqServerUrl, Serilog.Events.LogEventLevel.Warning)
+            .WriteTo.Seq(SeqServerHost, Serilog.Events.LogEventLevel.Warning)
             .Enrich.WithProperty("ApplicationName", AppName)
             .CreateLogger();
 
@@ -81,7 +81,7 @@ internal static class ProgramExtensions
 
             x.UsingRabbitMq((context, cfg) =>
             {
-                cfg.Host(builder.Configuration["RabbitMqHost"]);
+                cfg.Host(builder.Configuration["RABBITMQ_HOST"]);
                 cfg.ConfigureEndpoints(context);
             });
         });
@@ -104,7 +104,7 @@ internal static class ProgramExtensions
     {
         builder.Services.AddHangfire(c =>
         {
-            c.UseRedisStorage(builder.Configuration["RedisConnectionString"]);
+            c.UseRedisStorage(builder.Configuration["REDIS_CONNECTION_STRING"]);
         });
 
         builder.Services.AddHangfireServer(opt =>
@@ -148,7 +148,7 @@ internal static class ProgramExtensions
     {
         builder.Services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
-            .AddMongoDb(builder.Configuration["MongoConnectionString"],
+            .AddMongoDb(builder.Configuration["MONGO_CONNECTION_STRING"],
                         "database",
                         null,
                         new string[] { "mongodb" });
@@ -173,7 +173,7 @@ internal static class ProgramExtensions
 
         builder.Services.AddSingleton(_ =>
         {
-            return new MongoClient(builder.Configuration["MongoConnectionString"]);
+            return new MongoClient(builder.Configuration["MONGO_CONNECTION_STRING"]);
         });
         builder.Services.AddSingleton(typeof(IMetadataRepository<,>), typeof(MetadataRepository<,>));
         builder.Services.AddSingleton(typeof(IPostRelationRepository), typeof(PostRelationRepository));
@@ -184,27 +184,35 @@ internal static class ProgramExtensions
 
         builder.Services.AddHttpClient<IBooruApiService, BooruApiService>(config =>
         {
-            config.BaseAddress = new Uri(builder.Configuration["BooruApiHost"]);
+            config.BaseAddress = new Uri(builder.Configuration["BOORUAPI_HOST"]);
         });
 
         builder.Services.AddHttpClient<IBooruApiService<Yandere>, BooruApiService<Yandere>>(config =>
         {
-            config.BaseAddress = new Uri(builder.Configuration["BooruApiHost"]);
+            config.BaseAddress = new Uri(builder.Configuration["BOORUAPI_HOST"]);
         });
 
         builder.Services.AddHttpClient<IBooruApiService<Danbooru>, BooruApiService<Danbooru>>(config =>
         {
-            config.BaseAddress = new Uri(builder.Configuration["BooruApiHost"]);
+            config.BaseAddress = new Uri(builder.Configuration["BOORUAPI_HOST"]);
         });
 
         builder.Services.AddHttpClient<IBooruApiService<Konachan>, BooruApiService<Konachan>>(config =>
         {
-            config.BaseAddress = new Uri(builder.Configuration["BooruApiHost"]);
+            config.BaseAddress = new Uri(builder.Configuration["BOORUAPI_HOST"]);
         });
 
-        builder.Services.AddHttpClient<ICollectorService, CollectorService>(config =>
+        builder.Services.AddHttpClient<ICollectorRCloneService, CollectorRCloneService>(config =>
         {
-            config.BaseAddress = new Uri(builder.Configuration["CollectorHost"]);
+            config.BaseAddress = new Uri(builder.Configuration["COLLECTOR_RCLONE_HOST"]);
+        });
+
+        builder.Services.AddSingleton<ICollectorAria2Service, CollectorAria2Service>(_ =>
+        {
+            var aria2NetClient = new Aria2NET.Aria2NetClient(builder.Configuration["COLLECTOR_ARIA2_HOST"] + "/jsonrpc",
+            builder.Configuration["COLLECTOR_ARIA2_SECRET"]);
+
+            return new CollectorAria2Service(aria2NetClient);
         });
 
         #endregion

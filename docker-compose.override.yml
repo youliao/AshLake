@@ -30,13 +30,14 @@ services:
   archiver:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-      - MongoConnectionString=mongodb://mongoadmin:mongoadmin@archiver-mongo:27017?maxPoolSize=500
-      - RedisConnectionString=archiver-redis:6379
-      - RabbitMqHost=rabbitmq://rabbitmq:5672
-      - BooruApiHost=http://booru-api:3000
-      - CollectorHost=http://collector:3000
-      - SeqServerUrl=http://seq
+      - MONGO_CONNECTION_STRING=mongodb://mongoadmin:mongoadmin@archiver-mongo:27017?maxPoolSize=500
+      - REDIS_CONNECTION_STRING=archiver-redis:6379
+      - RABBITMQ_HOST=rabbitmq://rabbitmq:5672
+      - BOORUAPI_HOST=http://booru-api:3000
+      - COLLECTOR_ARIA2_HOST=http://collector:6800
+      - COLLECTOR_ARIA2_SECRET=ARIA2
+      - COLLECTOR_RCLONE_HOST=http://collector:5572
+      - SEQ_SERVER_HOST=http://seq
     ports:
       - "30002:80"
 
@@ -51,29 +52,24 @@ services:
 
   collector:
     environment:
-      - MINIO_HOST=collector-minio
-      - MINIO_ACCESS_KEY=minio
-      - MINIO_SECRET_KEY=minio123
-      - MINIO_BUCKET_NAME=postfile
-      - ARIA2_HOST=collector-aria2
-      - ARIA2_SECRET=ARIA2
-      - AMQP_HOST=rabbitmq
+      - RPC_SECRET=ARIA2
+      - SPLIT=5
+      - CONCURRENT_DOWNLOADS=10
+      - CONNECTIONS_PER_SERVER=8
+      #- NOTIFICATION_ENDPOINT=
+      - RCLONE_S3_ACCESS_KEY_ID=minio
+      - RCLONE_S3_SECRET_ACCESS_KEY=minio123
+      - RCLONE_S3_ENDPOINT=http://collector-minio:9000
+      - RCLONE_S3_BUCKET=postfile
     volumes:
-      - aria2-downloads:/downloads
+      - collector-downloads:/downloads
     ports:
-      - 30003:3000
+      - 5572:5572
 
   collector-minio:
     environment:
       - MINIO_ACCESS_KEY=minio
       - MINIO_SECRET_KEY=minio123
-      #- MINIO_NOTIFY_AMQP_ENABLE=on
-      #- MINIO_NOTIFY_AMQP_URL=amqp://rabbitmq:5672
-      #- MINIO_NOTIFY_AMQP_EXCHANGE=collector.minio.events
-      #- MINIO_NOTIFY_AMQP_EXCHANGE_TYPE=fanout
-      #- MINIO_NOTIFY_AMQP_DELIVERY_MODE=2
-      #- MINIO_NOTIFY_AMQP_AUTO_DELETED=off
-      #- MINIO_NOTIFY_AMQP_DURABLE=on
     command: server /data{1...4} --console-address ":9001"
     volumes:
       - collector-miniodata1:/data1
@@ -105,16 +101,7 @@ services:
     ports:
       - "30004:8080"
     depends_on:
-      - collector-minio   
-
-  collector-aria2:
-    environment:
-      - RPC_SECRET=ARIA2
-      - SPLIT=5
-      - CONCURRENT_DOWNLOADS=10
-      - CONNECTIONS_PER_SERVER=8
-    volumes:
-      - aria2-downloads:/downloads
+      - collector-minio
 
   #yandestore:
   #  environment:
@@ -165,5 +152,5 @@ volumes:
   collector-miniodata2:
   collector-miniodata3:
   collector-miniodata4:
-  aria2-downloads:
+  collector-downloads:
   #yandestore-sqldata:

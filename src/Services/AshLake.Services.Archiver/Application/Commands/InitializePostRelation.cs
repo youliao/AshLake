@@ -4,12 +4,12 @@ public record InitializePostRelation(int Limit);
 
 public class InitializePostRelationHandler : IConsumer<InitializePostRelation>
 {
-    private readonly ICollectorService _collectorService;
+    private readonly ICollectorRCloneService _collectorRCloneService;
     private readonly IPostRelationRepository _postRelationRepository;
 
-    public InitializePostRelationHandler(ICollectorService collectorService, IPostRelationRepository postRelationRepository)
+    public InitializePostRelationHandler(ICollectorRCloneService collectorRCloneService, IPostRelationRepository postRelationRepository)
     {
-        _collectorService = collectorService ?? throw new ArgumentNullException(nameof(collectorService));
+        _collectorRCloneService = collectorRCloneService ?? throw new ArgumentNullException(nameof(collectorRCloneService));
         _postRelationRepository = postRelationRepository ?? throw new ArgumentNullException(nameof(postRelationRepository));
     }
 
@@ -31,7 +31,7 @@ public class InitializePostRelationHandler : IConsumer<InitializePostRelation>
                 continue;
             }
 
-            var exists = await _collectorService.ObjectExists(item.Id);
+            var exists = await _collectorRCloneService.ObjectExists(item.Id);
 
             if (exists)
             {

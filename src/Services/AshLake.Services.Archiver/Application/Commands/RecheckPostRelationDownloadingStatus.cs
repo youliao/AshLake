@@ -4,12 +4,12 @@ public record RecheckPostRelationDownloadingStatus(int Limit):Request<RecheckPos
 public record RecheckPostRelationDownloadingStatusResult(int AffectedRows);
 public class RecheckPostRelationDownloadingStatusHandler : IConsumer<RecheckPostRelationDownloadingStatus>
 {
-    private readonly ICollectorService _collectorService;
+    private readonly ICollectorRCloneService _collectorRCloneService;
     private readonly IPostRelationRepository _postRelationRepository;
 
-    public RecheckPostRelationDownloadingStatusHandler(ICollectorService collectorService, IPostRelationRepository postRelationRepository)
+    public RecheckPostRelationDownloadingStatusHandler(ICollectorRCloneService collectorRCloneService, IPostRelationRepository postRelationRepository)
     {
-        _collectorService = collectorService ?? throw new ArgumentNullException(nameof(collectorService));
+        _collectorRCloneService = collectorRCloneService ?? throw new ArgumentNullException(nameof(collectorRCloneService));
         _postRelationRepository = postRelationRepository ?? throw new ArgumentNullException(nameof(postRelationRepository));
     }
 
@@ -29,7 +29,7 @@ public class RecheckPostRelationDownloadingStatusHandler : IConsumer<RecheckPost
 
         foreach (var item in postRelations)
         {
-            var exists = await _collectorService.ObjectExists(item.Id);
+            var exists = await _collectorRCloneService.ObjectExists(item.Id);
 
             if (exists)
             {

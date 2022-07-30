@@ -31,10 +31,8 @@ services:
     image: redis:7
 
   collector:
-    image: youliao/collector:220727
-    user: "1000"
+    image: youliao/collector:220730
     depends_on:
-      - collector-aria2
       - collector-minio
 
   collector-minio:
@@ -42,11 +40,6 @@ services:
 
   collector-imgproxy:
     image: darthsim/imgproxy:latest
-    depends_on:
-      - collector-minio
-
-  collector-aria2:
-    image: youliao/aria2:220728
     depends_on:
       - collector-minio
 

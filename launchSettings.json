@@ -12,7 +12,6 @@
         "archiver-redis": "StartWithoutDebugging",
         "booru-api": "StartWithoutDebugging",
         "collector": "StartWithoutDebugging",
-        "collector-aria2": "StartWithoutDebugging",
         "collector-imgproxy": "StartWithoutDebugging",
         "collector-minio": "StartWithoutDebugging",
         "healthcheck": "StartWithoutDebugging",

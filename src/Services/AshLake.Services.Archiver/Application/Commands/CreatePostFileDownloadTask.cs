@@ -7,10 +7,10 @@ public record CreatePostFileDownloadTaskResult(string TaskId);
 public class CreatePostFileDownloadTaskHandler : IConsumer<CreatePostFileDownloadTask>
 {
     private readonly IBooruApiService _booruApiService;
-    private readonly ICollectorService _collectorService;
+    private readonly ICollectorAria2Service _collectorService;
     private readonly IPostRelationRepository _postRelationRepository;
 
-    public CreatePostFileDownloadTaskHandler(IBooruApiService booruApiService, ICollectorService collectorService, IPostRelationRepository postRelationRepository)
+    public CreatePostFileDownloadTaskHandler(IBooruApiService booruApiService, ICollectorAria2Service collectorService, IPostRelationRepository postRelationRepository)
     {
         _booruApiService = booruApiService ?? throw new ArgumentNullException(nameof(booruApiService));
         _collectorService = collectorService ?? throw new ArgumentNullException(nameof(collectorService));
