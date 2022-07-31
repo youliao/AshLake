@@ -1,11 +1,11 @@
-﻿namespace AshLake.Services.Archiver.Application.IntegrationEvents;
+﻿namespace AshLake.Services.Archiver.Application.EventHandlers;
 
-public class KonachanPostMetadataAddedConsumer : IConsumer<KonachanPostMetadataAdded>
+public class KonachanPostMetadataAddedHandler : IConsumer<KonachanPostMetadataAdded>
 {
     private readonly IPostRelationRepository _postRelationRepository;
     private readonly IMetadataRepository<Konachan, PostMetadata> _postMetadataRepository;
 
-    public KonachanPostMetadataAddedConsumer(IPostRelationRepository postRelationRepository, IMetadataRepository<Konachan, PostMetadata> postMetadataRepository)
+    public KonachanPostMetadataAddedHandler(IPostRelationRepository postRelationRepository, IMetadataRepository<Konachan, PostMetadata> postMetadataRepository)
     {
         _postRelationRepository = postRelationRepository ?? throw new ArgumentNullException(nameof(postRelationRepository));
         _postMetadataRepository = postMetadataRepository ?? throw new ArgumentNullException(nameof(postMetadataRepository));

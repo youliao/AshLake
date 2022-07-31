@@ -1,4 +1,4 @@
 ﻿namespace AshLake.Services.Archiver.Infrastructure.Repositories;
 
-public record AddRangeResult(IReadOnlyList<int> AddedIds, IReadOnlyList<int> ModifiedIds, IReadOnlyList<int> UnchangedIds);
-public record ReplaceRangeResult(IReadOnlyList<int> AddedIds, IReadOnlyList<int> ModifiedIds);
+public record AddRangeResult(IList<int> AddedIds, IList<int> ModifiedIds, IList<int> UnchangedIds);
+public record ReplaceRangeResult(IList<int> AddedIds, IList<int> ModifiedIds);

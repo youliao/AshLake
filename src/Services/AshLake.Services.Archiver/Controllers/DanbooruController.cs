@@ -1,8 +1,6 @@
-﻿using System.Linq.Expressions;
+﻿namespace AshLake.Services.Archiver.Controllers;
 
-namespace AshLake.Services.Archiver.Controllers;
-
-public class DanbooruArchiverController : ControllerBase
+public class DanbooruController : ControllerBase
 {
     [Route("/api/boorus/danbooru/postmetadata/{id:int}")]
     [HttpGet]
@@ -31,7 +29,7 @@ public class DanbooruArchiverController : ControllerBase
     [Route("/api/boorus/danbooru/addpostmetadatajobs")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<ActionResult> CreateAddPostMetadataJobs(CreateAddPostMetadataJobs<Danbooru> command,
+    public async Task<ActionResult> Handle(CreateAddPostMetadataJobs<Danbooru> command,
         [FromServices] IMediator mediator)
     {
         var result = await mediator.SendRequest(command);
@@ -41,7 +39,7 @@ public class DanbooruArchiverController : ControllerBase
     [Route("/api/boorus/danbooru/replacepostmetadatajobs")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<ActionResult> CreateReplacePostMetadataJobs(CreateReplacePostMetadataJobs<Danbooru> command,
+    public async Task<ActionResult> Handle(CreateReplacePostMetadataJobs<Danbooru> command,
         [FromServices] IMediator mediator)
     {
         var result = await mediator.SendRequest(command);

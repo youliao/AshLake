@@ -1,11 +1,11 @@
-﻿namespace AshLake.Services.Archiver.Application.IntegrationEvents;
+﻿namespace AshLake.Services.Archiver.Application.EventHandlers;
 
-public class YanderePostMetadataAddedConsumer : IConsumer<YanderePostMetadataAdded>
+public class YanderePostMetadataAddedHandler : IConsumer<YanderePostMetadataAdded>
 {
     private readonly IPostRelationRepository _postRelationRepository;
     private readonly IMetadataRepository<Yandere, PostMetadata> _postMetadataRepository;
 
-    public YanderePostMetadataAddedConsumer(IPostRelationRepository postRelationRepository, IMetadataRepository<Yandere, PostMetadata> postMetadataRepository)
+    public YanderePostMetadataAddedHandler(IPostRelationRepository postRelationRepository, IMetadataRepository<Yandere, PostMetadata> postMetadataRepository)
     {
         _postRelationRepository = postRelationRepository ?? throw new ArgumentNullException(nameof(postRelationRepository));
         _postMetadataRepository = postMetadataRepository ?? throw new ArgumentNullException(nameof(postMetadataRepository));

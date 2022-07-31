@@ -21,5 +21,6 @@ public enum PostFileStatus
     Downloading = 1,
     InStock = 2,
     Invalid = 3,
-    Deleted = 4
+    Deleted = 4,
+    DownloadError = 5
 }

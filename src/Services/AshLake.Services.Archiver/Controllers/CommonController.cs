@@ -1,6 +1,6 @@
 ﻿namespace AshLake.Services.Archiver.Controllers;
 
-public class CommonArchiverController : ControllerBase
+public class CommonController : ControllerBase
 {
     [Route("/api/postfiledownloadtasks/")]
     [HttpPost]

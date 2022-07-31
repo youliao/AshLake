@@ -2,7 +2,7 @@
 
 public static class EventBuilders<T> where T : Booru
 {
-    public static dynamic PostMetadataAddedIntegrationEventBuilder(IReadOnlyList<int> PostIds)
+    public static dynamic PostMetadataAddedIntegrationEventBuilder(IList<int> PostIds)
     {
         var souceSite = typeof(T).Name;
 
@@ -17,7 +17,7 @@ public static class EventBuilders<T> where T : Booru
         return integrationEvent;
     }
 
-    public static dynamic PostMetadataModifiedIntegrationEventBuilder(IReadOnlyList<int> PostIds)
+    public static dynamic PostMetadataModifiedIntegrationEventBuilder(IList<int> PostIds)
     {
         var souceSite = typeof(T).Name;
 
@@ -32,7 +32,7 @@ public static class EventBuilders<T> where T : Booru
         return integrationEvent;
     }
 
-    public static dynamic PostMetadataUnchangedIntegrationEventBuilder(IReadOnlyList<int> PostIds)
+    public static dynamic PostMetadataUnchangedIntegrationEventBuilder(IList<int> PostIds)
     {
         var souceSite = typeof(T).Name;
 

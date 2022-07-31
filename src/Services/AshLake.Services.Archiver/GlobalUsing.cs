@@ -12,6 +12,7 @@ global using AshLake.Services.Archiver.Infrastructure.Services;
 global using Ardalis.GuardClauses;
 global using AshLake.Services.Archiver.Infrastructure;
 global using AshLake.Contracts.Archiver.Events;
+global using AshLake.Contracts.Collector.Events;
 global using AshLake.Contracts.Seedwork;
 global using MassTransit;
 global using AshLake.Services.Archiver.Application.Commands;

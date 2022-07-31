@@ -69,6 +69,7 @@ services:
       - CONCURRENT_DOWNLOADS=10
       - CONNECTIONS_PER_SERVER=8
       - AUTO_UPLOAD=true
+      - PUBLISH_EVENTS=true
       - RCLONE_S3_ACCESS_KEY_ID=minio
       - RCLONE_S3_SECRET_ACCESS_KEY=minio123
       - RCLONE_S3_ENDPOINT=http://collector-minio:9000

@@ -1,9 +1,9 @@
 ﻿namespace AshLake.Contracts.Archiver.Events;
 
-public record KonachanPostMetadataAdded(IReadOnlyList<int> PostIds);
+public record KonachanPostMetadataAdded(IList<int> PostIds);
 
-public record KonachanPostMetadataModified(IReadOnlyList<int> PostIds);
+public record KonachanPostMetadataModified(IList<int> PostIds);
 
-public record KonachanPostMetadataUnchanged(IReadOnlyList<int> PostIds);
+public record KonachanPostMetadataUnchanged(IList<int> PostIds);
 
 public record KonachanTagMetadataChanged(int TagType);

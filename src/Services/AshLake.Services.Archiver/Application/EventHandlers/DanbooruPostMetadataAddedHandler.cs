@@ -1,11 +1,11 @@
-﻿namespace AshLake.Services.Archiver.Application.IntegrationEvents;
+﻿namespace AshLake.Services.Archiver.Application.EventHandlers;
 
-public class DanbooruPostMetadataAddedConsumer : IConsumer<DanbooruPostMetadataAdded>
+public class DanbooruPostMetadataAddedHandler : IConsumer<DanbooruPostMetadataAdded>
 {
     private readonly IPostRelationRepository _postRelationRepository;
     private readonly IMetadataRepository<Danbooru, PostMetadata> _postMetadataRepository;
 
-    public DanbooruPostMetadataAddedConsumer(IPostRelationRepository postRelationRepository, IMetadataRepository<Danbooru, PostMetadata> postMetadataRepository)
+    public DanbooruPostMetadataAddedHandler(IPostRelationRepository postRelationRepository, IMetadataRepository<Danbooru, PostMetadata> postMetadataRepository)
     {
         _postRelationRepository = postRelationRepository ?? throw new ArgumentNullException(nameof(postRelationRepository));
         _postMetadataRepository = postMetadataRepository ?? throw new ArgumentNullException(nameof(postMetadataRepository));
