@@ -20,7 +20,7 @@ public class CreateManyPostFileDownloadTasksHandler : IConsumer<CreateManyPostFi
     {
         var command = context.Message;
 
-        var aria2Stat = await _collectorService.GetAria2GlobalStat();
+        var aria2Stat = await _collectorService.GetGlobalStat();
 
         if (aria2Stat!.NumWaiting > 1000)
         {
@@ -55,7 +55,7 @@ public class CreateManyPostFileDownloadTasksHandler : IConsumer<CreateManyPostFi
 
             var md5 = Path.GetFileNameWithoutExtension(item.Id);
 
-            var taskId = await _collectorService.AddDownloadTask(urls, item.Id, md5);
+            var taskId = await _collectorService.AddUri(urls, item.Id, md5);
             if (item.FileStatus != PostFileStatus.Downloading)
             {
                 await _postRelationRepository.UpdateFileStatus(item with { FileStatus = PostFileStatus.Downloading });

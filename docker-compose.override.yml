@@ -30,6 +30,7 @@ services:
   archiver:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
       - MONGO_CONNECTION_STRING=mongodb://mongoadmin:mongoadmin@archiver-mongo:27017?maxPoolSize=500
       - REDIS_CONNECTION_STRING=archiver-redis:6379
       - RABBITMQ_HOST=rabbitmq://rabbitmq:5672
@@ -40,6 +41,17 @@ services:
       - SEQ_SERVER_HOST=http://seq
     ports:
       - "30002:80"
+
+  archiver-dapr:
+    command: ["./daprd",
+      "-app-id", "archiver",
+      "-app-port", "80",
+      "-components-path", "/components",
+      "-config", "/configuration/ashlake-config.yaml"
+      ]
+    volumes:
+      - "./dapr/components/:/components"
+      - "./dapr/configuration/:/configuration"
 
   archiver-mongo:
     environment:
@@ -56,15 +68,24 @@ services:
       - SPLIT=5
       - CONCURRENT_DOWNLOADS=10
       - CONNECTIONS_PER_SERVER=8
-      #- NOTIFICATION_ENDPOINT=
+      - AUTO_UPLOAD=true
       - RCLONE_S3_ACCESS_KEY_ID=minio
       - RCLONE_S3_SECRET_ACCESS_KEY=minio123
       - RCLONE_S3_ENDPOINT=http://collector-minio:9000
       - RCLONE_S3_BUCKET=postfile
     volumes:
       - collector-downloads:/downloads
-    ports:
-      - 5572:5572
+
+  collector-dapr:
+    command: ["./daprd",
+      "-app-id", "collector",
+      "-app-port", "5572",
+      "-components-path", "/components",
+      "-config", "/configuration/ashlake-config.yaml"
+      ]
+    volumes:
+      - "./dapr/components/:/components"
+      - "./dapr/configuration/:/configuration"
 
   collector-minio:
     environment:

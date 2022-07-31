@@ -25,6 +25,7 @@
     <PackageReference Include="Aria2.NET" Version="1.0.5" />
     <PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="6.0.2" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.4" />
+    <PackageReference Include="Dapr.AspNetCore" Version="1.8.0" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.30" />
     <PackageReference Include="Hangfire.Redis.StackExchange" Version="1.8.5" />
     <PackageReference Include="MassTransit.AspNetCore" Version="7.3.1" />

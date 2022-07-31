@@ -6,6 +6,7 @@ builder.UseSerilog();
 
 builder.AddProblemDetails();
 builder.AddControllers();
+builder.AddDapr();
 builder.AddSwagger();
 builder.AddMassTransit();
 builder.AddHangfire();
@@ -16,6 +17,7 @@ var app = builder.Build();
 
 app.UseProblemDetails();
 app.UseSwagger();
+app.UseDapr();
 app.MapControllers();
 app.UseHealthChecks();
 app.UseHangfireDashboard();

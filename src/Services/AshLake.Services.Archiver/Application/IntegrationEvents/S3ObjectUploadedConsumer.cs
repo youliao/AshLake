@@ -1,15 +1,15 @@
 ﻿using AshLake.Contracts.Collector.Events;
 
-public class S3ObjectCreatedConsumer : IConsumer<S3ObjectCreated>
+public class S3ObjectUploadedConsumer : IConsumer<S3ObjectUploaded>
 {
     private readonly IPostRelationRepository _postRelationRepository;
 
-    public S3ObjectCreatedConsumer(IPostRelationRepository postRelationRepository)
+    public S3ObjectUploadedConsumer(IPostRelationRepository postRelationRepository)
     {
         _postRelationRepository = postRelationRepository ?? throw new ArgumentNullException(nameof(postRelationRepository));
     }
 
-    public async Task Consume(ConsumeContext<S3ObjectCreated> context)
+    public async Task Consume(ConsumeContext<S3ObjectUploaded> context)
     {
         var objectKey = context.Message.ObjectKey;
 

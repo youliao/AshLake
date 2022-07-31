@@ -24,6 +24,12 @@ services:
       - archiver-mongo
       - archiver-redis
 
+  archiver-dapr:
+    image: "daprio/daprd:1.8.3"
+    network_mode: "service:archiver"
+    depends_on:
+      - archiver
+
   archiver-mongo:
     image: mongo:4
 
@@ -31,9 +37,15 @@ services:
     image: redis:7
 
   collector:
-    image: youliao/collector:220730
+    image: collector:dev
     depends_on:
       - collector-minio
+
+  collector-dapr:
+    image: "daprio/daprd:1.8.3"
+    network_mode: "service:collector"
+    depends_on:
+      - collector
 
   collector-minio:
     image: minio/minio:latest

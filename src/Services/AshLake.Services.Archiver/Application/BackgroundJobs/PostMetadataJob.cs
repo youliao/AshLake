@@ -6,13 +6,13 @@ public class PostMetadataJob<T> where T : Booru
 {
     private readonly IMetadataRepository<T, PostMetadata> _postMetadataRepository;
     private readonly IBooruApiService<T> _grabberService;
-    private readonly IPublishEndpoint _publishEndpoint;
+    private readonly DaprClient _dapr;
 
-    public PostMetadataJob(IMetadataRepository<T, PostMetadata> postMetadataRepository, IBooruApiService<T> grabberService, IPublishEndpoint publishEndpoint)
+    public PostMetadataJob(IMetadataRepository<T, PostMetadata> postMetadataRepository, IBooruApiService<T> grabberService, DaprClient dapr)
     {
         _postMetadataRepository = postMetadataRepository ?? throw new ArgumentNullException(nameof(postMetadataRepository));
         _grabberService = grabberService ?? throw new ArgumentNullException(nameof(grabberService));
-        _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(publishEndpoint));
+        _dapr = dapr ?? throw new ArgumentNullException(nameof(dapr));
     }
 
     [Queue("{0}")]
@@ -29,13 +29,23 @@ public class PostMetadataJob<T> where T : Booru
         var result = await _postMetadataRepository.AddRangeAsync(dataList);
 
         if (result.AddedIds.Count > 0)
-            await _publishEndpoint.Publish(EventBuilders<T>.PostMetadataAddedIntegrationEventBuilder(result.AddedIds));
+        {
+            var @event = EventBuilders<T>.PostMetadataAddedIntegrationEventBuilder(result.AddedIds);
+            await _dapr.PublishEventAsync(DaprInfo.DAPR_PUBSUB_NAME, @event.GetType().Name, @event);
+        }
 
         if (result.ModifiedIds.Count > 0)
-            await _publishEndpoint.Publish(EventBuilders<T>.PostMetadataModifiedIntegrationEventBuilder(result.ModifiedIds));
+        {
+            var @event = EventBuilders<T>.PostMetadataModifiedIntegrationEventBuilder(result.ModifiedIds);
+            await _dapr.PublishEventAsync(DaprInfo.DAPR_PUBSUB_NAME, @event.GetType().Name, @event);
+        }
 
         if (result.UnchangedIds.Count > 0)
-            await _publishEndpoint.Publish(EventBuilders<T>.PostMetadataUnchangedIntegrationEventBuilder(result.UnchangedIds));
+        {
+            var @event = EventBuilders<T>.PostMetadataUnchangedIntegrationEventBuilder(result.UnchangedIds);
+            await _dapr.PublishEventAsync(DaprInfo.DAPR_PUBSUB_NAME, @event.GetType().Name, @event);
+        }
+
 
         return new { Added = result.AddedIds.Count, Modified = result.ModifiedIds.Count, Unchanged = result.UnchangedIds.Count };
     }
@@ -54,10 +64,16 @@ public class PostMetadataJob<T> where T : Booru
         var result = await _postMetadataRepository.ReplaceRangeAsync(dataList);
 
         if (result.AddedIds.Count > 0)
-            await _publishEndpoint.Publish(EventBuilders<T>.PostMetadataAddedIntegrationEventBuilder(result.AddedIds));
+        {
+            var @event = EventBuilders<T>.PostMetadataAddedIntegrationEventBuilder(result.AddedIds);
+            await _dapr.PublishEventAsync(DaprInfo.DAPR_PUBSUB_NAME, @event.GetType().Name, @event);
+        }
 
         if (result.ModifiedIds.Count > 0)
-            await _publishEndpoint.Publish(EventBuilders<T>.PostMetadataModifiedIntegrationEventBuilder(result.ModifiedIds));
+        {
+            var @event = EventBuilders<T>.PostMetadataModifiedIntegrationEventBuilder(result.ModifiedIds);
+            await _dapr.PublishEventAsync(DaprInfo.DAPR_PUBSUB_NAME, @event.GetType().Name, @event);
+        }
 
         return new { Added = result.AddedIds.Count, Modified = result.ModifiedIds.Count };
     }

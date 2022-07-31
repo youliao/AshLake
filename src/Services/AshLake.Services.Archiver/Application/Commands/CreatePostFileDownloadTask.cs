@@ -41,7 +41,7 @@ public class CreatePostFileDownloadTaskHandler : IConsumer<CreatePostFileDownloa
 
         var md5 = Path.GetFileNameWithoutExtension(objectKey);
 
-        var taskId = await _collectorService.AddDownloadTask(urls, objectKey, md5);
+        var taskId = await _collectorService.AddUri(urls, objectKey, md5);
         await _postRelationRepository.UpdateFileStatus(postRelation with { FileStatus = PostFileStatus.Downloading });
 
         await context.RespondAsync(new CreatePostFileDownloadTaskResult(taskId));

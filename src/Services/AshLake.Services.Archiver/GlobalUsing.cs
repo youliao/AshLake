@@ -16,3 +16,5 @@ global using AshLake.Contracts.Seedwork;
 global using MassTransit;
 global using AshLake.Services.Archiver.Application.Commands;
 global using MassTransit.Mediator;
+global using Dapr;
+global using Dapr.Client;

@@ -46,6 +46,7 @@ internal static class ProgramExtensions
     {
         builder.Services
             .AddControllers()
+            .AddDapr()
             .AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -53,6 +54,17 @@ internal static class ProgramExtensions
         });
 
         builder.Services.AddEndpointsApiExplorer();
+    }
+
+    public static void AddDapr(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddDaprClient();
+    }
+
+    public static void UseDapr(this WebApplication app)
+    {
+        app.UseCloudEvents();
+        app.MapSubscribeHandler();
     }
 
     public static void AddSwagger(this WebApplicationBuilder builder)
@@ -79,11 +91,12 @@ internal static class ProgramExtensions
 
             //x.SetKebabCaseEndpointNameFormatter();
 
-            x.UsingRabbitMq((context, cfg) =>
-            {
-                cfg.Host(builder.Configuration["RABBITMQ_HOST"]);
-                cfg.ConfigureEndpoints(context);
-            });
+            //x.UsingRabbitMq((context, cfg) =>
+            //{
+            //    cfg.Host(builder.Configuration["RABBITMQ_HOST"]);
+            //    cfg.ConfigureEndpoints(context);
+            //});
+            x.UsingInMemory();
         });
 
         builder.Services.AddMediator(cfg =>
